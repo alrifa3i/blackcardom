@@ -13,6 +13,7 @@ const ProductsSection = () => {
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [showDemoDialog, setShowDemoDialog] = useState(false);
   const [demoCredentials, setDemoCredentials] = useState({ username: '', password: '' });
+  const [showAllProducts, setShowAllProducts] = useState(false);
 
   const products = [
     {
@@ -132,6 +133,8 @@ const ProductsSection = () => {
     }
   ];
 
+  const displayedProducts = showAllProducts ? products : products.slice(0, 3);
+
   const openDemo = (product: any) => {
     if (product.loginRequired) {
       setSelectedProduct(product);
@@ -195,7 +198,7 @@ const ProductsSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product, index) => (
+          {displayedProducts.map((product, index) => (
             <Card key={index} className="modern-card group overflow-hidden border-0 shadow-xl bg-gradient-to-br from-gray-800 to-gray-700">
               {/* Product Preview Area */}
               <div className="relative h-48 bg-gradient-to-br from-gray-600 to-gray-500 flex items-center justify-center">
@@ -361,8 +364,13 @@ const ProductsSection = () => {
         </Dialog>
 
         <div className="text-center mt-16">
-          <Button size="lg" variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black">
-            عرض جميع المنتجات
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+            onClick={() => setShowAllProducts(!showAllProducts)}
+          >
+            {showAllProducts ? 'عرض أقل' : 'عرض جميع المنتجات'}
             <ArrowRight className="mr-2 h-5 w-5" />
           </Button>
         </div>

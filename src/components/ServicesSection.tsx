@@ -1,10 +1,13 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Code, Smartphone, Globe, Shield, Zap, Users, Database, Cloud, Cog } from 'lucide-react';
 
 const ServicesSection = () => {
+  const [showAllServices, setShowAllServices] = useState(false);
+
   const services = [
     {
       icon: <Users className="h-8 w-8" />,
@@ -80,6 +83,8 @@ const ServicesSection = () => {
     }
   ];
 
+  const displayedServices = showAllServices ? services : services.slice(0, 3);
+
   return (
     <section id="services" className="py-20 bg-black">
       <div className="container mx-auto px-6">
@@ -92,7 +97,7 @@ const ServicesSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
+          {displayedServices.map((service, index) => (
             <Card key={index} className="modern-card group overflow-hidden border-0 shadow-xl bg-gradient-to-br from-gray-900 to-gray-800">
               {/* Image Placeholder Area */}
               <div className="relative h-48 bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center">
@@ -133,8 +138,13 @@ const ServicesSection = () => {
         </div>
 
         <div className="text-center mt-16">
-          <Button size="lg" variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black">
-            عرض جميع الخدمات
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+            onClick={() => setShowAllServices(!showAllServices)}
+          >
+            {showAllServices ? 'عرض أقل' : 'عرض جميع الخدمات'}
             <ArrowRight className="mr-2 h-5 w-5" />
           </Button>
         </div>

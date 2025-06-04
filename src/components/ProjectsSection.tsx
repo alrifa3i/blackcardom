@@ -176,7 +176,7 @@ const ProjectsSection = () => {
                 </div>
               </div>
               
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-bold text-white">{project.name}</CardTitle>
                 <div className="flex items-center text-sm text-gray-400 space-x-4 mb-2">
                   <div className="flex items-center space-x-1">
@@ -191,7 +191,7 @@ const ProjectsSection = () => {
                 <p className="text-gray-300 text-sm">{project.description}</p>
               </CardHeader>
               
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3">
                 {/* Technologies */}
                 <div>
                   <div className="flex flex-wrap gap-2 mb-3">
@@ -205,11 +205,11 @@ const ProjectsSection = () => {
                 
                 {/* Achievements */}
                 <div>
-                  <h4 className="font-semibold mb-3 flex items-center text-white text-sm">
+                  <h4 className="font-semibold mb-2 flex items-center text-white text-sm">
                     <Award className="h-4 w-4 mr-2" />
                     الإنجازات الرئيسية
                   </h4>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     {project.achievements.map((achievement, idx) => (
                       <div key={idx} className="flex items-center space-x-3">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -220,7 +220,7 @@ const ProjectsSection = () => {
                 </div>
                 
                 <Button 
-                  className="w-full bg-yellow-500 text-black hover:bg-yellow-400 transition-all"
+                  className="w-full bg-yellow-500 text-black hover:bg-yellow-400 transition-all mt-2"
                   onClick={() => openProject(project)}
                 >
                   <Eye className="mr-2 h-4 w-4" />
@@ -252,7 +252,7 @@ const ProjectsSection = () => {
             </DialogHeader>
             <div className="flex-1 bg-white rounded-lg overflow-hidden">
               <iframe
-                src="https://example.com"
+                src="https://www.theblack-card.com"
                 className="w-full h-full border-0"
                 title={selectedProject?.name}
                 sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
