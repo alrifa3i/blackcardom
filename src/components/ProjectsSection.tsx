@@ -1,11 +1,15 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Calendar, MapPin, Eye, Code, Award } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Globe, Calendar, MapPin, Eye, Code, Award, X } from 'lucide-react';
 
 const ProjectsSection = () => {
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const projects = [
     {
       logo: "/placeholder.svg",
@@ -135,9 +139,12 @@ const ProjectsSection = () => {
     }
   };
 
-  const openProject = (url: string) => {
-    window.open(url, '_blank');
+  const openProject = (project: any) => {
+    setSelectedProject(project);
+    setIsDialogOpen(true);
   };
+
+  const displayedProjects = showAllProjects ? projects : projects.slice(0, 3);
 
   return (
     <section id="projects" className="py-20 bg-black">
@@ -151,7 +158,7 @@ const ProjectsSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
+          {displayedProjects.map((project, index) => (
             <Card key={index} className="project-card group border-0 shadow-xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
               {/* Project Image/Preview Area */}
               <div className="relative h-48 bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center overflow-hidden">
@@ -214,7 +221,7 @@ const ProjectsSection = () => {
                 
                 <Button 
                   className="w-full bg-yellow-500 text-black hover:bg-yellow-400 transition-all"
-                  onClick={() => openProject(project.projectUrl)}
+                  onClick={() => openProject(project)}
                 >
                   <Eye className="mr-2 h-4 w-4" />
                   عرض المشروع
@@ -225,10 +232,34 @@ const ProjectsSection = () => {
         </div>
 
         <div className="text-center mt-16">
-          <Button size="lg" variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black">
-            عرض جميع المشاريع
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+            onClick={() => setShowAllProjects(!showAllProjects)}
+          >
+            {showAllProjects ? 'عرض أقل' : 'عرض جميع المشاريع'}
           </Button>
         </div>
+
+        {/* Project Preview Dialog */}
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="max-w-6xl h-[80vh] bg-gray-900 border-gray-700">
+            <DialogHeader>
+              <DialogTitle className="text-white text-xl font-bold">
+                {selectedProject?.name}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="flex-1 bg-white rounded-lg overflow-hidden">
+              <iframe
+                src="https://example.com"
+                className="w-full h-full border-0"
+                title={selectedProject?.name}
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );
