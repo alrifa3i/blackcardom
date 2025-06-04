@@ -43,9 +43,10 @@ const MembershipRegistration = () => {
     const cvv = generateCVV();
     const expiryDate = calculateExpiryDate();
     
-    // Store member data
+    // Store member data with explicit typing
     const newMemberData = {
-      ...values,
+      name: values.name,
+      email: values.email,
       cardNumber,
       cvv,
       expiryDate
