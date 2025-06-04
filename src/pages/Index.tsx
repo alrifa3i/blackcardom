@@ -11,6 +11,7 @@ import ProductsSection from '@/components/ProductsSection';
 import ProjectsSection from '@/components/ProjectsSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
+import AuthSection from '@/components/AuthSection';
 
 const Index = () => {
   return (
@@ -128,6 +129,10 @@ const Index = () => {
       <ServicesSection />
       <ProductsSection />
       <ProjectsSection />
+      
+      {/* Add Authentication Section */}
+      <AuthSection />
+      
       <ContactSection />
       <Footer />
     </div>

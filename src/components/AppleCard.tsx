@@ -2,7 +2,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Card } from '@/components/ui/card';
 
-const AppleCard = () => {
+interface AppleCardProps {
+  memberName?: string;
+  cardNumber?: string;
+  expiryDate?: string;
+  isPersonalized?: boolean;
+  cvv?: string;
+}
+
+const AppleCard = ({
+  memberName = '',
+  cardNumber = '•••• •••• •••• ••••',
+  expiryDate = '12/25',
+  isPersonalized = false,
+  cvv = ''
+}: AppleCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -89,8 +103,29 @@ const AppleCard = () => {
     };
   }, [isMobile]);
 
+  // Add wallet button click handler
+  const handleAddToWallet = () => {
+    // Create an anchor element for the wallet pass download
+    const element = document.createElement('a');
+    element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(
+      JSON.stringify({
+        cardholderName: memberName || 'عضو مهم',
+        cardNumber: cardNumber,
+        expiryDate: expiryDate,
+        cardType: 'membership',
+        issuer: 'The Black Card',
+        cvv: cvv
+      })
+    )}`);
+    element.setAttribute('download', 'black-card-pass.pkpass');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
   return (
-    <div className="flex justify-center items-center p-4 md:p-8">
+    <div className="flex flex-col justify-center items-center p-4 md:p-8 gap-4">
       <div
         ref={cardRef}
         className="apple-card card-glow w-80 h-52 md:w-96 md:h-64 rounded-3xl p-6 md:p-8 cursor-pointer transition-all duration-300 ease-out"
@@ -103,7 +138,9 @@ const AppleCard = () => {
           <div className="flex justify-between items-start">
             <div>
               <div className="text-xs md:text-sm text-gray-300 mb-1 md:mb-2">Premium Card</div>
-              <div className="text-xl md:text-2xl font-bold gradient-text">The Black Card</div>
+              <div className="text-xl md:text-2xl font-bold gradient-text">
+                {isPersonalized ? 'عضو مهم' : 'The Black Card'}
+              </div>
             </div>
             <div className="w-10 h-6 md:w-12 md:h-8 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded flex items-center justify-center">
               <div className="w-5 h-3 md:w-6 md:h-4 bg-yellow-300 rounded-sm"></div>
@@ -112,16 +149,20 @@ const AppleCard = () => {
           
           <div className="space-y-3 md:space-y-4">
             <div className="text-base md:text-lg font-mono tracking-wider">
-              •••• •••• •••• ****
+              {cardNumber}
             </div>
             <div className="flex justify-between items-end">
               <div>
                 <div className="text-xs text-gray-400">VALID THRU</div>
-                <div className="text-sm font-bold">12/25</div>
+                <div className="text-sm font-bold">{expiryDate}</div>
               </div>
               <div className="text-right">
-                <div className="text-xs text-gray-400 mb-1">CARDMEMBER</div>
-                <div className="text-xs md:text-sm font-bold">THE BLACK CARD</div>
+                <div className="text-xs text-gray-400 mb-1">
+                  {isPersonalized ? 'MEMBER NAME' : 'CARDMEMBER'}
+                </div>
+                <div className="text-xs md:text-sm font-bold">
+                  {isPersonalized ? memberName : 'THE BLACK CARD'}
+                </div>
               </div>
             </div>
           </div>
@@ -130,6 +171,19 @@ const AppleCard = () => {
         {/* Holographic effect overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-yellow-500/10 to-transparent opacity-50 rounded-3xl"></div>
       </div>
+
+      {isPersonalized && (
+        <button 
+          onClick={handleAddToWallet}
+          className="flex items-center gap-2 bg-black text-white border border-yellow-500 py-2 px-4 rounded-md hover:bg-yellow-900/20 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect width="20" height="14" x="2" y="5" rx="2" />
+            <line x1="2" x2="22" y1="10" y2="10" />
+          </svg>
+          إضافة إلى المحفظة
+        </button>
+      )}
     </div>
   );
 };
