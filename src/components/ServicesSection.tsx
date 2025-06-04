@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Code, Smartphone, Globe, Shield, Zap, Users } from 'lucide-react';
+import { ArrowRight, Code, Smartphone, Globe, Shield, Zap, Users, Database, Cloud, Cog } from 'lucide-react';
 
 const ServicesSection = () => {
   const services = [
@@ -30,6 +29,30 @@ const ServicesSection = () => {
       features: ["تخطيط المشاريع", "إدارة الفرق", "متابعة التقدم", "ضمان الجودة"],
       price: "حسب المشروع",
       imageUrl: "/lovable-uploads/3eda1a51-81b1-45c6-8975-53dcc50cf0c2.png"
+    },
+    {
+      icon: <Database className="h-8 w-8" />,
+      title: "تصميم قواعد البيانات",
+      description: "تصميم وتطوير قواعد بيانات متقدمة وآمنة لحفظ وإدارة المعلومات",
+      features: ["تحليل البيانات", "التصميم المنطقي", "الأمان والحماية", "النسخ الاحتياطي"],
+      price: "ابتداءً من 3000 ريال",
+      imageUrl: "/lovable-uploads/3eda1a51-81b1-45c6-8975-53dcc50cf0c2.png"
+    },
+    {
+      icon: <Cloud className="h-8 w-8" />,
+      title: "الحلول السحابية",
+      description: "خدمات الاستضافة السحابية والهجرة إلى الكلاود وإدارة الخوادم",
+      features: ["هجرة البيانات", "إعداد الخوادم", "المراقبة المستمرة", "النسخ الاحتياطي"],
+      price: "ابتداءً من 800 ريال/شهرياً",
+      imageUrl: "/lovable-uploads/3eda1a51-81b1-45c6-8975-53dcc50cf0c2.png"
+    },
+    {
+      icon: <Cog className="h-8 w-8" />,
+      title: "صيانة الأنظمة",
+      description: "خدمات صيانة شاملة للأنظمة والتطبيقات لضمان الأداء الأمثل",
+      features: ["مراقبة الأداء", "إصلاح المشاكل", "تحديث الأنظمة", "الدعم الفني"],
+      price: "ابتداءً من 500 ريال/شهرياً",
+      imageUrl: "/lovable-uploads/3eda1a51-81b1-45c6-8975-53dcc50cf0c2.png"
     }
   ];
 
@@ -44,7 +67,7 @@ const ServicesSection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <Card key={index} className="modern-card group overflow-hidden border-0 shadow-xl bg-gradient-to-br from-gray-900 to-gray-800">
               {/* Image Placeholder Area */}

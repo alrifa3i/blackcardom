@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,6 +41,42 @@ const ProductsSection = () => {
       demoUrl: "https://demo.project-manager.com",
       category: "إدارة المشاريع",
       badge: "مختبر"
+    },
+    {
+      title: "نظام إدارة المخزون الذكي",
+      description: "حل متكامل لإدارة المخزون مع تتبع آلي للكميات",
+      image: "/lovable-uploads/0ae28439-a628-4b57-b4e1-2a51f507ea4a.png",
+      price: "2200 ريال",
+      rating: 4.6,
+      downloads: "250+ تحميل",
+      features: ["تتبع المخزون", "تنبيهات نقص", "تقارير المبيعات", "إدارة الموردين"],
+      demoUrl: "https://demo.inventory-system.com",
+      category: "إدارة المخزون",
+      badge: "تجربة"
+    },
+    {
+      title: "منصة التجارة الإلكترونية",
+      description: "منصة شاملة لإنشاء وإدارة المتاجر الإلكترونية",
+      image: "/lovable-uploads/0ae28439-a628-4b57-b4e1-2a51f507ea4a.png",
+      price: "4500 ريال",
+      rating: 4.9,
+      downloads: "600+ تحميل",
+      features: ["واجهة تسوق", "نظام دفع آمن", "إدارة الطلبات", "تتبع الشحن"],
+      demoUrl: "https://demo.ecommerce-platform.com",
+      category: "التجارة الإلكترونية",
+      badge: "مختبر"
+    },
+    {
+      title: "نظام إدارة الموارد البشرية",
+      description: "حل شامل لإدارة الموظفين والرواتب والحضور",
+      image: "/lovable-uploads/0ae28439-a628-4b57-b4e1-2a51f507ea4a.png",
+      price: "3800 ريال",
+      rating: 4.5,
+      downloads: "350+ تحميل",
+      features: ["إدارة الموظفين", "نظام الحضور", "حساب الرواتب", "تقييم الأداء"],
+      demoUrl: "https://demo.hr-system.com",
+      category: "الموارد البشرية",
+      badge: "تجربة"
     }
   ];
 
@@ -60,7 +95,7 @@ const ProductsSection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product, index) => (
             <Card key={index} className="modern-card group overflow-hidden border-0 shadow-xl bg-gradient-to-br from-gray-900 to-gray-800">
               <div className="relative h-48 bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center overflow-hidden">

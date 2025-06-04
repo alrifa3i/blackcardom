@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -45,6 +44,45 @@ const ProjectsSection = () => {
       achievements: ["تحسين الكفاءة %40", "تقليل وقت الانتظار %60", "رضا المرضى %95"],
       projectUrl: "https://hospital-system.om",
       featured: false
+    },
+    {
+      logo: "/placeholder.svg",
+      name: "منصة التجارة الإلكترونية المتقدمة",
+      country: "الكويت، دولة الكويت",
+      date: "2023",
+      description: "منصة تجارة إلكترونية شاملة مع نظام دفع متطور وإدارة المخزون وتحليلات المبيعات",
+      status: "مكتمل",
+      category: "تجاري",
+      technologies: ["Stripe", "Redis", "Next.js", "TypeScript"],
+      achievements: ["زيادة المبيعات %150", "+5,000 عميل", "معالجة 100k طلب"],
+      projectUrl: "https://ecommerce-platform.kw",
+      featured: true
+    },
+    {
+      logo: "/placeholder.svg",
+      name: "نظام إدارة الموارد الحكومية",
+      country: "الدوحة، دولة قطر",
+      date: "2024",
+      description: "نظام حكومي لإدارة الموارد والخدمات العامة مع واجهات للمواطنين والموظفين",
+      status: "قيد التطوير",
+      category: "حكومي",
+      technologies: ["Blockchain", "Oracle", "Java", "Spring"],
+      achievements: ["تسريع الخدمات %70", "شفافية كاملة", "رقمنة 50 خدمة"],
+      projectUrl: "https://gov-resources.qa",
+      featured: false
+    },
+    {
+      logo: "/placeholder.svg",
+      name: "تطبيق إدارة الصحة الشخصية",
+      country: "المنامة، مملكة البحرين",
+      date: "2023",
+      description: "تطبيق محمول لتتبع الصحة الشخصية مع ربط أجهزة القياس والاستشارات الطبية عن بُعد",
+      status: "مكتمل",
+      category: "صحي",
+      technologies: ["Flutter", "Firebase", "TensorFlow", "IoT"],
+      achievements: ["+50,000 مستخدم", "دقة التشخيص %92", "توفير %40 في التكاليف"],
+      projectUrl: "https://health-tracker.bh",
+      featured: true
     }
   ];
 
@@ -52,6 +90,7 @@ const ProjectsSection = () => {
     switch (status) {
       case 'مكتمل': return 'bg-green-500 text-white';
       case 'قيد التطوير': return 'bg-yellow-500 text-black';
+      case 'حكومي': return 'bg-blue-500 text-white';
       default: return 'bg-gray-500 text-white';
     }
   };
@@ -71,7 +110,7 @@ const ProjectsSection = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
             <Card key={index} className="project-card group border-0 shadow-xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
               {/* Project Image/Preview Area */}
