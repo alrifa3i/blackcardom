@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Edit, Trash2, Eye, Save, ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('services');
@@ -129,41 +130,59 @@ const AdminDashboard = () => {
   };
 
   const openPayPal = (price: string) => {
-    const paypalUrl = `https://www.paypal.com/checkoutnow?token=YOUR_PAYPAL_TOKEN&amount=${price}`;
+    // PayPal integration with provided credentials
+    const paypalUrl = `https://www.paypal.com/checkoutnow?token=AbbCtePdaGiT_0SyfFgLjcJxR75XjaoF5ODOPMbYb-du_QDalqRkIVuj85laQmc0ceYnkjwYoAtN4xwP&amount=${price}`;
     window.open(paypalUrl, '_blank');
   };
 
+  const deleteService = (id: number) => {
+    setServices(services.filter(service => service.id !== id));
+    toast({ title: "تم حذف الخدمة بنجاح" });
+  };
+
+  const deleteProduct = (id: number) => {
+    setProducts(products.filter(product => product.id !== id));
+    toast({ title: "تم حذف المنتج بنجاح" });
+  };
+
+  const deleteProject = (id: number) => {
+    setProjects(projects.filter(project => project.id !== id));
+    toast({ title: "تم حذف المشروع بنجاح" });
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <div className="bg-black text-white p-6">
+      <div className="bg-gradient-to-r from-gray-900 to-black text-white p-6 border-b border-gray-800">
         <div className="container mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold gradient-text">لوحة تحكم The Black Card</h1>
             <p className="text-gray-300">إدارة شاملة لموقع الشركة</p>
           </div>
-          <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            العودة للموقع
-          </Button>
+          <Link to="/">
+            <Button variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              العودة للموقع
+            </Button>
+          </Link>
         </div>
       </div>
 
       <div className="container mx-auto p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="services">إدارة الخدمات</TabsTrigger>
-            <TabsTrigger value="products">إدارة المنتجات</TabsTrigger>
-            <TabsTrigger value="projects">إدارة المشاريع</TabsTrigger>
-            <TabsTrigger value="contact">معلومات التواصل</TabsTrigger>
-            <TabsTrigger value="analytics">التحليلات</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 bg-gray-900 border border-gray-700">
+            <TabsTrigger value="services" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">إدارة الخدمات</TabsTrigger>
+            <TabsTrigger value="products" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">إدارة المنتجات</TabsTrigger>
+            <TabsTrigger value="projects" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">إدارة المشاريع</TabsTrigger>
+            <TabsTrigger value="contact" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">معلومات التواصل</TabsTrigger>
+            <TabsTrigger value="analytics" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">التحليلات</TabsTrigger>
           </TabsList>
 
           {/* Services Management */}
           <TabsContent value="services" className="space-y-6">
-            <Card>
+            <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-white">
                   <Plus className="mr-2 h-5 w-5" />
                   إضافة خدمة جديدة
                 </CardTitle>
@@ -176,12 +195,14 @@ const AdminDashboard = () => {
                       value={serviceForm.title}
                       onChange={(e) => setServiceForm({...serviceForm, title: e.target.value})}
                       required
+                      className="bg-gray-800 border-gray-600 text-white"
                     />
                     <Input
                       placeholder="السعر (مثال: من 2000 ريال)"
                       value={serviceForm.price}
                       onChange={(e) => setServiceForm({...serviceForm, price: e.target.value})}
                       required
+                      className="bg-gray-800 border-gray-600 text-white"
                     />
                   </div>
                   <Textarea
@@ -189,18 +210,21 @@ const AdminDashboard = () => {
                     value={serviceForm.description}
                     onChange={(e) => setServiceForm({...serviceForm, description: e.target.value})}
                     required
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
                   <Input
                     placeholder="رابط الصورة"
                     value={serviceForm.image}
                     onChange={(e) => setServiceForm({...serviceForm, image: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
                   <Input
                     placeholder="المميزات (افصل بينها بفاصلة)"
                     value={serviceForm.features}
                     onChange={(e) => setServiceForm({...serviceForm, features: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
-                  <Button type="submit" className="bg-black text-white">
+                  <Button type="submit" className="bg-yellow-500 text-black hover:bg-yellow-400">
                     <Save className="mr-2 h-4 w-4" />
                     إضافة الخدمة
                   </Button>
@@ -208,31 +232,37 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
-                <CardTitle>الخدمات الحالية</CardTitle>
+                <CardTitle className="text-white">الخدمات الحالية</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {services.map((service) => (
-                    <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={service.id} className="flex items-center justify-between p-4 bg-gray-800 border border-gray-700 rounded-lg">
                       <div>
-                        <h3 className="font-semibold">{service.title}</h3>
-                        <p className="text-gray-600">{service.description}</p>
-                        <Badge className="mt-2">{service.price}</Badge>
+                        <h3 className="font-semibold text-white">{service.title}</h3>
+                        <p className="text-gray-300">{service.description}</p>
+                        <Badge className="mt-2 bg-yellow-500 text-black">{service.price}</Badge>
                       </div>
                       <div className="flex space-x-2">
                         <Button 
                           size="sm" 
                           variant="outline"
                           onClick={() => openPayPal(service.price)}
+                          className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
                         >
                           اختبار الدفع
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline" className="text-red-600">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
+                          onClick={() => deleteService(service.id)}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -245,9 +275,9 @@ const AdminDashboard = () => {
 
           {/* Products Management */}
           <TabsContent value="products" className="space-y-6">
-            <Card>
+            <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-white">
                   <Plus className="mr-2 h-5 w-5" />
                   إضافة منتج جديد
                 </CardTitle>
@@ -260,12 +290,14 @@ const AdminDashboard = () => {
                       value={productForm.title}
                       onChange={(e) => setProductForm({...productForm, title: e.target.value})}
                       required
+                      className="bg-gray-800 border-gray-600 text-white"
                     />
                     <Input
                       placeholder="السعر"
                       value={productForm.price}
                       onChange={(e) => setProductForm({...productForm, price: e.target.value})}
                       required
+                      className="bg-gray-800 border-gray-600 text-white"
                     />
                   </div>
                   <Textarea
@@ -273,18 +305,21 @@ const AdminDashboard = () => {
                     value={productForm.description}
                     onChange={(e) => setProductForm({...productForm, description: e.target.value})}
                     required
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
                   <Input
                     placeholder="رابط العرض التوضيحي"
                     value={productForm.demoUrl}
                     onChange={(e) => setProductForm({...productForm, demoUrl: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
                   <Input
                     placeholder="المميزات (افصل بينها بفاصلة)"
                     value={productForm.features}
                     onChange={(e) => setProductForm({...productForm, features: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
-                  <Button type="submit" className="bg-black text-white">
+                  <Button type="submit" className="bg-yellow-500 text-black hover:bg-yellow-400">
                     <Save className="mr-2 h-4 w-4" />
                     إضافة المنتج
                   </Button>
@@ -292,31 +327,37 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
-                <CardTitle>المنتجات الحالية</CardTitle>
+                <CardTitle className="text-white">المنتجات الحالية</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {products.map((product) => (
-                    <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={product.id} className="flex items-center justify-between p-4 bg-gray-800 border border-gray-700 rounded-lg">
                       <div>
-                        <h3 className="font-semibold">{product.title}</h3>
-                        <p className="text-gray-600">{product.description}</p>
-                        <Badge className="mt-2">{product.price}</Badge>
+                        <h3 className="font-semibold text-white">{product.title}</h3>
+                        <p className="text-gray-300">{product.description}</p>
+                        <Badge className="mt-2 bg-yellow-500 text-black">{product.price}</Badge>
                       </div>
                       <div className="flex space-x-2">
                         <Button 
                           size="sm" 
                           variant="outline"
                           onClick={() => window.open(product.demoUrl, '_blank')}
+                          className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline" className="text-red-600">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
+                          onClick={() => deleteProduct(product.id)}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -474,28 +515,28 @@ const AdminDashboard = () => {
           {/* Analytics */}
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid md:grid-cols-4 gap-6">
-              <Card>
+              <Card className="bg-gray-900 border-gray-700">
                 <CardContent className="p-6">
-                  <div className="text-2xl font-bold">150+</div>
-                  <p className="text-gray-600">إجمالي الزوار</p>
+                  <div className="text-2xl font-bold text-yellow-500">150+</div>
+                  <p className="text-gray-300">إجمالي الزوار</p>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="bg-gray-900 border-gray-700">
                 <CardContent className="p-6">
-                  <div className="text-2xl font-bold">25</div>
-                  <p className="text-gray-600">طلبات الخدمات</p>
+                  <div className="text-2xl font-bold text-yellow-500">25</div>
+                  <p className="text-gray-300">طلبات الخدمات</p>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="bg-gray-900 border-gray-700">
                 <CardContent className="p-6">
-                  <div className="text-2xl font-bold">12</div>
-                  <p className="text-gray-600">مبيعات المنتجات</p>
+                  <div className="text-2xl font-bold text-yellow-500">12</div>
+                  <p className="text-gray-300">مبيعات المنتجات</p>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="bg-gray-900 border-gray-700">
                 <CardContent className="p-6">
-                  <div className="text-2xl font-bold">85%</div>
-                  <p className="text-gray-600">معدل الرضا</p>
+                  <div className="text-2xl font-bold text-yellow-500">85%</div>
+                  <p className="text-gray-300">معدل الرضا</p>
                 </CardContent>
               </Card>
             </div>

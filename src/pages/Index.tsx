@@ -14,7 +14,7 @@ import Footer from '@/components/Footer';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-black">
       <Navigation />
       
       {/* Hero Section */}
@@ -78,12 +78,12 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-900">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <Badge className="mb-4">لماذا تختارنا</Badge>
-            <h2 className="text-4xl font-bold mb-4">مزايا فريدة تجعلنا الأفضل</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <Badge className="mb-4 bg-yellow-500 text-black">لماذا تختارنا</Badge>
+            <h2 className="text-4xl font-bold mb-4 text-white">مزايا فريدة تجعلنا الأفضل</h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               نقدم حلولاً متكاملة ومبتكرة تلبي احتياجاتك التقنية بأعلى معايير الجودة والاحترافية
             </p>
           </div>
@@ -111,13 +111,13 @@ const Index = () => {
                 description: "خدمات متنوعة تغطي جميع احتياجاتك"
               }
             ].map((feature, index) => (
-              <Card key={index} className="service-card text-center p-6 border-0 shadow-lg">
+              <Card key={index} className="modern-card text-center p-6 border-0 shadow-lg bg-gradient-to-br from-gray-800 to-gray-700">
                 <CardContent className="pt-6">
-                  <div className="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-yellow-500 text-black rounded-full flex items-center justify-center mx-auto mb-4">
                     {feature.icon}
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <h3 className="text-xl font-bold mb-2 text-white">{feature.title}</h3>
+                  <p className="text-gray-300">{feature.description}</p>
                 </CardContent>
               </Card>
             ))}

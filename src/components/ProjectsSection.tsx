@@ -9,74 +9,50 @@ const ProjectsSection = () => {
   const projects = [
     {
       logo: "/placeholder.svg",
-      name: "منصة الحكومة الرقمية",
-      country: "سلطنة عُمان",
+      name: "نظام إدارة سلسلة التوريد",
+      country: "الرياض، المملكة العربية السعودية",
       date: "2024",
-      description: "منصة حكومية متكاملة لتقديم الخدمات الإلكترونية للمواطنين مع نظام دفع آمن وواجهة مستخدم متطورة",
-      status: "مكتمل",
-      category: "حكومي",
-      technologies: ["React", "Node.js", "PostgreSQL", "AWS"],
-      achievements: ["تحسين 85% في سرعة الخدمات", "3M+ مستخدم نشط", "99.9% وقت تشغيل"],
-      projectUrl: "https://gov-platform.om",
-      featured: true
-    },
-    {
-      logo: "/placeholder.svg",
-      name: "تطبيق التجارة الذكية",
-      country: "الإمارات العربية المتحدة",
-      date: "2024",
-      description: "تطبيق متكامل للتجارة الإلكترونية مع ذكاء اصطناعي لتحليل سلوك المستهلكين وتحسين تجربة التسوق",
+      description: "نظام متطور لإدارة سلسلة التوريد يشمل تتبع المخزون والتوزيع وإدارة الموردين وتحليلات الذكاء الاصطناعي",
       status: "قيد التطوير",
-      category: "تجاري",
-      technologies: ["Flutter", "Python", "MongoDB", "AI/ML"],
-      achievements: ["50% زيادة في المبيعات", "تقليل 30% في وقت التسوق", "تقييم 4.8/5"],
-      projectUrl: "https://smart-commerce.ae",
+      category: "إدارة التوريد",
+      technologies: ["AI/ML", "MongoDB", "Python", "Angular"],
+      achievements: ["تقليل التكاليف %25", "تحسين التسليم %30", "نقص الفقد %90"],
+      projectUrl: "https://supply-management.sa",
       featured: false
     },
     {
       logo: "/placeholder.svg",
-      name: "نظام إدارة المستشفيات",
-      country: "المملكة العربية السعودية",
+      name: "منصة التعليم الإلكتروني الجامعية",
+      country: "دبي، الإمارات العربية المتحدة",
       date: "2023",
-      description: "نظام شامل لإدارة المستشفيات يشمل إدارة المرضى والمواعيد والفواتير والتقارير الطبية",
+      description: "منصة تعليمية شاملة للجامعات تتضمن إدارة الدورات الإلكترونية والمحاضرات التفاعلية والتقييم والاستيفاق",
       status: "مكتمل",
-      category: "طبي",
-      technologies: ["Vue.js", "Laravel", "MySQL", "Docker"],
-      achievements: ["تحسين 60% في كفاءة العمليات", "تقليل 40% في الأخطاء", "رضا 95% من المستخدمين"],
-      projectUrl: "https://hospital-management.sa",
+      category: "تعليمي",
+      technologies: ["Docker", "MySQL", "Laravel", "Vue.js"],
+      achievements: ["+10,000 طالب مسجل", "معدل إكمال %85", "تقييم 4.8/5"],
+      projectUrl: "https://university-learning.ae",
       featured: true
     },
     {
       logo: "/placeholder.svg",
-      name: "منصة التعليم الافتراضي",
-      country: "دولة الكويت",
-      date: "2023",
-      description: "منصة تعليمية متطورة تدعم التعلم الافتراضي مع أدوات تفاعلية وتقييم ذكي للطلاب",
+      name: "نظام إدارة المستشفيات الذكي",
+      country: "مسقط، سلطنة عُمان",
+      date: "2024",
+      description: "نظام متكامل لإدارة المستشفيات يشمل إدارة المرضى والمواعيد الصيدلية والتقارير الطبية",
       status: "مكتمل",
-      category: "تعليمي",
-      technologies: ["React Native", "Express.js", "Redis", "WebRTC"],
-      achievements: ["100K+ طالب مسجل", "تحسين 70% في النتائج", "توفير 50% في التكاليف"],
-      projectUrl: "https://virtual-education.kw",
+      category: "صحي",
+      technologies: ["AWS", "PostgreSQL", "Node.js", "React"],
+      achievements: ["تحسين الكفاءة %40", "تقليل وقت الانتظار %60", "رضا المرضى %95"],
+      projectUrl: "https://hospital-system.om",
       featured: false
     }
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'مكتمل': return 'bg-green-100 text-green-800';
-      case 'قيد التطوير': return 'bg-yellow-100 text-yellow-800';
-      case 'حكومي': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'حكومي': return 'bg-blue-100 text-blue-800';
-      case 'تجاري': return 'bg-purple-100 text-purple-800';
-      case 'طبي': return 'bg-red-100 text-red-800';
-      case 'تعليمي': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'مكتمل': return 'bg-green-500 text-white';
+      case 'قيد التطوير': return 'bg-yellow-500 text-black';
+      default: return 'bg-gray-500 text-white';
     }
   };
 
@@ -85,73 +61,65 @@ const ProjectsSection = () => {
   };
 
   return (
-    <section id="projects" className="py-20 bg-white">
+    <section id="projects" className="py-20 bg-black">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-black text-white">مشاريعنا المميزة</Badge>
-          <h2 className="text-4xl font-bold mb-4">إنجازات نفخر بها</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <Badge className="mb-4 bg-yellow-500 text-black">مشاريعنا المميزة</Badge>
+          <h2 className="text-4xl font-bold mb-4 text-white">إنجازات نفخر بها</h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             مجموعة مختارة من أبرز مشاريعنا الناجحة التي حققت تأثيراً إيجابياً في مختلف القطاعات
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
-            <Card key={index} className={`service-card group border-0 shadow-xl overflow-hidden ${project.featured ? 'ring-2 ring-yellow-500' : ''}`}>
-              {project.featured && (
-                <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-center py-2 font-semibold">
-                  <Award className="inline-block h-4 w-4 mr-2" />
-                  مشروع مميز
+            <Card key={index} className="project-card group border-0 shadow-xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
+              {/* Project Image/Preview Area */}
+              <div className="relative h-48 bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center overflow-hidden">
+                <div className="absolute top-4 right-4">
+                  <Badge className={getStatusColor(project.status)}>
+                    {project.status}
+                  </Badge>
                 </div>
-              )}
-              
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-4 mb-4">
-                  <img 
-                    src={project.logo} 
-                    alt={project.name}
-                    className="w-16 h-16 rounded-lg object-cover"
-                  />
-                  <div className="flex-1">
-                    <CardTitle className="text-xl font-bold mb-2">{project.name}</CardTitle>
-                    <div className="flex items-center text-sm text-gray-600 space-x-4">
-                      <div className="flex items-center space-x-1">
-                        <MapPin className="h-4 w-4" />
-                        <span>{project.country}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>{project.date}</span>
-                      </div>
-                    </div>
+                <div className="text-center text-gray-400">
+                  <div className="text-xs mb-2">Drop your images here or Browse</div>
+                  {/* Project Logo */}
+                  <div className="w-16 h-12 bg-red-600 rounded-lg flex items-center justify-center mx-auto">
+                    <span className="text-white font-bold text-xs">LOGO</span>
                   </div>
                 </div>
-                
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <Badge className={getStatusColor(project.status)}>{project.status}</Badge>
-                  <Badge className={getCategoryColor(project.category)}>{project.category}</Badge>
+              </div>
+              
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg font-bold text-white">{project.name}</CardTitle>
+                <div className="flex items-center text-sm text-gray-400 space-x-4 mb-2">
+                  <div className="flex items-center space-x-1">
+                    <MapPin className="h-4 w-4" />
+                    <span>{project.country}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Calendar className="h-4 w-4" />
+                    <span>{project.date}</span>
+                  </div>
                 </div>
-                
-                <p className="text-gray-600">{project.description}</p>
+                <p className="text-gray-300 text-sm">{project.description}</p>
               </CardHeader>
               
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
+                {/* Technologies */}
                 <div>
-                  <h4 className="font-semibold mb-3 flex items-center">
-                    <Code className="h-4 w-4 mr-2" />
-                    التقنيات المستخدمة
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mb-3">
                     {project.technologies.map((tech, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
+                      <Badge key={idx} variant="outline" className="text-xs border-gray-600 text-gray-300">
                         {tech}
                       </Badge>
                     ))}
                   </div>
                 </div>
                 
+                {/* Achievements */}
                 <div>
-                  <h4 className="font-semibold mb-3 flex items-center">
+                  <h4 className="font-semibold mb-3 flex items-center text-white text-sm">
                     <Award className="h-4 w-4 mr-2" />
                     الإنجازات الرئيسية
                   </h4>
@@ -159,14 +127,14 @@ const ProjectsSection = () => {
                     {project.achievements.map((achievement, idx) => (
                       <div key={idx} className="flex items-center space-x-3">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-sm text-gray-600">{achievement}</span>
+                        <span className="text-xs text-gray-300">{achievement}</span>
                       </div>
                     ))}
                   </div>
                 </div>
                 
                 <Button 
-                  className="w-full bg-black text-white hover:bg-yellow-500 hover:text-black transition-all"
+                  className="w-full bg-yellow-500 text-black hover:bg-yellow-400 transition-all"
                   onClick={() => openProject(project.projectUrl)}
                 >
                   <Eye className="mr-2 h-4 w-4" />
@@ -178,7 +146,7 @@ const ProjectsSection = () => {
         </div>
 
         <div className="text-center mt-16">
-          <Button size="lg" variant="outline" className="border-black text-black hover:bg-black hover:text-white">
+          <Button size="lg" variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black">
             عرض جميع المشاريع
           </Button>
         </div>

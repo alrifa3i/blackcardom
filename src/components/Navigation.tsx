@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,11 +20,16 @@ const Navigation = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 glass-effect">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
+          {/* Dashboard Button - Left Side */}
           <div className="flex items-center space-x-4">
-            <div className="text-2xl font-bold gradient-text">The Black Card</div>
+            <Link to="/admin">
+              <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
+                لوحة التحكم
+              </Button>
+            </Link>
           </div>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Center */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <a
@@ -36,10 +42,9 @@ const Navigation = () => {
             ))}
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
-            <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
-              لوحة التحكم
-            </Button>
+          {/* Logo - Right Side */}
+          <div className="flex items-center">
+            <div className="text-2xl font-bold gradient-text">The Black Card</div>
           </div>
 
           {/* Mobile menu button */}
@@ -69,9 +74,11 @@ const Navigation = () => {
                   {item.name}
                 </a>
               ))}
-              <Button className="bg-yellow-500 text-black hover:bg-yellow-400 w-full mt-4">
-                لوحة التحكم
-              </Button>
+              <Link to="/admin">
+                <Button className="bg-yellow-500 text-black hover:bg-yellow-400 w-full mt-4">
+                  لوحة التحكم
+                </Button>
+              </Link>
             </div>
           </div>
         )}
