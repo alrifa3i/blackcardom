@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +35,7 @@ const AdminDashboard = () => {
       id: 1,
       title: "استشارات الأعمال التقنية",
       description: "نقدم استشارات متخصصة لتحسين العمليات وزيادة الكفاءة",
-      price: "200 ريال/ساعة",
+      price: "25 ريال عُماني/ساعة",
       image: "/placeholder.svg",
       features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"]
     }
@@ -47,7 +46,7 @@ const AdminDashboard = () => {
       id: 1,
       title: "نظام إدارة المخزون الذكي",
       description: "نظام متطور لإدارة المخزون مع تتبع المنتجات والتنبيهات التلقائية",
-      price: "2500 ريال",
+      price: "400 ريال عُماني",
       downloads: "1,200+",
       rating: 4.8,
       category: "إدارة أعمال",
@@ -281,7 +280,7 @@ const AdminDashboard = () => {
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                   <Input
-                    placeholder="السعر"
+                    placeholder="السعر (مثال: 25 ريال عُماني/ساعة)"
                     value={newService.price}
                     onChange={(e) => setNewService({...newService, price: e.target.value})}
                     className="bg-gray-800 border-gray-600 text-white"
@@ -374,7 +373,7 @@ const AdminDashboard = () => {
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                   <Input
-                    placeholder="السعر"
+                    placeholder="السعر (مثال: 400 ريال عُماني)"
                     value={newProduct.price}
                     onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
                     className="bg-gray-800 border-gray-600 text-white"
