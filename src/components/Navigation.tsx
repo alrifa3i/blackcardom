@@ -16,17 +16,32 @@ const Navigation = () => {
     { name: 'تواصل معنا', href: '#contact' },
   ];
 
+  const scrollToAuth = () => {
+    const authSection = document.getElementById('auth');
+    if (authSection) {
+      authSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsOpen(false);
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-effect">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Dashboard Button - Left Side */}
-          <div className="flex items-center">
+          {/* Dashboard and Join Buttons - Left Side */}
+          <div className="flex items-center gap-3">
             <Link to="/admin" className="hidden sm:block">
               <Button className="bg-yellow-500 text-black hover:bg-yellow-400 text-sm">
                 لوحة التحكم
               </Button>
             </Link>
+            <Button 
+              onClick={scrollToAuth}
+              variant="outline" 
+              className="hidden sm:block border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-sm"
+            >
+              انضم الآن
+            </Button>
           </div>
 
           {/* Desktop Navigation - Center */}
@@ -74,11 +89,20 @@ const Navigation = () => {
                   {item.name}
                 </a>
               ))}
-              <Link to="/admin" className="mt-4">
-                <Button className="bg-yellow-500 text-black hover:bg-yellow-400 w-full">
-                  لوحة التحكم
+              <div className="flex flex-col gap-3 mt-4">
+                <Link to="/admin">
+                  <Button className="bg-yellow-500 text-black hover:bg-yellow-400 w-full">
+                    لوحة التحكم
+                  </Button>
+                </Link>
+                <Button 
+                  onClick={scrollToAuth}
+                  variant="outline" 
+                  className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black w-full"
+                >
+                  انضم الآن
                 </Button>
-              </Link>
+              </div>
             </div>
           </div>
         )}
