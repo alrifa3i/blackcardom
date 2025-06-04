@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -64,7 +65,7 @@ const ProjectsSection = () => {
       country: "الدوحة، دولة قطر",
       date: "2024",
       description: "نظام حكومي لإدارة الموارد والخدمات العامة مع واجهات للمواطنين والموظفين",
-      status: "قيد التطوير",
+      status: "حكومي",
       category: "حكومي",
       technologies: ["Blockchain", "Oracle", "Java", "Spring"],
       achievements: ["تسريع الخدمات %70", "شفافية كاملة", "رقمنة 50 خدمة"],
@@ -83,6 +84,45 @@ const ProjectsSection = () => {
       achievements: ["+50,000 مستخدم", "دقة التشخيص %92", "توفير %40 في التكاليف"],
       projectUrl: "https://health-tracker.bh",
       featured: true
+    },
+    {
+      logo: "/placeholder.svg",
+      name: "نظام إدارة الشحن واللوجستيات",
+      country: "أبوظبي، الإمارات العربية المتحدة",
+      date: "2024",
+      description: "منصة متكاملة لإدارة عمليات الشحن والتتبع اللحظي للطرود والإدارة اللوجستية",
+      status: "قيد التطوير",
+      category: "لوجستيات",
+      technologies: ["GPS", "Node.js", "React Native", "MongoDB"],
+      achievements: ["تقليل وقت التسليم %45", "تتبع دقيق %99", "رضا العملاء %94"],
+      projectUrl: "https://logistics-system.ae",
+      featured: false
+    },
+    {
+      logo: "/placeholder.svg",
+      name: "منصة التمويل الجماعي الإسلامي",
+      country: "جدة، المملكة العربية السعودية",
+      date: "2023",
+      description: "منصة مبتكرة للتمويل الجماعي المتوافق مع أحكام الشريعة الإسلامية لدعم المشاريع الناشئة",
+      status: "مكتمل",
+      category: "مالي",
+      technologies: ["Blockchain", "React", "Python", "PostgreSQL"],
+      achievements: ["تمويل +200 مشروع", "جمع 50M ريال", "معدل نجاح %87"],
+      projectUrl: "https://islamic-crowdfunding.sa",
+      featured: true
+    },
+    {
+      logo: "/placeholder.svg",
+      name: "نظام إدارة الفعاليات والمؤتمرات",
+      country: "مسقط، سلطنة عُمان",
+      date: "2024",
+      description: "منصة شاملة لإدارة الفعاليات والمؤتمرات مع نظام تسجيل وإدارة الحضور والمحتوى",
+      status: "مكتمل",
+      category: "فعاليات",
+      technologies: ["Vue.js", "Laravel", "WebRTC", "MySQL"],
+      achievements: ["إدارة +100 فعالية", "حضور +25,000 شخص", "تقييم 4.9/5"],
+      projectUrl: "https://events-management.om",
+      featured: false
     }
   ];
 

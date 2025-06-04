@@ -70,12 +70,12 @@ const ContactSection = () => {
   ];
 
   return (
-    <section id="contact" className="py-20 bg-gray-50">
+    <section id="contact" className="py-20 bg-gray-900">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-black text-white">تواصل معنا</Badge>
-          <h2 className="text-4xl font-bold mb-4">نحن هنا للمساعدة</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <Badge className="mb-4 bg-yellow-500 text-black">تواصل معنا</Badge>
+          <h2 className="text-4xl font-bold mb-4 text-white">نحن هنا للمساعدة</h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             لديك مشروع في ذهنك؟ تواصل معنا اليوم ودعنا نحول رؤيتك إلى واقع رقمي مبهر
           </p>
         </div>
@@ -83,36 +83,36 @@ const ContactSection = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Contact Information */}
           <div className="lg:col-span-1 space-y-6">
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-xl font-bold">معلومات التواصل</CardTitle>
+                <CardTitle className="text-xl font-bold text-white">معلومات التواصل</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {contactInfo.map((contact, index) => (
                   <div 
                     key={index} 
-                    className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
                     onClick={contact.action}
                   >
-                    <div className="w-12 h-12 bg-black text-white rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-yellow-500 text-black rounded-lg flex items-center justify-center">
                       {contact.icon}
                     </div>
                     <div>
-                      <h3 className="font-semibold">{contact.title}</h3>
-                      <p className="text-gray-600">{contact.info}</p>
+                      <h3 className="font-semibold text-white">{contact.title}</h3>
+                      <p className="text-gray-300">{contact.info}</p>
                     </div>
                   </div>
                 ))}
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg bg-black text-white">
+            <Card className="border-0 shadow-lg bg-yellow-500 text-black">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold mb-4">استشارة مجانية</h3>
-                <p className="text-gray-300 mb-4">
+                <p className="text-gray-800 mb-4">
                   احصل على استشارة مجانية لمشروعك التقني مع فريق الخبراء لدينا
                 </p>
-                <Button className="w-full bg-yellow-500 text-black hover:bg-yellow-400">
+                <Button className="w-full bg-black text-white hover:bg-gray-800">
                   احجز استشارتك المجانية
                 </Button>
               </CardContent>
@@ -121,27 +121,27 @@ const ContactSection = () => {
 
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold">أرسل لنا رسالة</CardTitle>
-                <p className="text-gray-600">املأ النموذج أدناه وسنتواصل معك في أقرب وقت</p>
+                <CardTitle className="text-2xl font-bold text-white">أرسل لنا رسالة</CardTitle>
+                <p className="text-gray-300">املأ النموذج أدناه وسنتواصل معك في أقرب وقت</p>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">الاسم الكامل</label>
+                      <label className="block text-sm font-medium mb-2 text-white">الاسم الكامل</label>
                       <Input
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="اسمك الكامل"
                         required
-                        className="border-gray-300"
+                        className="border-gray-600 bg-gray-700 text-white placeholder-gray-400"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">البريد الإلكتروني</label>
+                      <label className="block text-sm font-medium mb-2 text-white">البريد الإلكتروني</label>
                       <Input
                         name="email"
                         type="email"
@@ -149,37 +149,37 @@ const ContactSection = () => {
                         onChange={handleChange}
                         placeholder="your@email.com"
                         required
-                        className="border-gray-300"
+                        className="border-gray-600 bg-gray-700 text-white placeholder-gray-400"
                       />
                     </div>
                   </div>
                   
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">رقم الهاتف</label>
+                      <label className="block text-sm font-medium mb-2 text-white">رقم الهاتف</label>
                       <Input
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="+968 9XXX XXXX"
-                        className="border-gray-300"
+                        className="border-gray-600 bg-gray-700 text-white placeholder-gray-400"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">موضوع الرسالة</label>
+                      <label className="block text-sm font-medium mb-2 text-white">موضوع الرسالة</label>
                       <Input
                         name="subject"
                         value={formData.subject}
                         onChange={handleChange}
                         placeholder="موضوع رسالتك"
                         required
-                        className="border-gray-300"
+                        className="border-gray-600 bg-gray-700 text-white placeholder-gray-400"
                       />
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">الرسالة</label>
+                    <label className="block text-sm font-medium mb-2 text-white">الرسالة</label>
                     <Textarea
                       name="message"
                       value={formData.message}
@@ -187,14 +187,14 @@ const ContactSection = () => {
                       placeholder="اكتب رسالتك هنا..."
                       rows={6}
                       required
-                      className="border-gray-300"
+                      className="border-gray-600 bg-gray-700 text-white placeholder-gray-400"
                     />
                   </div>
                   
                   <Button 
                     type="submit" 
                     size="lg" 
-                    className="w-full bg-black text-white hover:bg-yellow-500 hover:text-black transition-all"
+                    className="w-full bg-yellow-500 text-black hover:bg-yellow-400 transition-all"
                   >
                     <Send className="mr-2 h-5 w-5" />
                     إرسال الرسالة

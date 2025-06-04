@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,6 +53,30 @@ const ServicesSection = () => {
       description: "خدمات صيانة شاملة للأنظمة والتطبيقات لضمان الأداء الأمثل",
       features: ["مراقبة الأداء", "إصلاح المشاكل", "تحديث الأنظمة", "الدعم الفني"],
       price: "ابتداءً من 500 ريال/شهرياً",
+      imageUrl: "/lovable-uploads/3eda1a51-81b1-45c6-8975-53dcc50cf0c2.png"
+    },
+    {
+      icon: <Smartphone className="h-8 w-8" />,
+      title: "تطوير التطبيقات المحمولة",
+      description: "تطوير تطبيقات ذكية للأجهزة المحمولة بتقنيات حديثة ومتقدمة",
+      features: ["iOS & Android", "تصميم UI/UX", "الاختبار الشامل", "النشر في المتاجر"],
+      price: "ابتداءً من 8000 ريال",
+      imageUrl: "/lovable-uploads/3eda1a51-81b1-45c6-8975-53dcc50cf0c2.png"
+    },
+    {
+      icon: <Globe className="h-8 w-8" />,
+      title: "تطوير المواقع الإلكترونية",
+      description: "تصميم وتطوير مواقع إلكترونية احترافية ومتجاوبة مع جميع الأجهزة",
+      features: ["تصميم متجاوب", "محسن لمحركات البحث", "إدارة المحتوى", "الاستضافة والحماية"],
+      price: "ابتداءً من 2500 ريال",
+      imageUrl: "/lovable-uploads/3eda1a51-81b1-45c6-8975-53dcc50cf0c2.png"
+    },
+    {
+      icon: <Zap className="h-8 w-8" />,
+      title: "حلول الذكاء الاصطناعي",
+      description: "تطوير وتطبيق حلول الذكاء الاصطناعي وتعلم الآلة لتحسين كفاءة الأعمال",
+      features: ["تحليل البيانات الذكي", "التعلم الآلي", "الأتمتة الذكية", "التنبؤات المتقدمة"],
+      price: "ابتداءً من 10000 ريال",
       imageUrl: "/lovable-uploads/3eda1a51-81b1-45c6-8975-53dcc50cf0c2.png"
     }
   ];

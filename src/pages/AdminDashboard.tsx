@@ -6,540 +6,650 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Edit, Trash2, Eye, Save, ArrowLeft } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  Settings, 
+  Users, 
+  Package, 
+  FolderOpen, 
+  Mail, 
+  CreditCard, 
+  BarChart3, 
+  Plus, 
+  Edit3, 
+  Trash2, 
+  Eye,
+  Save,
+  Upload,
+  Globe,
+  Star,
+  Download
+} from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { Link } from 'react-router-dom';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('services');
-
-  // Services Management
+  const [activeTab, setActiveTab] = useState('overview');
+  
+  // States for different sections
   const [services, setServices] = useState([
     {
       id: 1,
-      title: "تطوير التطبيقات",
-      description: "تطوير تطبيقات ويب وموبايل متطورة",
-      price: "من 2000 ريال",
+      title: "استشارات الأعمال التقنية",
+      description: "نقدم استشارات متخصصة لتحسين العمليات وزيادة الكفاءة",
+      price: "200 ريال/ساعة",
       image: "/placeholder.svg",
-      features: ["React & Node.js", "Flutter & React Native"]
+      features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"]
     }
   ]);
 
-  const [serviceForm, setServiceForm] = useState({
-    title: '',
-    description: '',
-    price: '',
-    image: '',
-    features: ''
-  });
-
-  // Products Management
   const [products, setProducts] = useState([
     {
       id: 1,
-      title: "نظام إدارة المشاريع",
-      description: "نظام متكامل لإدارة المشاريع",
-      price: "5000 ريال",
-      rating: 4.9,
-      downloads: "2.5K",
-      demoUrl: "https://demo.project-manager.com"
+      title: "نظام إدارة المخزون الذكي",
+      description: "نظام متطور لإدارة المخزون مع تتبع المنتجات والتنبيهات التلقائية",
+      price: "2500 ريال",
+      downloads: "1,200+",
+      rating: 4.8,
+      category: "إدارة أعمال",
+      demoUrl: "https://inventory-demo.theblack-card.com",
+      image: "/placeholder.svg"
     }
   ]);
 
-  const [productForm, setProductForm] = useState({
-    title: '',
-    description: '',
-    price: '',
-    demoUrl: '',
-    features: ''
-  });
-
-  // Projects Management
   const [projects, setProjects] = useState([
     {
       id: 1,
-      name: "منصة الحكومة الرقمية",
-      country: "سلطنة عُمان",
+      name: "نظام إدارة سلسلة التوريد",
+      country: "الرياض، المملكة العربية السعودية",
       date: "2024",
-      description: "منصة حكومية متكاملة",
-      status: "مكتمل",
-      category: "حكومي",
-      projectUrl: "https://gov-platform.om",
+      description: "نظام متطور لإدارة سلسلة التوريد يشمل تتبع المخزون والتوزيع",
+      status: "قيد التطوير",
+      technologies: ["AI/ML", "MongoDB", "Python", "Angular"],
+      achievements: ["تقليل التكاليف %25", "تحسين التسليم %30", "نقص الفقد %90"],
+      projectUrl: "https://supply-management.sa",
       logo: "/placeholder.svg"
     }
   ]);
 
-  const [projectForm, setProjectForm] = useState({
+  const [paypalSettings, setPaypalSettings] = useState({
+    clientId: "AbbCtePdaGiT_0SyfFgLjcJxR75XjaoF5ODOPMbYb-du_QDalqRkIVuj85laQmc0ceYnkjwYoAtN4xwP",
+    secretKey: "EHeFTszAxK2eCuDEKvqOD_qCmHLuMUNg_ZMjDK8zazxGqTz8ve_sHOaZvbkg7gaUl1Updm6zL3bkNgLX",
+    appName: "The Black Card",
+    email: "info@theblack-card.com"
+  });
+
+  const [contactInfo, setContactInfo] = useState({
+    email: "info@theblack-card.com",
+    phone: "+968 9XXX XXXX",
+    address: "مسقط، سلطنة عُمان",
+    workingHours: "الأحد - الخميس: 8:00 - 17:00"
+  });
+
+  // Form states
+  const [newService, setNewService] = useState({
+    title: '',
+    description: '',
+    price: '',
+    image: '',
+    features: ['']
+  });
+
+  const [newProduct, setNewProduct] = useState({
+    title: '',
+    description: '',
+    price: '',
+    category: '',
+    demoUrl: '',
+    image: ''
+  });
+
+  const [newProject, setNewProject] = useState({
     name: '',
     country: '',
     date: '',
     description: '',
     status: '',
-    category: '',
+    technologies: [''],
+    achievements: [''],
     projectUrl: '',
     logo: ''
   });
 
-  // Contact Settings
-  const [contactSettings, setContactSettings] = useState({
-    email: 'info@theblack-card.com',
-    phone: '+968 9XXX XXXX',
-    address: 'مسقط، سلطنة عُمان',
-    workingHours: 'الأحد - الخميس: 8:00 - 17:00'
-  });
-
-  const handleServiceSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newService = {
-      id: Date.now(),
-      ...serviceForm,
-      features: serviceForm.features.split(',').map(f => f.trim())
+  // Handle form submissions
+  const handleAddService = () => {
+    const service = {
+      id: services.length + 1,
+      ...newService,
+      features: newService.features.filter(f => f.trim() !== '')
     };
-    setServices([...services, newService]);
-    setServiceForm({ title: '', description: '', price: '', image: '', features: '' });
+    setServices([...services, service]);
+    setNewService({ title: '', description: '', price: '', image: '', features: [''] });
     toast({ title: "تم إضافة الخدمة بنجاح" });
   };
 
-  const handleProductSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newProduct = {
-      id: Date.now(),
-      ...productForm,
-      rating: 0,
-      downloads: "0",
-      features: productForm.features.split(',').map(f => f.trim())
+  const handleAddProduct = () => {
+    const product = {
+      id: products.length + 1,
+      ...newProduct,
+      downloads: "0+",
+      rating: 0
     };
-    setProducts([...products, newProduct]);
-    setProductForm({ title: '', description: '', price: '', demoUrl: '', features: '' });
+    setProducts([...products, product]);
+    setNewProduct({ title: '', description: '', price: '', category: '', demoUrl: '', image: '' });
     toast({ title: "تم إضافة المنتج بنجاح" });
   };
 
-  const handleProjectSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newProject = {
-      id: Date.now(),
-      ...projectForm
+  const handleAddProject = () => {
+    const project = {
+      id: projects.length + 1,
+      ...newProject,
+      technologies: newProject.technologies.filter(t => t.trim() !== ''),
+      achievements: newProject.achievements.filter(a => a.trim() !== '')
     };
-    setProjects([...projects, newProject]);
-    setProjectForm({ name: '', country: '', date: '', description: '', status: '', category: '', projectUrl: '', logo: '' });
+    setProjects([...projects, project]);
+    setNewProject({ 
+      name: '', 
+      country: '', 
+      date: '', 
+      description: '', 
+      status: '', 
+      technologies: [''], 
+      achievements: [''], 
+      projectUrl: '', 
+      logo: '' 
+    });
     toast({ title: "تم إضافة المشروع بنجاح" });
   };
 
-  const handleContactUpdate = () => {
-    toast({ title: "تم تحديث معلومات التواصل بنجاح" });
-  };
-
-  const openPayPal = (price: string) => {
-    // PayPal integration with provided credentials
-    const paypalUrl = `https://www.paypal.com/checkoutnow?token=AbbCtePdaGiT_0SyfFgLjcJxR75XjaoF5ODOPMbYb-du_QDalqRkIVuj85laQmc0ceYnkjwYoAtN4xwP&amount=${price}`;
-    window.open(paypalUrl, '_blank');
-  };
-
-  const deleteService = (id: number) => {
-    setServices(services.filter(service => service.id !== id));
+  const handleDeleteService = (id: number) => {
+    setServices(services.filter(s => s.id !== id));
     toast({ title: "تم حذف الخدمة بنجاح" });
   };
 
-  const deleteProduct = (id: number) => {
-    setProducts(products.filter(product => product.id !== id));
+  const handleDeleteProduct = (id: number) => {
+    setProducts(products.filter(p => p.id !== id));
     toast({ title: "تم حذف المنتج بنجاح" });
   };
 
-  const deleteProject = (id: number) => {
-    setProjects(projects.filter(project => project.id !== id));
+  const handleDeleteProject = (id: number) => {
+    setProjects(projects.filter(p => p.id !== id));
     toast({ title: "تم حذف المشروع بنجاح" });
   };
 
-  return (
-    <div className="min-h-screen bg-black">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-gray-900 to-black text-white p-6 border-b border-gray-800">
-        <div className="container mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold gradient-text">لوحة تحكم The Black Card</h1>
-            <p className="text-gray-300">إدارة شاملة لموقع الشركة</p>
-          </div>
-          <Link to="/">
-            <Button variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              العودة للموقع
-            </Button>
-          </Link>
-        </div>
-      </div>
+  const handleSavePaypalSettings = () => {
+    toast({ title: "تم حفظ إعدادات PayPal بنجاح" });
+  };
 
-      <div className="container mx-auto p-6">
+  const handleSaveContactInfo = () => {
+    toast({ title: "تم حفظ معلومات التواصل بنجاح" });
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <div className="container mx-auto px-6 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">لوحة التحكم الإدارية</h1>
+          <p className="text-gray-400">إدارة شاملة لموقع The Black Card</p>
+        </div>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-gray-900 border border-gray-700">
-            <TabsTrigger value="services" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">إدارة الخدمات</TabsTrigger>
-            <TabsTrigger value="products" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">إدارة المنتجات</TabsTrigger>
-            <TabsTrigger value="projects" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">إدارة المشاريع</TabsTrigger>
-            <TabsTrigger value="contact" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">معلومات التواصل</TabsTrigger>
-            <TabsTrigger value="analytics" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">التحليلات</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-6 bg-gray-900">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              نظرة عامة
+            </TabsTrigger>
+            <TabsTrigger value="services" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              الخدمات
+            </TabsTrigger>
+            <TabsTrigger value="products" className="flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              المنتجات
+            </TabsTrigger>
+            <TabsTrigger value="projects" className="flex items-center gap-2">
+              <FolderOpen className="h-4 w-4" />
+              المشاريع
+            </TabsTrigger>
+            <TabsTrigger value="contact" className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              التواصل
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              المدفوعات
+            </TabsTrigger>
           </TabsList>
 
-          {/* Services Management */}
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gray-900 border-gray-700">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg text-white">إجمالي الخدمات</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-yellow-500">{services.length}</div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gray-900 border-gray-700">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg text-white">إجمالي المنتجات</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-yellow-500">{products.length}</div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gray-900 border-gray-700">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg text-white">إجمالي المشاريع</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-yellow-500">{projects.length}</div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gray-900 border-gray-700">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg text-white">المشاريع المكتملة</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-500">
+                    {projects.filter(p => p.status === 'مكتمل').length}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Services Tab */}
           <TabsContent value="services" className="space-y-6">
             <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
-                <CardTitle className="flex items-center text-white">
-                  <Plus className="mr-2 h-5 w-5" />
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Plus className="h-5 w-5" />
                   إضافة خدمة جديدة
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <form onSubmit={handleServiceSubmit} className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <Input
-                      placeholder="عنوان الخدمة"
-                      value={serviceForm.title}
-                      onChange={(e) => setServiceForm({...serviceForm, title: e.target.value})}
-                      required
-                      className="bg-gray-800 border-gray-600 text-white"
-                    />
-                    <Input
-                      placeholder="السعر (مثال: من 2000 ريال)"
-                      value={serviceForm.price}
-                      onChange={(e) => setServiceForm({...serviceForm, price: e.target.value})}
-                      required
-                      className="bg-gray-800 border-gray-600 text-white"
-                    />
-                  </div>
-                  <Textarea
-                    placeholder="وصف الخدمة"
-                    value={serviceForm.description}
-                    onChange={(e) => setServiceForm({...serviceForm, description: e.target.value})}
-                    required
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Input
+                    placeholder="عنوان الخدمة"
+                    value={newService.title}
+                    onChange={(e) => setNewService({...newService, title: e.target.value})}
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                   <Input
-                    placeholder="رابط الصورة"
-                    value={serviceForm.image}
-                    onChange={(e) => setServiceForm({...serviceForm, image: e.target.value})}
+                    placeholder="السعر"
+                    value={newService.price}
+                    onChange={(e) => setNewService({...newService, price: e.target.value})}
                     className="bg-gray-800 border-gray-600 text-white"
                   />
-                  <Input
-                    placeholder="المميزات (افصل بينها بفاصلة)"
-                    value={serviceForm.features}
-                    onChange={(e) => setServiceForm({...serviceForm, features: e.target.value})}
-                    className="bg-gray-800 border-gray-600 text-white"
-                  />
-                  <Button type="submit" className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    <Save className="mr-2 h-4 w-4" />
-                    إضافة الخدمة
-                  </Button>
-                </form>
+                </div>
+                <Textarea
+                  placeholder="وصف الخدمة"
+                  value={newService.description}
+                  onChange={(e) => setNewService({...newService, description: e.target.value})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+                <div className="space-y-2">
+                  <label className="text-white text-sm">المميزات الرئيسية:</label>
+                  {newService.features.map((feature, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        placeholder={`المميزة ${index + 1}`}
+                        value={feature}
+                        onChange={(e) => {
+                          const updated = [...newService.features];
+                          updated[index] = e.target.value;
+                          setNewService({...newService, features: updated});
+                        }}
+                        className="bg-gray-800 border-gray-600 text-white"
+                      />
+                      {index === newService.features.length - 1 && (
+                        <Button
+                          size="sm"
+                          onClick={() => setNewService({...newService, features: [...newService.features, '']})}
+                          className="bg-yellow-500 text-black hover:bg-yellow-400"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <Button onClick={handleAddService} className="bg-yellow-500 text-black hover:bg-yellow-400">
+                  <Save className="h-4 w-4 mr-2" />
+                  حفظ الخدمة
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-900 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">الخدمات الحالية</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {services.map((service) => (
-                    <div key={service.id} className="flex items-center justify-between p-4 bg-gray-800 border border-gray-700 rounded-lg">
-                      <div>
-                        <h3 className="font-semibold text-white">{service.title}</h3>
-                        <p className="text-gray-300">{service.description}</p>
-                        <Badge className="mt-2 bg-yellow-500 text-black">{service.price}</Badge>
+            {/* Services List */}
+            <div className="grid gap-4">
+              {services.map((service) => (
+                <Card key={service.id} className="bg-gray-900 border-gray-700">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
+                        <p className="text-gray-300 mb-2">{service.description}</p>
+                        <Badge className="bg-yellow-500 text-black">{service.price}</Badge>
                       </div>
-                      <div className="flex space-x-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => openPayPal(service.price)}
-                          className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
-                        >
-                          اختبار الدفع
-                        </Button>
-                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300">
-                          <Edit className="h-4 w-4" />
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" className="border-gray-600">
+                          <Edit3 className="h-4 w-4" />
                         </Button>
                         <Button 
                           size="sm" 
-                          variant="outline" 
-                          className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
-                          onClick={() => deleteService(service.id)}
+                          variant="destructive"
+                          onClick={() => handleDeleteService(service.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
 
-          {/* Products Management */}
+          {/* Products Tab */}
           <TabsContent value="products" className="space-y-6">
             <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
-                <CardTitle className="flex items-center text-white">
-                  <Plus className="mr-2 h-5 w-5" />
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Plus className="h-5 w-5" />
                   إضافة منتج جديد
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <form onSubmit={handleProductSubmit} className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <Input
-                      placeholder="اسم المنتج"
-                      value={productForm.title}
-                      onChange={(e) => setProductForm({...productForm, title: e.target.value})}
-                      required
-                      className="bg-gray-800 border-gray-600 text-white"
-                    />
-                    <Input
-                      placeholder="السعر"
-                      value={productForm.price}
-                      onChange={(e) => setProductForm({...productForm, price: e.target.value})}
-                      required
-                      className="bg-gray-800 border-gray-600 text-white"
-                    />
-                  </div>
-                  <Textarea
-                    placeholder="وصف المنتج"
-                    value={productForm.description}
-                    onChange={(e) => setProductForm({...productForm, description: e.target.value})}
-                    required
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Input
+                    placeholder="اسم المنتج"
+                    value={newProduct.title}
+                    onChange={(e) => setNewProduct({...newProduct, title: e.target.value})}
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                   <Input
-                    placeholder="رابط العرض التوضيحي"
-                    value={productForm.demoUrl}
-                    onChange={(e) => setProductForm({...productForm, demoUrl: e.target.value})}
+                    placeholder="السعر"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
                     className="bg-gray-800 border-gray-600 text-white"
                   />
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Select value={newProduct.category} onValueChange={(value) => setNewProduct({...newProduct, category: value})}>
+                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                      <SelectValue placeholder="اختر التصنيف" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="إدارة أعمال">إدارة أعمال</SelectItem>
+                      <SelectItem value="موارد بشرية">موارد بشرية</SelectItem>
+                      <SelectItem value="تجارة إلكترونية">تجارة إلكترونية</SelectItem>
+                      <SelectItem value="إدارة محتوى">إدارة محتوى</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Input
-                    placeholder="المميزات (افصل بينها بفاصلة)"
-                    value={productForm.features}
-                    onChange={(e) => setProductForm({...productForm, features: e.target.value})}
+                    placeholder="رابط المعاينة"
+                    value={newProduct.demoUrl}
+                    onChange={(e) => setNewProduct({...newProduct, demoUrl: e.target.value})}
                     className="bg-gray-800 border-gray-600 text-white"
                   />
-                  <Button type="submit" className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    <Save className="mr-2 h-4 w-4" />
-                    إضافة المنتج
-                  </Button>
-                </form>
+                </div>
+                <Textarea
+                  placeholder="وصف المنتج"
+                  value={newProduct.description}
+                  onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+                <Button onClick={handleAddProduct} className="bg-yellow-500 text-black hover:bg-yellow-400">
+                  <Save className="h-4 w-4 mr-2" />
+                  حفظ المنتج
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-900 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">المنتجات الحالية</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {products.map((product) => (
-                    <div key={product.id} className="flex items-center justify-between p-4 bg-gray-800 border border-gray-700 rounded-lg">
-                      <div>
-                        <h3 className="font-semibold text-white">{product.title}</h3>
-                        <p className="text-gray-300">{product.description}</p>
-                        <Badge className="mt-2 bg-yellow-500 text-black">{product.price}</Badge>
+            {/* Products List */}
+            <div className="grid gap-4">
+              {products.map((product) => (
+                <Card key={product.id} className="bg-gray-900 border-gray-700">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-white mb-2">{product.title}</h3>
+                        <p className="text-gray-300 mb-2">{product.description}</p>
+                        <div className="flex gap-2 mb-2">
+                          <Badge className="bg-green-500 text-white">{product.category}</Badge>
+                          <Badge className="bg-yellow-500 text-black">{product.price}</Badge>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                          <span className="flex items-center gap-1">
+                            <Download className="h-4 w-4" />
+                            {product.downloads}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Star className="h-4 w-4" />
+                            {product.rating}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex space-x-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => window.open(product.demoUrl, '_blank')}
-                          className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
-                        >
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" className="border-gray-600">
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300">
-                          <Edit className="h-4 w-4" />
+                        <Button size="sm" variant="outline" className="border-gray-600">
+                          <Edit3 className="h-4 w-4" />
                         </Button>
                         <Button 
                           size="sm" 
-                          variant="outline" 
-                          className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
-                          onClick={() => deleteProduct(product.id)}
+                          variant="destructive"
+                          onClick={() => handleDeleteProduct(product.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
 
-          {/* Projects Management */}
+          {/* Projects Tab */}
           <TabsContent value="projects" className="space-y-6">
-            <Card>
+            <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Plus className="mr-2 h-5 w-5" />
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Plus className="h-5 w-5" />
                   إضافة مشروع جديد
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <form onSubmit={handleProjectSubmit} className="space-y-4">
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <Input
-                      placeholder="اسم المشروع"
-                      value={projectForm.name}
-                      onChange={(e) => setProjectForm({...projectForm, name: e.target.value})}
-                      required
-                    />
-                    <Input
-                      placeholder="دولة المشروع"
-                      value={projectForm.country}
-                      onChange={(e) => setProjectForm({...projectForm, country: e.target.value})}
-                      required
-                    />
-                    <Input
-                      placeholder="تاريخ المشروع"
-                      value={projectForm.date}
-                      onChange={(e) => setProjectForm({...projectForm, date: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <Input
-                      placeholder="حالة المشروع"
-                      value={projectForm.status}
-                      onChange={(e) => setProjectForm({...projectForm, status: e.target.value})}
-                      required
-                    />
-                    <Input
-                      placeholder="تصنيف المشروع"
-                      value={projectForm.category}
-                      onChange={(e) => setProjectForm({...projectForm, category: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <Textarea
-                    placeholder="وصف المشروع"
-                    value={projectForm.description}
-                    onChange={(e) => setProjectForm({...projectForm, description: e.target.value})}
-                    required
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Input
+                    placeholder="اسم المشروع"
+                    value={newProject.name}
+                    onChange={(e) => setNewProject({...newProject, name: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <Input
-                      placeholder="رابط المشروع"
-                      value={projectForm.projectUrl}
-                      onChange={(e) => setProjectForm({...projectForm, projectUrl: e.target.value})}
-                    />
-                    <Input
-                      placeholder="رابط شعار المشروع"
-                      value={projectForm.logo}
-                      onChange={(e) => setProjectForm({...projectForm, logo: e.target.value})}
-                    />
-                  </div>
-                  <Button type="submit" className="bg-black text-white">
-                    <Save className="mr-2 h-4 w-4" />
-                    إضافة المشروع
-                  </Button>
-                </form>
+                  <Input
+                    placeholder="الدولة"
+                    value={newProject.country}
+                    onChange={(e) => setNewProject({...newProject, country: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Input
+                    placeholder="تاريخ المشروع"
+                    value={newProject.date}
+                    onChange={(e) => setNewProject({...newProject, date: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                  <Select value={newProject.status} onValueChange={(value) => setNewProject({...newProject, status: value})}>
+                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                      <SelectValue placeholder="حالة المشروع" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="مكتمل">مكتمل</SelectItem>
+                      <SelectItem value="قيد التطوير">قيد التطوير</SelectItem>
+                      <SelectItem value="حكومي">حكومي</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Input
+                  placeholder="رابط المشروع"
+                  value={newProject.projectUrl}
+                  onChange={(e) => setNewProject({...newProject, projectUrl: e.target.value})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+                <Textarea
+                  placeholder="وصف المشروع"
+                  value={newProject.description}
+                  onChange={(e) => setNewProject({...newProject, description: e.target.value})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+                <Button onClick={handleAddProject} className="bg-yellow-500 text-black hover:bg-yellow-400">
+                  <Save className="h-4 w-4 mr-2" />
+                  حفظ المشروع
+                </Button>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>المشاريع الحالية</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {projects.map((project) => (
-                    <div key={project.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h3 className="font-semibold">{project.name}</h3>
-                        <p className="text-gray-600">{project.description}</p>
-                        <div className="flex space-x-2 mt-2">
-                          <Badge>{project.status}</Badge>
-                          <Badge variant="outline">{project.category}</Badge>
+            {/* Projects List */}
+            <div className="grid gap-4">
+              {projects.map((project) => (
+                <Card key={project.id} className="bg-gray-900 border-gray-700">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-white mb-2">{project.name}</h3>
+                        <p className="text-gray-300 mb-2">{project.description}</p>
+                        <div className="flex gap-2 mb-2">
+                          <Badge className="bg-blue-500 text-white">{project.status}</Badge>
+                          <Badge variant="outline" className="border-gray-600 text-gray-300">{project.country}</Badge>
                         </div>
                       </div>
-                      <div className="flex space-x-2">
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" className="border-gray-600">
+                          <Globe className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" className="border-gray-600">
+                          <Edit3 className="h-4 w-4" />
+                        </Button>
                         <Button 
                           size="sm" 
-                          variant="outline"
-                          onClick={() => window.open(project.projectUrl, '_blank')}
+                          variant="destructive"
+                          onClick={() => handleDeleteProject(project.id)}
                         >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline" className="text-red-600">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
 
-          {/* Contact Settings */}
+          {/* Contact Tab */}
           <TabsContent value="contact" className="space-y-6">
-            <Card>
+            <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
-                <CardTitle>تحديث معلومات التواصل</CardTitle>
+                <CardTitle className="text-white">إعدادات التواصل</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Input
-                  placeholder="البريد الإلكتروني"
-                  value={contactSettings.email}
-                  onChange={(e) => setContactSettings({...contactSettings, email: e.target.value})}
-                />
-                <Input
-                  placeholder="رقم الهاتف"
-                  value={contactSettings.phone}
-                  onChange={(e) => setContactSettings({...contactSettings, phone: e.target.value})}
-                />
-                <Input
-                  placeholder="العنوان"
-                  value={contactSettings.address}
-                  onChange={(e) => setContactSettings({...contactSettings, address: e.target.value})}
-                />
-                <Input
-                  placeholder="ساعات العمل"
-                  value={contactSettings.workingHours}
-                  onChange={(e) => setContactSettings({...contactSettings, workingHours: e.target.value})}
-                />
-                <Button onClick={handleContactUpdate} className="bg-black text-white">
-                  <Save className="mr-2 h-4 w-4" />
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-white text-sm mb-2 block">البريد الإلكتروني</label>
+                    <Input
+                      value={contactInfo.email}
+                      onChange={(e) => setContactInfo({...contactInfo, email: e.target.value})}
+                      className="bg-gray-800 border-gray-600 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-white text-sm mb-2 block">رقم الهاتف</label>
+                    <Input
+                      value={contactInfo.phone}
+                      onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
+                      className="bg-gray-800 border-gray-600 text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-white text-sm mb-2 block">العنوان</label>
+                  <Input
+                    value={contactInfo.address}
+                    onChange={(e) => setContactInfo({...contactInfo, address: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-white text-sm mb-2 block">ساعات العمل</label>
+                  <Input
+                    value={contactInfo.workingHours}
+                    onChange={(e) => setContactInfo({...contactInfo, workingHours: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <Button onClick={handleSaveContactInfo} className="bg-yellow-500 text-black hover:bg-yellow-400">
+                  <Save className="h-4 w-4 mr-2" />
                   حفظ التغييرات
                 </Button>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Analytics */}
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid md:grid-cols-4 gap-6">
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6">
-                  <div className="text-2xl font-bold text-yellow-500">150+</div>
-                  <p className="text-gray-300">إجمالي الزوار</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6">
-                  <div className="text-2xl font-bold text-yellow-500">25</div>
-                  <p className="text-gray-300">طلبات الخدمات</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6">
-                  <div className="text-2xl font-bold text-yellow-500">12</div>
-                  <p className="text-gray-300">مبيعات المنتجات</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6">
-                  <div className="text-2xl font-bold text-yellow-500">85%</div>
-                  <p className="text-gray-300">معدل الرضا</p>
-                </CardContent>
-              </Card>
-            </div>
+          {/* Payments Tab */}
+          <TabsContent value="payments" className="space-y-6">
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">إعدادات PayPal</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="text-white text-sm mb-2 block">اسم التطبيق</label>
+                  <Input
+                    value={paypalSettings.appName}
+                    onChange={(e) => setPaypalSettings({...paypalSettings, appName: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-white text-sm mb-2 block">Client ID</label>
+                  <Input
+                    value={paypalSettings.clientId}
+                    onChange={(e) => setPaypalSettings({...paypalSettings, clientId: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-white text-sm mb-2 block">Secret Key</label>
+                  <Input
+                    type="password"
+                    value={paypalSettings.secretKey}
+                    onChange={(e) => setPaypalSettings({...paypalSettings, secretKey: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-white text-sm mb-2 block">البريد الإلكتروني الأساسي</label>
+                  <Input
+                    value={paypalSettings.email}
+                    onChange={(e) => setPaypalSettings({...paypalSettings, email: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <Button onClick={handleSavePaypalSettings} className="bg-yellow-500 text-black hover:bg-yellow-400">
+                  <Save className="h-4 w-4 mr-2" />
+                  حفظ إعدادات PayPal
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
