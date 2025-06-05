@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Card } from '@/components/ui/card';
 
@@ -139,18 +138,11 @@ const AppleCard = ({
             <div>
               <div className="text-xs md:text-sm text-gray-300 mb-1 md:mb-2">Premium Card</div>
               <div className="text-xl md:text-2xl font-bold gradient-text">
-                {isPersonalized ? 'عضو مهم' : 'The Black Card'}
+                The Black Card
               </div>
             </div>
             <div className="w-10 h-6 md:w-12 md:h-8 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded flex items-center justify-center">
               <div className="w-5 h-3 md:w-6 md:h-4 bg-yellow-300 rounded-sm"></div>
-            </div>
-          </div>
-          
-          {/* The Black Card text in the center right */}
-          <div className="absolute right-6 md:right-8 top-1/2 transform -translate-y-1/2 -rotate-90 origin-center">
-            <div className="text-lg md:text-xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent tracking-wider">
-              THE BLACK CARD
             </div>
           </div>
           
@@ -168,7 +160,7 @@ const AppleCard = ({
                   {isPersonalized ? 'MEMBER NAME' : 'CARDMEMBER'}
                 </div>
                 <div className="text-xs md:text-sm font-bold">
-                  {isPersonalized ? memberName : 'THE BLACK CARD'}
+                  {isPersonalized ? memberName : 'PREMIUM MEMBER'}
                 </div>
               </div>
             </div>
