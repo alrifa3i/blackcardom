@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ThemeSelector from '@/components/ThemeSelector';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,13 +29,16 @@ const Navigation = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 glass-effect">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Dashboard and Join Buttons - Left Side */}
+          {/* Dashboard, Theme Selector and Join Buttons - Left Side */}
           <div className="flex items-center gap-3">
             <Link to="/admin" className="hidden sm:block">
               <Button className="bg-yellow-500 text-black hover:bg-yellow-400 text-sm">
                 لوحة التحكم
               </Button>
             </Link>
+            <div className="hidden sm:block">
+              <ThemeSelector />
+            </div>
             <Button 
               onClick={scrollToAuth}
               variant="outline" 
@@ -95,6 +99,9 @@ const Navigation = () => {
                     لوحة التحكم
                   </Button>
                 </Link>
+                <div className="flex justify-center">
+                  <ThemeSelector />
+                </div>
                 <Button 
                   onClick={scrollToAuth}
                   variant="outline" 

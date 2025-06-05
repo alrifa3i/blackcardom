@@ -6,32 +6,32 @@
 
 @layer base {
   :root {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: var(--background, 222.2 84% 4.9%);
+    --foreground: var(--foreground, 210 40% 98%);
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: var(--card, 222.2 84% 4.9%);
+    --card-foreground: var(--card-foreground, 210 40% 98%);
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: var(--popover, 222.2 84% 4.9%);
+    --popover-foreground: var(--popover-foreground, 210 40% 98%);
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: var(--primary, 210 40% 98%);
+    --primary-foreground: var(--primary-foreground, 222.2 47.4% 11.2%);
 
-    --secondary: 45 100% 50%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: var(--secondary, 45 100% 50%);
+    --secondary-foreground: var(--secondary-foreground, 222.2 47.4% 11.2%);
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: var(--muted, 217.2 32.6% 17.5%);
+    --muted-foreground: var(--muted-foreground, 215 20.2% 65.1%);
 
-    --accent: 45 100% 50%;
-    --accent-foreground: 210 40% 98%;
+    --accent: var(--accent, 45 100% 50%);
+    --accent-foreground: var(--accent-foreground, 210 40% 98%);
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: var(--border, 217.2 32.6% 17.5%);
+    --input: var(--input, 217.2 32.6% 17.5%);
     --ring: 212.7 26.8% 83.9%;
 
     --radius: 0.5rem;
@@ -45,9 +45,10 @@
 
   body {
     @apply bg-background text-foreground font-tajawal;
-    background: #000000;
-    color: #ffffff;
+    background: var(--background, #000000);
+    color: var(--foreground, #ffffff);
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   html {
@@ -92,7 +93,7 @@
 }
 
 .apple-card {
-  background: linear-gradient(135deg, #000000, #1a1a1a, #000000);
+  background: linear-gradient(135deg, var(--background, #000000), var(--muted, #1a1a1a), var(--background, #000000));
   background-size: 200% 200%;
   animation: gradient-shift 3s ease infinite;
   position: relative;
@@ -106,14 +107,14 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, var(--primary, rgba(255, 215, 0, 0.2)), transparent);
   animation: shimmer 3s infinite;
 }
 
 /* Enhanced mobile shimmer effect */
 @media (max-width: 768px) {
   .apple-card::before {
-    background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+    background: linear-gradient(45deg, transparent, var(--primary, rgba(255, 215, 0, 0.3)), transparent);
     animation: shimmer-mobile 4s infinite;
   }
 
@@ -124,7 +125,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--primary, rgba(255, 215, 0, 0.1)) 0%, transparent 70%);
     animation: float 6s ease-in-out infinite;
     pointer-events: none;
   }
@@ -139,7 +140,7 @@
 }
 
 .gradient-text {
-  background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700);
+  background: linear-gradient(45deg, var(--primary, #FFD700), var(--secondary, #FFA500), var(--primary, #FFD700));
   background-size: 200% 200%;
   animation: gradient-shift 3s ease infinite;
   -webkit-background-clip: text;
@@ -148,42 +149,42 @@
 }
 
 .hero-gradient {
-  background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+  background: linear-gradient(135deg, var(--background, #000000) 0%, var(--muted, #1a1a1a) 50%, var(--background, #000000) 100%);
 }
 
 .service-card {
   transition: all 0.3s ease;
-  background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-  border: 1px solid #333;
+  background: linear-gradient(145deg, var(--muted, #1a1a1a), var(--card, #2a2a2a));
+  border: 1px solid var(--border, #333);
 }
 
 .service-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 20px 40px var(--primary, rgba(255, 215, 0, 0.2));
 }
 
 .glass-effect {
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--background, rgba(0, 0, 0, 0.8));
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modern-card {
-  background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-  border: 1px solid #333;
+  background: linear-gradient(145deg, var(--muted, #1a1a1a), var(--card, #2a2a2a));
+  border: 1px solid var(--border, #333);
   border-radius: 20px;
   transition: all 0.3s ease;
 }
 
 .modern-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(255, 215, 0, 0.15);
-  border-color: #FFD700;
+  box-shadow: 0 15px 35px var(--primary, rgba(255, 215, 0, 0.15));
+  border-color: var(--primary, #FFD700);
 }
 
 .project-card {
-  background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
-  border: 1px solid #333;
+  background: linear-gradient(145deg, var(--muted, #1a1a1a), var(--background, #0f0f0f));
+  border: 1px solid var(--border, #333);
   border-radius: 16px;
   transition: all 0.3s ease;
 }
@@ -191,7 +192,7 @@
 .project-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  border-color: #FFD700;
+  border-color: var(--primary, #FFD700);
 }
 
 /* Mobile optimizations */
