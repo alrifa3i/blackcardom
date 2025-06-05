@@ -195,6 +195,40 @@
   border-color: var(--primary, #FFD700);
 }
 
+/* Theme-aware button styles */
+.btn-primary {
+  background-color: var(--primary, #FFD700) !important;
+  color: var(--primary-foreground, #000000) !important;
+  border-color: var(--primary, #FFD700) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary, #FFA500) !important;
+  border-color: var(--secondary, #FFA500) !important;
+}
+
+.btn-outline {
+  border-color: var(--primary, #FFD700) !important;
+  color: var(--primary, #FFD700) !important;
+  background-color: transparent !important;
+}
+
+.btn-outline:hover {
+  background-color: var(--primary, #FFD700) !important;
+  color: var(--primary-foreground, #000000) !important;
+}
+
+.btn-secondary {
+  background-color: var(--secondary, #FFA500) !important;
+  color: var(--secondary-foreground, #000000) !important;
+  border-color: var(--secondary, #FFA500) !important;
+}
+
+.btn-secondary:hover {
+  background-color: var(--accent, #FFD700) !important;
+  border-color: var(--accent, #FFD700) !important;
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .container {

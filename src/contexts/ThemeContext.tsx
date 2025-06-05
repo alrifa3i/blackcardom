@@ -96,8 +96,37 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     root.style.setProperty('--card', colors.card);
     root.style.setProperty('--border', colors.border);
     
+    // تحديد لون النص للأزرار بناءً على اللون الأساسي
+    const primaryForeground = colors.primary === '#FFFFFF' ? '#000000' : 
+                              colors.primary === '#10B981' ? '#FFFFFF' : '#000000';
+    root.style.setProperty('--primary-foreground', primaryForeground);
+    
+    const secondaryForeground = colors.secondary === '#E5E7EB' ? '#000000' : 
+                                colors.secondary === '#059669' ? '#FFFFFF' : '#000000';
+    root.style.setProperty('--secondary-foreground', secondaryForeground);
+    
     document.body.style.background = colors.background;
     document.body.style.color = colors.foreground;
+
+    // تطبيق الألوان على الأزرار
+    const updateButtonStyles = () => {
+      const style = document.getElementById('dynamic-theme-styles') || document.createElement('style');
+      style.id = 'dynamic-theme-styles';
+      style.innerHTML = `
+        .bg-yellow-500 { background-color: ${colors.primary} !important; }
+        .text-yellow-500 { color: ${colors.primary} !important; }
+        .border-yellow-500 { border-color: ${colors.primary} !important; }
+        .hover\\:bg-yellow-500:hover { background-color: ${colors.secondary} !important; }
+        .hover\\:bg-yellow-400:hover { background-color: ${colors.secondary} !important; }
+        .bg-blue-600 { background-color: ${colors.secondary} !important; }
+        .hover\\:bg-blue-500:hover { background-color: ${colors.accent} !important; }
+      `;
+      if (!document.getElementById('dynamic-theme-styles')) {
+        document.head.appendChild(style);
+      }
+    };
+
+    updateButtonStyles();
   }, [currentTheme]);
 
   const setTheme = (theme: ThemeVariant) => {
