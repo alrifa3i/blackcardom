@@ -244,9 +244,9 @@ const ProjectsSection = () => {
 
         {/* Project Preview Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-6xl h-[80vh] bg-gray-900 border-gray-700">
-            <DialogHeader>
-              <DialogTitle className="text-white text-xl font-bold">
+          <DialogContent className="max-w-6xl h-[85vh] bg-gray-900 border-gray-700 p-4">
+            <DialogHeader className="pb-2">
+              <DialogTitle className="text-white text-lg font-bold">
                 {selectedProject?.name}
               </DialogTitle>
             </DialogHeader>
@@ -256,6 +256,37 @@ const ProjectsSection = () => {
                 className="w-full h-full border-0"
                 title={selectedProject?.name}
                 sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                onLoad={(e) => {
+                  // تعطيل النقر بالزر الأيمن داخل الإطار
+                  const iframe = e.currentTarget;
+                  try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                    if (iframeDoc) {
+                      iframeDoc.addEventListener('contextmenu', (event) => {
+                        event.preventDefault();
+                        return false;
+                      });
+                      
+                      // منع التحديد والنسخ
+                      iframeDoc.addEventListener('selectstart', (event) => {
+                        event.preventDefault();
+                        return false;
+                      });
+                      
+                      // منع سحب العناصر
+                      iframeDoc.addEventListener('dragstart', (event) => {
+                        event.preventDefault();
+                        return false;
+                      });
+                    }
+                  } catch (error) {
+                    console.log('Cannot access iframe content due to CORS policy');
+                  }
+                }}
+                style={{
+                  userSelect: 'none',
+                  pointerEvents: 'auto'
+                }}
               />
             </div>
           </DialogContent>
