@@ -9,18 +9,28 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { name: 'الرئيسية', href: '#home' },
-    { name: 'خدماتنا', href: '#services' },
-    { name: 'منتجاتنا', href: '#products' },
-    { name: 'مشاريعنا', href: '#projects' },
-    { name: 'من نحن', href: '#about' },
-    { name: 'تواصل معنا', href: '#contact' },
+    { name: 'الرئيسية', href: '/', isRoute: true },
+    { name: 'خدماتنا', href: '#services', isRoute: false },
+    { name: 'منتجاتنا', href: '#products', isRoute: false },
+    { name: 'مشاريعنا', href: '#projects', isRoute: false },
+    { name: 'من نحن', href: '/about', isRoute: true },
+    { name: 'تواصل معنا', href: '#contact', isRoute: false },
   ];
 
   const scrollToAuth = () => {
     const authSection = document.getElementById('auth');
     if (authSection) {
       authSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsOpen(false);
+  };
+
+  const handleNavClick = (item: any) => {
+    if (!item.isRoute && item.href.startsWith('#')) {
+      const element = document.getElementById(item.href.substring(1));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
     setIsOpen(false);
   };
@@ -51,19 +61,31 @@ const Navigation = () => {
           {/* Desktop Navigation - Center */}
           <div className="hidden lg:flex items-center space-x-6">
             {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-white hover:text-yellow-400 transition-colors duration-200 font-medium text-sm"
-              >
-                {item.name}
-              </a>
+              item.isRoute ? (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="text-white hover:text-yellow-400 transition-colors duration-200 font-medium text-sm"
+                >
+                  {item.name}
+                </Link>
+              ) : (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavClick(item)}
+                  className="text-white hover:text-yellow-400 transition-colors duration-200 font-medium text-sm"
+                >
+                  {item.name}
+                </button>
+              )
             ))}
           </div>
 
           {/* Logo - Right Side */}
           <div className="flex items-center">
-            <div className="text-xl md:text-2xl font-bold gradient-text">The Black Card</div>
+            <Link to="/" className="text-xl md:text-2xl font-bold gradient-text">
+              The Black Card
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -84,14 +106,24 @@ const Navigation = () => {
           <div className="lg:hidden py-4 border-t border-white/10 bg-black/95 backdrop-blur-md">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-white hover:text-yellow-400 transition-colors duration-200 font-medium text-center py-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </a>
+                item.isRoute ? (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className="text-white hover:text-yellow-400 transition-colors duration-200 font-medium text-center py-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ) : (
+                  <button
+                    key={item.name}
+                    onClick={() => handleNavClick(item)}
+                    className="text-white hover:text-yellow-400 transition-colors duration-200 font-medium text-center py-2"
+                  >
+                    {item.name}
+                  </button>
+                )
               ))}
               <div className="flex flex-col gap-3 mt-4">
                 <Link to="/admin">

@@ -22,11 +22,16 @@ import {
   Upload,
   Globe,
   Star,
-  Download
+  Download,
+  LogOut,
+  Home
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
+import AdminAuth from '@/components/AdminAuth';
 
 const AdminDashboard = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   
   // States for different sections
@@ -67,6 +72,31 @@ const AdminDashboard = () => {
       achievements: ["تقليل التكاليف %25", "تحسين التسليم %30", "نقص الفقد %90"],
       projectUrl: "https://supply-management.sa",
       logo: "/placeholder.svg"
+    }
+  ]);
+
+  const [requests, setRequests] = useState([
+    {
+      id: 1,
+      type: "خدمة",
+      title: "طلب استشارة تقنية",
+      clientName: "أحمد محمد",
+      email: "ahmed@example.com",
+      phone: "+968 9XXX XXXX",
+      description: "نحتاج استشارة لتطوير نظام إدارة المخزون",
+      status: "جديد",
+      date: "2024-01-15"
+    },
+    {
+      id: 2,
+      type: "منتج",
+      title: "طلب شراء نظام CRM",
+      clientName: "فاطمة علي",
+      email: "fatima@example.com",
+      phone: "+968 9XXX XXXX",
+      description: "نريد شراء نظام إدارة العملاء",
+      status: "قيد المراجعة",
+      date: "2024-01-14"
     }
   ]);
 
@@ -183,19 +213,51 @@ const AdminDashboard = () => {
     toast({ title: "تم حفظ معلومات التواصل بنجاح" });
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('adminAuthenticated');
+    setIsAuthenticated(false);
+    toast({ title: "تم تسجيل الخروج بنجاح" });
+  };
+
+  if (!isAuthenticated) {
+    return <AdminAuth onAuthenticated={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">لوحة التحكم الإدارية</h1>
-          <p className="text-gray-400">إدارة شاملة لموقع The Black Card</p>
+        {/* Header with navigation */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">لوحة التحكم الإدارية</h1>
+            <p className="text-gray-400">إدارة شاملة لموقع The Black Card</p>
+          </div>
+          <div className="flex gap-3">
+            <Link to="/">
+              <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-700">
+                <Home className="h-4 w-4 mr-2" />
+                العودة للرئيسية
+              </Button>
+            </Link>
+            <Button 
+              onClick={handleLogout}
+              variant="destructive"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              تسجيل خروج
+            </Button>
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-gray-900">
+          <TabsList className="grid w-full grid-cols-7 bg-gray-900">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               نظرة عامة
+            </TabsTrigger>
+            <TabsTrigger value="requests" className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              الطلبات
             </TabsTrigger>
             <TabsTrigger value="services" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
@@ -221,7 +283,18 @@ const AdminDashboard = () => {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+              <Card className="bg-gray-900 border-gray-700">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg text-white">الطلبات الجديدة</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-red-500">
+                    {requests.filter(r => r.status === 'جديد').length}
+                  </div>
+                </CardContent>
+              </Card>
+              
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg text-white">إجمالي الخدمات</CardTitle>
@@ -260,6 +333,55 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Requests Tab */}
+          <TabsContent value="requests" className="space-y-6">
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">طلبات العملاء</CardTitle>
+                <p className="text-gray-400">إدارة جميع الطلبات الواردة من العملاء</p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {requests.map((request) => (
+                    <Card key={request.id} className="bg-gray-800 border-gray-600">
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h3 className="text-lg font-bold text-white">{request.title}</h3>
+                            <p className="text-gray-300 text-sm">{request.clientName} - {request.email}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge className={`${
+                              request.status === 'جديد' ? 'bg-red-500' :
+                              request.status === 'قيد المراجعة' ? 'bg-yellow-500' : 'bg-green-500'
+                            } text-white`}>
+                              {request.status}
+                            </Badge>
+                            <Badge variant="outline" className="border-gray-600 text-gray-300">
+                              {request.type}
+                            </Badge>
+                          </div>
+                        </div>
+                        <p className="text-gray-400 mb-3">{request.description}</p>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-500">{request.date}</span>
+                          <div className="flex gap-2">
+                            <Button size="sm" className="bg-green-600 hover:bg-green-500">
+                              رد
+                            </Button>
+                            <Button size="sm" variant="outline" className="border-gray-600">
+                              تفاصيل
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Services Tab */}
@@ -657,3 +779,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+</edits_to_apply>

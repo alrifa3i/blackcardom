@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,12 +13,19 @@ import Footer from '@/components/Footer';
 import AuthSection from '@/components/AuthSection';
 
 const Index = () => {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black">
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative hero-gradient min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-0">
+      <section id="home" className="relative hero-gradient min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-0">
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
@@ -38,11 +44,20 @@ const Index = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center lg:justify-start">
-                <Button size="lg" className="bg-yellow-500 text-black hover:bg-yellow-400 transition-all">
+                <Button 
+                  size="lg" 
+                  className="bg-yellow-500 text-black hover:bg-yellow-400 transition-all"
+                  onClick={() => scrollToSection('services')}
+                >
                   استكشف خدماتنا
                   <ArrowRight className="mr-2 h-5 w-5" />
                 </Button>
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-black">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="border-white text-white hover:bg-white hover:text-black"
+                  onClick={() => scrollToSection('contact')}
+                >
                   تواصل معنا
                 </Button>
               </div>
