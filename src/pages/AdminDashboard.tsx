@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,6 +21,7 @@ import FAQManagement from '@/components/FAQManagement';
 import WebsiteProjectsManagement from '@/components/WebsiteProjectsManagement';
 import WebApplicationsManagement from '@/components/WebApplicationsManagement';
 import WhatsAppAnalytics from '@/components/WhatsAppAnalytics';
+import WhatsAppSettings from '@/components/WhatsAppSettings';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -94,7 +94,7 @@ const AdminDashboard = () => {
 
         {/* التبويبات الرئيسية */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-9 bg-gray-800">
             <TabsTrigger value="overview" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
               نظرة عامة
             </TabsTrigger>
@@ -109,6 +109,9 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="whatsapp" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
               واتساب
+            </TabsTrigger>
+            <TabsTrigger value="whatsapp-settings" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
+              إعدادات واتساب
             </TabsTrigger>
             <TabsTrigger value="social" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
               التواصل الاجتماعي
@@ -193,6 +196,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="whatsapp">
             <WhatsAppAnalytics />
+          </TabsContent>
+
+          <TabsContent value="whatsapp-settings">
+            <WhatsAppSettings />
           </TabsContent>
 
           <TabsContent value="social">

@@ -14,93 +14,218 @@ const TermsOfService = () => {
         <div className="container mx-auto px-4 md:px-6 pt-16">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <Badge className="mb-4 bg-yellow-500 text-black">شروط الاستخدام</Badge>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">شروط الاستخدام</h1>
+              <Badge className="mb-4 bg-yellow-500 text-black">شروط الخدمة</Badge>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">شروط الخدمة والاستخدام</h1>
               <p className="text-xl text-gray-300">
-                يرجى قراءة هذه الشروط بعناية قبل استخدام خدماتنا
+                يرجى قراءة هذه الشروط بعناية قبل استخدام خدمات شركة الكارت الأسود
               </p>
             </div>
 
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-8 space-y-8">
                 <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">قبول الشروط</h2>
+                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">قبول الشروط والأحكام</h2>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    باستخدامك لخدمات شركة الكارت الأسود، سواء عبر الموقع الإلكتروني أو التطبيقات أو أي منصة أخرى، فإنك تؤكد موافقتك الكاملة على الالتزام بهذه الشروط والأحكام. إذا كنت لا توافق على أي من هذه الشروط، يرجى عدم استخدام خدماتنا.
+                  </p>
                   <p className="text-gray-300 leading-relaxed">
-                    باستخدامك لخدمات شركة الكارت الأسود، فإنك توافق على الالتزام بهذه الشروط والأحكام. إذا كنت لا توافق على أي من هذه الشروط، يرجى عدم استخدام خدماتنا.
+                    هذه الاتفاقية سارية المفعول من تاريخ أول استخدام للخدمة وتستمر حتى إنهائها وفقاً لهذه الشروط.
                   </p>
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">نطاق الخدمات</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    تقدم شركة الكارت الأسود خدمات متنوعة تشمل:
+                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">نطاق الخدمات المقدمة</h2>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    تقدم شركة الكارت الأسود مجموعة شاملة من الخدمات التقنية المتطورة:
                   </p>
-                  <ul className="mt-4 space-y-2 text-gray-300">
-                    <li>• تطوير التطبيقات والمواقع الإلكترونية</li>
-                    <li>• حلول إدارة الأنظمة</li>
-                    <li>• الاستشارات التقنية</li>
-                    <li>• التدريب والدعم الفني</li>
+                  <ul className="mt-4 space-y-3 text-gray-300">
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>تطوير المواقع الإلكترونية:</strong> مواقع تجارية، تعليمية، وحكومية بأحدث التقنيات</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>تطبيقات الويب:</strong> أنظمة إدارة مخصصة وحلول برمجية متقدمة</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>حلول إدارة الأنظمة:</strong> تصميم وتطوير أنظمة إدارية شاملة</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>الاستشارات التقنية:</strong> توجيه وإرشاد في اختيار الحلول التقنية المناسبة</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>التدريب والدعم:</strong> تدريب الفرق وتقديم الدعم الفني المستمر</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>الصيانة والتطوير:</strong> صيانة دورية وتحديثات مستمرة</span>
+                    </li>
                   </ul>
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">التزامات العميل</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    يلتزم العميل بما يلي:
+                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">التزامات العميل ومسؤولياته</h2>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    يلتزم العميل بالمسؤوليات التالية:
                   </p>
-                  <ul className="mt-4 space-y-2 text-gray-300">
-                    <li>• تقديم معلومات دقيقة وكاملة</li>
-                    <li>• عدم استخدام الخدمات لأغراض غير قانونية</li>
-                    <li>• احترام حقوق الملكية الفكرية</li>
-                    <li>• دفع الرسوم المستحقة في الوقت المحدد</li>
+                  <ul className="mt-4 space-y-3 text-gray-300">
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>دقة المعلومات:</strong> تقديم معلومات صحيحة ودقيقة وكاملة عن المشروع والمتطلبات</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>الاستخدام المشروع:</strong> عدم استخدام الخدمات لأغراض غير قانونية أو ضارة</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>احترام الملكية الفكرية:</strong> عدم انتهاك حقوق الطبع والنشر أو العلامات التجارية</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>الالتزام المالي:</strong> دفع الرسوم المستحقة في المواعيد المحددة وفقاً للاتفاق</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>التعاون:</strong> تقديم المحتوى والمواد اللازمة في الوقت المناسب</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>الامتثال للقوانين:</strong> ضمان أن المحتوى يتوافق مع قوانين سلطنة عُمان</span>
+                    </li>
                   </ul>
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">الملكية الفكرية</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    جميع حقوق الملكية الفكرية للمنتجات والخدمات المطورة تخضع للاتفاقيات المبرمة مع كل عميل. نحتفظ بحقوق الملكية الفكرية لأدواتنا وتقنياتنا الداخلية.
+                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">حقوق الملكية الفكرية</h2>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    حقوق الملكية الفكرية للمشاريع المطورة تخضع للاتفاقيات المحددة مع كل عميل:
                   </p>
+                  <ul className="mt-4 space-y-3 text-gray-300">
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>حقوق العميل:</strong> العميل يحتفظ بحقوق الملكية الفكرية للمحتوى والتصميمات المخصصة</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>حقوق الشركة:</strong> نحتفظ بحقوق الملكية الفكرية لأدواتنا وتقنياتنا الداخلية وإطارات العمل</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>الحقوق المشتركة:</strong> يمكن الاتفاق على حقوق مشتركة للابتكارات المطورة خلال المشروع</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>استخدام العلامة التجارية:</strong> لا يحق لأي طرف استخدام علامة الطرف الآخر دون إذن مكتوب</span>
+                    </li>
+                  </ul>
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">السرية</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    نلتزم بالحفاظ على سرية جميع المعلومات التي يقدمها العملاء ولا نكشف عنها لأطراف ثالثة إلا بموافقة كتابية صريحة أو عند الضرورة القانونية.
+                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">السرية وحماية المعلومات</h2>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    نلتزم بأعلى معايير السرية والحماية:
                   </p>
+                  <ul className="mt-4 space-y-3 text-gray-300">
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>سرية تامة:</strong> جميع المعلومات والبيانات التي يقدمها العملاء تعامل بسرية تامة</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>عدم الإفشاء:</strong> لا نكشف المعلومات لأطراف ثالثة إلا بموافقة كتابية صريحة</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>الحماية التقنية:</strong> استخدام أحدث تقنيات الحماية والتشفير</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>تدريب الفريق:</strong> جميع أعضاء فريقنا ملتزمون باتفاقيات السرية</span>
+                    </li>
+                  </ul>
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">حدود المسؤولية</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    لا تتحمل شركة الكارت الأسود مسؤولية أي أضرار غير مباشرة أو عرضية قد تنتج عن استخدام خدماتنا. مسؤوليتنا محدودة بقيمة الخدمات المقدمة.
+                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">حدود المسؤولية والضمانات</h2>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    مسؤوليتنا محددة وفقاً للشروط التالية:
                   </p>
+                  <ul className="mt-4 space-y-3 text-gray-300">
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>ضمان الجودة:</strong> نضمن تقديم خدمات عالية الجودة وفقاً للمعايير المتفق عليها</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>حدود المسؤولية:</strong> مسؤوليتنا محدودة بقيمة الخدمات المقدمة ولا تشمل الأضرار غير المباشرة</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>استثناءات:</strong> لا نتحمل مسؤولية الأضرار الناتجة عن سوء استخدام العميل للخدمة</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>القوة القاهرة:</strong> لا نتحمل مسؤولية التأخير الناتج عن ظروف خارجة عن سيطرتنا</span>
+                    </li>
+                  </ul>
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">إنهاء الخدمة</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    يحق لأي من الطرفين إنهاء الخدمة بإشعار مسبق حسب الشروط المتفق عليها في العقد. في حالة الإنهاء، يجب الوفاء بجميع الالتزامات المالية المستحقة.
+                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">إنهاء الخدمة وحل النزاعات</h2>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    شروط إنهاء الخدمة وحل النزاعات:
                   </p>
+                  <ul className="mt-4 space-y-3 text-gray-300">
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>إنهاء الخدمة:</strong> يحق لأي من الطرفين إنهاء الخدمة بإشعار مسبق وفقاً لشروط العقد</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>الالتزامات المالية:</strong> يجب الوفاء بجميع الالتزامات المالية المستحقة حتى تاريخ الإنهاء</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>حل النزاعات:</strong> نسعى لحل النزاعات ودياً، وفي حالة عدم التوصل لحل يُحال النزاع للقضاء العُماني</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>استمرارية الالتزامات:</strong> التزامات السرية والملكية الفكرية تستمر حتى بعد انتهاء الخدمة</span>
+                    </li>
+                  </ul>
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">تعديل الشروط</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    نحتفظ بالحق في تعديل هذه الشروط في أي وقت. سيتم إشعار العملاء بأي تغييرات جوهرية مسبقاً.
+                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">تعديل الشروط والقانون المطبق</h2>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    نحتفظ بالحق في تعديل هذه الشروط مع الإشعار المسبق. جميع الخدمات تخضع لقوانين سلطنة عُمان.
                   </p>
-                </div>
-
-                <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">القانون المطبق</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    تخضع هذه الشروط لقوانين سلطنة عُمان، وأي نزاع ينشأ عنها يُحل وفقاً للقوانين العُمانية المعمول بها.
-                  </p>
+                  <ul className="mt-4 space-y-3 text-gray-300">
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>التعديلات:</strong> سيتم إشعار العملاء بأي تغييرات جوهرية قبل 30 يوماً من تطبيقها</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>القانون الحاكم:</strong> تخضع هذه الشروط لقوانين سلطنة عُمان حصرياً</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-yellow-500 mt-1">•</span>
+                      <span><strong>الاختصاص القضائي:</strong> محاكم سلطنة عُمان هي المختصة بنظر أي نزاع</span>
+                    </li>
+                  </ul>
                 </div>
 
                 <div className="bg-gray-700 p-6 rounded-lg">
                   <p className="text-gray-300 text-sm">
-                    آخر تحديث: ديسمبر 2024. للاستفسارات، تواصل معنا: legal@theblackcard.om
+                    <strong>آخر تحديث:</strong> 12 يونيو 2025<br/>
+                    <strong>للاستفسارات القانونية:</strong> legal@theblackcard.om<br/>
+                    <strong>للاستفسارات العامة:</strong> info@theblackcard.om<br/>
+                    <strong>هاتف:</strong> +968 9784 4321
                   </p>
                 </div>
               </CardContent>
