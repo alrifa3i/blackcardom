@@ -1,121 +1,116 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const CookiePolicy = () => {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black text-white">
       <Navigation />
       
-      <section className="py-20 bg-gray-900 min-h-screen">
-        <div className="container mx-auto px-4 md:px-6 pt-16">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <Badge className="mb-4 bg-yellow-500 text-black">سياسة الكوكيز</Badge>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">سياسة الكوكيز</h1>
-              <p className="text-xl text-gray-300">
-                كيف نستخدم ملفات تعريف الارتباط لتحسين تجربتك
-              </p>
-            </div>
+      <div className="container mx-auto px-4 py-20">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold mb-4 gradient-text">سياسة الكوكيز</h1>
+            <p className="text-xl text-gray-300">
+              معلومات حول استخدام ملفات تعريف الارتباط في موقعنا
+            </p>
+          </div>
 
-            <Card className="bg-gray-800 border-gray-700">
-              <CardContent className="p-8 space-y-8">
-                <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">ما هي الكوكيز؟</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    الكوكيز هي ملفات نصية صغيرة يتم حفظها على جهازك عند زيارة موقعنا الإلكتروني. تساعدنا هذه الملفات في تذكر تفضيلاتك وتحسين تجربة استخدامك للموقع.
-                  </p>
-                </div>
+          <div className="space-y-8">
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-yellow-500 text-right">ما هي ملفات تعريف الارتباط؟</CardTitle>
+              </CardHeader>
+              <CardContent className="text-gray-300 text-right">
+                <p className="mb-4">
+                  ملفات تعريف الارتباط (الكوكيز) هي ملفات نصية صغيرة يتم حفظها على جهازك عند زيارة موقعنا الإلكتروني. تساعدنا هذه الملفات في تحسين تجربتك وتقديم خدمات أفضل.
+                </p>
+              </CardContent>
+            </Card>
 
-                <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">أنواع الكوكيز المستخدمة</h2>
-                  
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-2">الكوكيز الأساسية</h3>
-                      <p className="text-gray-300">
-                        ضرورية لعمل الموقع بشكل صحيح وتشمل:
-                      </p>
-                      <ul className="mt-2 space-y-1 text-gray-300">
-                        <li>• حفظ إعدادات تسجيل الدخول</li>
-                        <li>• تذكر اللغة المفضلة</li>
-                        <li>• ضمان أمان الجلسة</li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-2">كوكيز الأداء</h3>
-                      <p className="text-gray-300">
-                        تساعدنا في فهم كيفية تفاعل الزوار مع الموقع:
-                      </p>
-                      <ul className="mt-2 space-y-1 text-gray-300">
-                        <li>• عدد الزوار وأكثر الصفحات زيارة</li>
-                        <li>• مدة البقاء في الموقع</li>
-                        <li>• مصادر الزيارة</li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-2">كوكيز الوظائف</h3>
-                      <p className="text-gray-300">
-                        تحسن من تجربة المستخدم من خلال:
-                      </p>
-                      <ul className="mt-2 space-y-1 text-gray-300">
-                        <li>• تذكر الخيارات والتفضيلات</li>
-                        <li>• تخصيص المحتوى</li>
-                        <li>• حفظ العناصر في قائمة المفضلة</li>
-                      </ul>
-                    </div>
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-yellow-500 text-right">أنواع الكوكيز التي نستخدمها</CardTitle>
+              </CardHeader>
+              <CardContent className="text-gray-300 text-right">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">الكوكيز الأساسية</h3>
+                    <p>ضرورية لتشغيل الموقع بشكل صحيح ولا يمكن تعطيلها.</p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">كوكيز الأداء</h3>
+                    <p>تساعدنا في فهم كيفية تفاعل الزوار مع موقعنا لتحسين الأداء.</p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">كوكيز الوظائف</h3>
+                    <p>تتذكر اختياراتك وتفضيلاتك لتحسين تجربتك.</p>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">إدارة الكوكيز</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    يمكنك التحكم في الكوكيز من خلال إعدادات متصفحك:
-                  </p>
-                  <ul className="mt-4 space-y-2 text-gray-300">
-                    <li>• <strong>Chrome:</strong> الإعدادات > الخصوصية والأمان > الكوكيز</li>
-                    <li>• <strong>Firefox:</strong> الخيارات > الخصوصية والأمان</li>
-                    <li>• <strong>Safari:</strong> التفضيلات > الخصوصية</li>
-                    <li>• <strong>Edge:</strong> الإعدادات > الكوكيز والأذونات</li>
-                  </ul>
-                </div>
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-yellow-500 text-right">كيفية إدارة الكوكيز</CardTitle>
+              </CardHeader>
+              <CardContent className="text-gray-300 text-right">
+                <p className="mb-4">
+                  يمكنك التحكم في الكوكيز وحذفها من خلال إعدادات متصفحك. إليك كيفية القيام بذلك في المتصفحات الشائعة:
+                </p>
+                <ul className="list-disc list-inside space-y-2">
+                  <li><strong>Chrome:</strong> الإعدادات {'>'} الخصوصية والأمان {'>'} ملفات تعريف الارتباط وبيانات المواقع الأخرى</li>
+                  <li><strong>Firefox:</strong> الإعدادات {'>'} الخصوصية والأمان {'>'} ملفات تعريف الارتباط وبيانات المواقع</li>
+                  <li><strong>Safari:</strong> التفضيلات {'>'} الخصوصية {'>'} إدارة بيانات الموقع</li>
+                  <li><strong>Edge:</strong> الإعدادات {'>'} ملفات تعريف الارتباط وأذونات الموقع</li>
+                </ul>
+              </CardContent>
+            </Card>
 
-                <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">كوكيز الطرف الثالث</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    قد نستخدم خدمات طرف ثالث مثل Google Analytics لتحليل الأداء. هذه الخدمات قد تضع كوكيز خاصة بها وفقاً لسياساتها الخاصة.
-                  </p>
-                </div>
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-yellow-500 text-right">موافقتك</CardTitle>
+              </CardHeader>
+              <CardContent className="text-gray-300 text-right">
+                <p>
+                  باستخدام موقعنا، فإنك توافق على استخدام الكوكيز وفقاً لهذه السياسة. إذا كنت لا توافق على استخدام الكوكيز، يرجى تعطيلها من خلال إعدادات متصفحك أو تجنب استخدام الموقع.
+                </p>
+              </CardContent>
+            </Card>
 
-                <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">التحديثات</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    قد نحدث سياسة الكوكيز هذه من وقت لآخر. ننصحك بمراجعة هذه الصفحة دورياً للاطلاع على أي تغييرات.
-                  </p>
-                </div>
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-yellow-500 text-right">تحديثات السياسة</CardTitle>
+              </CardHeader>
+              <CardContent className="text-gray-300 text-right">
+                <p>
+                  قد نقوم بتحديث سياسة الكوكيز من وقت لآخر. سننشر أي تغييرات على هذه الصفحة ونحدث تاريخ "آخر تحديث" أعلاه.
+                </p>
+                <p className="mt-4 text-sm text-gray-400">
+                  آخر تحديث: 12 يونيو 2025
+                </p>
+              </CardContent>
+            </Card>
 
-                <div>
-                  <h2 className="text-2xl font-bold text-yellow-500 mb-4">الاتصال بنا</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    إذا كان لديك أي أسئلة حول استخدامنا للكوكيز، يرجى التواصل معنا عبر: cookies@theblackcard.om
-                  </p>
-                </div>
-
-                <div className="bg-gray-700 p-6 rounded-lg">
-                  <p className="text-gray-300 text-sm">
-                    آخر تحديث: ديسمبر 2024. باستمرارك في استخدام موقعنا، فإنك توافق على استخدام الكوكيز وفقاً لهذه السياسة.
-                  </p>
+            <Card className="bg-gray-900 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-yellow-500 text-right">اتصل بنا</CardTitle>
+              </CardHeader>
+              <CardContent className="text-gray-300 text-right">
+                <p>
+                  إذا كان لديك أي أسئلة حول سياسة الكوكيز هذه، يرجى التواصل معنا عبر:
+                </p>
+                <div className="mt-4 space-y-2">
+                  <p><strong>البريد الإلكتروني:</strong> privacy@theblackcard.com</p>
+                  <p><strong>الهاتف:</strong> +968 1234 5678</p>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
-      </section>
+      </div>
 
       <Footer />
     </div>
