@@ -1,298 +1,219 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Globe, Calendar, MapPin, Eye, Code, Award, X } from 'lucide-react';
+import { ArrowRight, MapPin, Calendar, ExternalLink, Users, Zap, Shield, Globe } from 'lucide-react';
+import ServiceRequestForm from './ServiceRequestForm';
 
 const ProjectsSection = () => {
-  const [showAllProjects, setShowAllProjects] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showServiceForm, setShowServiceForm] = useState(false);
 
   const projects = [
     {
-      logo: "/placeholder.svg",
+      id: 1,
       name: "نظام إدارة سلسلة التوريد",
       country: "الرياض، المملكة العربية السعودية",
       date: "2024",
-      description: "نظام متطور لإدارة سلسلة التوريد يشمل تتبع المخزون والتوزيع وإدارة الموردين وتحليلات الذكاء الاصطناعي",
-      status: "قيد التطوير",
-      category: "إدارة التوريد",
+      description: "نظام متطور لإدارة سلسلة التوريد يشمل تتبع المخزون والتوزيع والتحليلات الذكية",
+      status: "مكتمل",
       technologies: ["AI/ML", "MongoDB", "Python", "Angular"],
-      achievements: ["تقليل التكاليف %25", "تحسين التسليم %30", "نقص الفقد %90"],
+      achievements: [
+        "تقليل التكاليف بنسبة 25%",
+        "تحسين سرعة التسليم بنسبة 30%",
+        "تقليل نسبة الفقد بنسبة 90%"
+      ],
       projectUrl: "https://supply-management.sa",
-      featured: false
+      logo: "/placeholder.svg",
+      stats: {
+        users: "500+",
+        efficiency: "95%",
+        satisfaction: "4.9/5"
+      }
     },
     {
-      logo: "/placeholder.svg",
-      name: "منصة التعليم الإلكتروني الجامعية",
-      country: "دبي، الإمارات العربية المتحدة",
-      date: "2023",
-      description: "منصة تعليمية شاملة للجامعات تتضمن إدارة الدورات الإلكترونية والمحاضرات التفاعلية والتقييم والاستيفاق",
-      status: "مكتمل",
-      category: "تعليمي",
-      technologies: ["Docker", "MySQL", "Laravel", "Vue.js"],
-      achievements: ["+10,000 طالب مسجل", "معدل إكمال %85", "تقييم 4.8/5"],
-      projectUrl: "https://university-learning.ae",
-      featured: true
-    },
-    {
-      logo: "/placeholder.svg",
-      name: "نظام إدارة المستشفيات الذكي",
-      country: "مسقط، سلطنة عُمان",
-      date: "2024",
-      description: "نظام متكامل لإدارة المستشفيات يشمل إدارة المرضى والمواعيد الصيدلية والتقارير الطبية",
-      status: "مكتمل",
-      category: "صحي",
-      technologies: ["AWS", "PostgreSQL", "Node.js", "React"],
-      achievements: ["تحسين الكفاءة %40", "تقليل وقت الانتظار %60", "رضا المرضى %95"],
-      projectUrl: "https://hospital-system.om",
-      featured: false
-    },
-    {
-      logo: "/placeholder.svg",
-      name: "منصة التجارة الإلكترونية المتقدمة",
+      id: 2,
+      name: "منصة التجارة الإلكترونية المتكاملة",
       country: "الكويت، دولة الكويت",
       date: "2023",
-      description: "منصة تجارة إلكترونية شاملة مع نظام دفع متطور وإدارة المخزون وتحليلات المبيعات",
+      description: "منصة تجارة إلكترونية شاملة مع نظام دفع متطور وإدارة المخزون والتحليلات",
       status: "مكتمل",
-      category: "تجاري",
-      technologies: ["Stripe", "Redis", "Next.js", "TypeScript"],
-      achievements: ["زيادة المبيعات %150", "+5,000 عميل", "معالجة 100k طلب"],
-      projectUrl: "https://ecommerce-platform.kw",
-      featured: true
+      technologies: ["React", "Node.js", "PostgreSQL", "Stripe"],
+      achievements: [
+        "زيادة المبيعات بنسبة 150%",
+        "تحسين تجربة المستخدم بنسبة 40%",
+        "معدل تحويل عالي 8.5%"
+      ],
+      projectUrl: "https://ecommerce-kuwait.com",
+      logo: "/placeholder.svg",
+      stats: {
+        users: "2,000+",
+        efficiency: "98%",
+        satisfaction: "4.8/5"
+      }
     },
     {
-      logo: "/placeholder.svg",
-      name: "نظام إدارة الموارد الحكومية",
-      country: "الدوحة، دولة قطر",
-      date: "2024",
-      description: "نظام حكومي لإدارة الموارد والخدمات العامة مع واجهات للمواطنين والموظفين",
-      status: "حكومي",
-      category: "حكومي",
-      technologies: ["Blockchain", "Oracle", "Java", "Spring"],
-      achievements: ["تسريع الخدمات %70", "شفافية كاملة", "رقمنة 50 خدمة"],
-      projectUrl: "https://gov-resources.qa",
-      featured: false
-    },
-    {
-      logo: "/placeholder.svg",
-      name: "تطبيق إدارة الصحة الشخصية",
-      country: "المنامة، مملكة البحرين",
+      id: 3,
+      name: "تطبيق إدارة المطاعم الذكي",
+      country: "دبي، دولة الإمارات العربية المتحدة",
       date: "2023",
-      description: "تطبيق محمول لتتبع الصحة الشخصية مع ربط أجهزة القياس والاستشارات الطبية عن بُعد",
-      status: "مكتمل",
-      category: "صحي",
-      technologies: ["Flutter", "Firebase", "TensorFlow", "IoT"],
-      achievements: ["+50,000 مستخدم", "دقة التشخيص %92", "توفير %40 في التكاليف"],
-      projectUrl: "https://health-tracker.bh",
-      featured: true
-    },
-    {
-      logo: "/placeholder.svg",
-      name: "نظام إدارة الشحن واللوجستيات",
-      country: "أبوظبي، الإمارات العربية المتحدة",
-      date: "2024",
-      description: "منصة متكاملة لإدارة عمليات الشحن والتتبع اللحظي للطرود والإدارة اللوجستية",
+      description: "تطبيق شامل لإدارة المطاعم يشمل الطلبات والمخزون والموظفين والتقارير المالية",
       status: "قيد التطوير",
-      category: "لوجستيات",
-      technologies: ["GPS", "Node.js", "React Native", "MongoDB"],
-      achievements: ["تقليل وقت التسليم %45", "تتبع دقيق %99", "رضا العملاء %94"],
-      projectUrl: "https://logistics-system.ae",
-      featured: false
-    },
-    {
+      technologies: ["Flutter", "Firebase", "Node.js", "Express"],
+      achievements: [
+        "تقليل وقت الخدمة بنسبة 35%",
+        "تحسين إدارة المخزون بنسبة 50%",
+        "زيادة رضا العملاء بنسبة 45%"
+      ],
+      projectUrl: "https://restaurant-app.ae",
       logo: "/placeholder.svg",
-      name: "منصة التمويل الجماعي الإسلامي",
-      country: "جدة، المملكة العربية السعودية",
-      date: "2023",
-      description: "منصة مبتكرة للتمويل الجماعي المتوافق مع أحكام الشريعة الإسلامية لدعم المشاريع الناشئة",
-      status: "مكتمل",
-      category: "مالي",
-      technologies: ["Blockchain", "React", "Python", "PostgreSQL"],
-      achievements: ["تمويل +200 مشروع", "جمع 50M ريال", "معدل نجاح %87"],
-      projectUrl: "https://islamic-crowdfunding.sa",
-      featured: true
-    },
-    {
-      logo: "/placeholder.svg",
-      name: "نظام إدارة الفعاليات والمؤتمرات",
-      country: "مسقط، سلطنة عُمان",
-      date: "2024",
-      description: "منصة شاملة لإدارة الفعاليات والمؤتمرات مع نظام تسجيل وإدارة الحضور والمحتوى",
-      status: "مكتمل",
-      category: "فعاليات",
-      technologies: ["Vue.js", "Laravel", "WebRTC", "MySQL"],
-      achievements: ["إدارة +100 فعالية", "حضور +25,000 شخص", "تقييم 4.9/5"],
-      projectUrl: "https://events-management.om",
-      featured: false
+      stats: {
+        users: "300+",
+        efficiency: "92%",
+        satisfaction: "4.7/5"
+      }
     }
   ];
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'مكتمل': return 'bg-green-500 text-white';
-      case 'قيد التطوير': return 'bg-yellow-500 text-black';
-      case 'حكومي': return 'bg-blue-500 text-white';
-      default: return 'bg-gray-500 text-white';
-    }
-  };
-
-  const openProject = (project: any) => {
-    setSelectedProject(project);
-    setIsDialogOpen(true);
-  };
-
-  const displayedProjects = showAllProjects ? projects : projects.slice(0, 3);
-
   return (
-    <section id="projects" className="py-20 bg-black">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-yellow-500 text-black">مشاريعنا المميزة</Badge>
-          <h2 className="text-4xl font-bold mb-4 text-white">إنجازات نفخر بها</h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            مجموعة مختارة من أبرز مشاريعنا الناجحة التي حققت تأثيراً إيجابياً في مختلف القطاعات
-          </p>
-        </div>
+    <>
+      <section id="projects" className="py-20 bg-gray-900">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-yellow-500 text-black">مشاريعنا</Badge>
+            <h2 className="text-4xl font-bold mb-4 text-white">مشاريع نفخر بإنجازها</h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              استكشف مجموعة من المشاريع الناجحة التي طورناها لعملائنا في مختلف القطاعات
+            </p>
+          </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayedProjects.map((project, index) => (
-            <Card key={index} className="project-card group border-0 shadow-xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
-              {/* Project Image/Preview Area */}
-              <div className="relative h-48 bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center overflow-hidden">
-                <div className="absolute top-4 right-4">
-                  <Badge className={getStatusColor(project.status)}>
-                    {project.status}
-                  </Badge>
-                </div>
-                <div className="text-center text-gray-400">
-                  <div className="text-xs mb-2">Drop your images here or Browse</div>
-                  {/* Project Logo */}
-                  <div className="w-16 h-12 bg-red-600 rounded-lg flex items-center justify-center mx-auto">
-                    <span className="text-white font-bold text-xs">LOGO</span>
+          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            {projects.map((project, index) => (
+              <Card key={project.id} className="modern-card border-0 shadow-xl bg-gradient-to-br from-gray-800 to-gray-700 hover:shadow-2xl transition-all duration-300 group">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center">
+                      <img src={project.logo} alt={project.name} className="w-8 h-8" />
+                    </div>
+                    <Badge className={`${
+                      project.status === 'مكتمل' ? 'bg-green-500' : 'bg-blue-500'
+                    } text-white`}>
+                      {project.status}
+                    </Badge>
                   </div>
-                </div>
-              </div>
-              
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-bold text-white">{project.name}</CardTitle>
-                <div className="flex items-center text-sm text-gray-400 space-x-4 mb-2">
-                  <div className="flex items-center space-x-1">
-                    <MapPin className="h-4 w-4" />
+                  <CardTitle className="text-xl font-bold text-white mb-2 group-hover:text-yellow-500 transition-colors">
+                    {project.name}
+                  </CardTitle>
+                  <div className="flex items-center text-gray-300 text-sm mb-2">
+                    <MapPin className="h-4 w-4 mr-2" />
                     <span>{project.country}</span>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <Calendar className="h-4 w-4" />
+                  <div className="flex items-center text-gray-300 text-sm">
+                    <Calendar className="h-4 w-4 mr-2" />
                     <span>{project.date}</span>
                   </div>
-                </div>
-                <p className="text-gray-300 text-sm">{project.description}</p>
-              </CardHeader>
-              
-              <CardContent className="space-y-3">
-                {/* Technologies */}
-                <div>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {project.technologies.map((tech, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs border-gray-600 text-gray-300">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+                </CardHeader>
                 
-                {/* Achievements */}
-                <div>
-                  <h4 className="font-semibold mb-2 flex items-center text-white text-sm">
-                    <Award className="h-4 w-4 mr-2" />
-                    الإنجازات الرئيسية
-                  </h4>
-                  <div className="space-y-1">
-                    {project.achievements.map((achievement, idx) => (
-                      <div key={idx} className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-xs text-gray-300">{achievement}</span>
-                      </div>
-                    ))}
+                <CardContent className="space-y-6">
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    {project.description}
+                  </p>
+
+                  {/* إحصائيات المشروع */}
+                  <div className="grid grid-cols-3 gap-4 p-4 bg-black/30 rounded-lg">
+                    <div className="text-center">
+                      <Users className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
+                      <div className="text-sm font-bold text-white">{project.stats.users}</div>
+                      <div className="text-xs text-gray-400">مستخدم</div>
+                    </div>
+                    <div className="text-center">
+                      <Zap className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
+                      <div className="text-sm font-bold text-white">{project.stats.efficiency}</div>
+                      <div className="text-xs text-gray-400">كفاءة</div>
+                    </div>
+                    <div className="text-center">
+                      <Shield className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
+                      <div className="text-sm font-bold text-white">{project.stats.satisfaction}</div>
+                      <div className="text-xs text-gray-400">تقييم</div>
+                    </div>
                   </div>
-                </div>
-                
-                <Button 
-                  className="w-full bg-yellow-500 text-black hover:bg-yellow-400 transition-all mt-2"
-                  onClick={() => openProject(project)}
-                >
-                  <Eye className="mr-2 h-4 w-4" />
-                  عرض المشروع
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
 
-        <div className="text-center mt-16">
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
-            onClick={() => setShowAllProjects(!showAllProjects)}
-          >
-            {showAllProjects ? 'عرض أقل' : 'عرض جميع المشاريع'}
-          </Button>
-        </div>
+                  {/* التقنيات المستخدمة */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-white mb-2">التقنيات المستخدمة:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {project.technologies.map((tech, techIndex) => (
+                        <Badge key={techIndex} variant="outline" className="text-xs border-yellow-500 text-yellow-500">
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
 
-        {/* Project Preview Dialog */}
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-6xl h-[85vh] bg-gray-900 border-gray-700 p-4">
-            <DialogHeader className="pb-2">
-              <DialogTitle className="text-white text-lg font-bold">
-                {selectedProject?.name}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="flex-1 bg-white rounded-lg overflow-hidden">
-              <iframe
-                src="https://www.theblack-card.com"
-                className="w-full h-full border-0"
-                title={selectedProject?.name}
-                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                onLoad={(e) => {
-                  // تعطيل النقر بالزر الأيمن داخل الإطار
-                  const iframe = e.currentTarget;
-                  try {
-                    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                    if (iframeDoc) {
-                      iframeDoc.addEventListener('contextmenu', (event) => {
-                        event.preventDefault();
-                        return false;
-                      });
-                      
-                      // منع التحديد والنسخ
-                      iframeDoc.addEventListener('selectstart', (event) => {
-                        event.preventDefault();
-                        return false;
-                      });
-                      
-                      // منع سحب العناصر
-                      iframeDoc.addEventListener('dragstart', (event) => {
-                        event.preventDefault();
-                        return false;
-                      });
-                    }
-                  } catch (error) {
-                    console.log('Cannot access iframe content due to CORS policy');
-                  }
-                }}
-                style={{
-                  userSelect: 'none',
-                  pointerEvents: 'auto'
-                }}
-              />
+                  {/* الإنجازات */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-white mb-2">الإنجازات الرئيسية:</h4>
+                    <ul className="space-y-1">
+                      {project.achievements.map((achievement, achIndex) => (
+                        <li key={achIndex} className="text-xs text-gray-300 flex items-center">
+                          <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full mr-2"></div>
+                          {achievement}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* أزرار العمل */}
+                  <div className="flex gap-2 pt-4">
+                    <Button 
+                      size="sm" 
+                      className="flex-1 bg-yellow-500 text-black hover:bg-yellow-400"
+                      onClick={() => setShowServiceForm(true)}
+                    >
+                      طلب خدمة مماثلة
+                      <ArrowRight className="mr-1 h-3 w-3" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="border-gray-600 text-white hover:bg-gray-700"
+                      onClick={() => window.open(project.projectUrl, '_blank')}
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center mt-16">
+            <div className="bg-gradient-to-r from-yellow-500/10 to-yellow-400/10 border border-yellow-500/20 rounded-xl p-8 max-w-3xl mx-auto">
+              <h3 className="text-2xl font-bold text-white mb-4">
+                لديك مشروع مشابه؟
+              </h3>
+              <p className="text-gray-300 mb-6">
+                دعنا نحول فكرتك إلى واقع رقمي مبهر. تواصل معنا اليوم واحصل على استشارة مجانية
+              </p>
+              <Button 
+                size="lg" 
+                className="bg-yellow-500 text-black hover:bg-yellow-400"
+                onClick={() => setShowServiceForm(true)}
+              >
+                ابدأ مشروعك الآن
+                <ArrowRight className="mr-2 h-5 w-5" />
+              </Button>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </section>
+          </div>
+        </div>
+      </section>
+
+      <ServiceRequestForm 
+        isOpen={showServiceForm} 
+        onClose={() => setShowServiceForm(false)} 
+      />
+    </>
   );
 };
 

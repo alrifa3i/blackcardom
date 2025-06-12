@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Separator } from '@/components/ui/separator';
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin, Mail, MapPin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -59,13 +59,12 @@ const Footer = () => {
                 <Mail className="h-4 w-4 text-yellow-500" />
                 <span className="text-gray-400">info@theblack-card.com</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="h-4 w-4 text-yellow-500" />
-                <span className="text-gray-400">+968 9XXX XXXX</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="h-4 w-4 text-yellow-500" />
-                <span className="text-gray-400">مسقط، سلطنة عُمان</span>
+              <div className="flex items-start space-x-3">
+                <MapPin className="h-4 w-4 text-yellow-500 mt-1" />
+                <div className="text-gray-400">
+                  <div>Al Khuwair / Bousher / Muscat Governorate</div>
+                  <div className="text-sm">الخوير / بوشر / محافظة مسقط</div>
+                </div>
               </div>
             </div>
             
@@ -128,7 +127,12 @@ const Footer = () => {
         
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="text-gray-400 mb-4 md:mb-0">
-            © {currentYear} The Black Card. جميع الحقوق محفوظة.
+            <div className="mb-2">
+              © {currentYear} الكرت الأسود ش م م - THE BLACK CARD LLC
+            </div>
+            <div className="text-sm">
+              شركة محدودة المسؤولية | رقم السجل: 1551835
+            </div>
           </div>
           <div className="flex space-x-6 text-sm">
             <a href="#privacy" className="text-gray-400 hover:text-yellow-500 transition-colors">

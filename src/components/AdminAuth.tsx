@@ -15,7 +15,7 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const ADMIN_PASSWORD = 'admin123'; // كلمة المرور للوحة التحكم
+  const ADMIN_PASSWORD = 'BlackOman2025$$$$'; // كلمة المرور المحدثة
 
   useEffect(() => {
     // التحقق من وجود جلسة مصادقة
@@ -93,12 +93,6 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
             >
               {isLoading ? "جارٍ التحقق..." : "دخول"}
             </Button>
-            
-            <div className="text-center">
-              <p className="text-xs text-gray-500">
-                كلمة المرور الافتراضية: admin123
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>
