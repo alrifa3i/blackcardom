@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,7 +21,7 @@ const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   if (!isAuthenticated) {
-    return <AdminAuth onLogin={() => setIsAuthenticated(true)} />;
+    return <AdminAuth onAuthenticated={() => setIsAuthenticated(true)} />;
   }
 
   const stats = [
