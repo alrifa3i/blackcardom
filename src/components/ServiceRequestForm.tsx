@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { Send, Calendar, User, Mail, Phone, FolderOpen, FileText } from 'lucide-react';
+import { sendEmail } from '@/utils/emailService';
 
 interface ServiceRequestFormProps {
   isOpen: boolean;
@@ -27,6 +27,8 @@ const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ isOpen, onClose
   const [isLoading, setIsLoading] = useState(false);
 
   const projectTypes = [
+    'استشارات الأعمال التقنية',
+    'تطوير تطبيقات الويب',
     'نظام إدارة المخزون الذكي',
     'نظام إدارة سلسلة التوريد',
     'تطبيق إدارة العملاء (CRM)',
@@ -42,8 +44,7 @@ const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ isOpen, onClose
     setIsLoading(true);
 
     try {
-      const emailContent = `
-طلب خدمة جديد:
+      const emailContent = `طلب خدمة جديد:
 
 الاسم: ${formData.name}
 رقم الهاتف: ${formData.phone}
@@ -53,40 +54,25 @@ const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ isOpen, onClose
 الموعد المناسب للاجتماع: ${formData.meetingDate}
 
 تم الإرسال من: ${window.location.origin}
-الوقت: ${new Date().toLocaleString('ar-EG')}
-      `;
+الوقت: ${new Date().toLocaleString('ar-EG')}`;
 
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to: 'info@theblack-card.com',
-          subject: `طلب خدمة جديد من ${formData.name}`,
-          content: emailContent
-        }),
+      await sendEmail('info@theblack-card.com', `طلب خدمة جديد من ${formData.name}`, emailContent);
+
+      toast({
+        title: "تم إرسال الطلب بنجاح",
+        description: "سيتم التواصل معك في أقرب وقت ممكن",
       });
-
-      if (response.ok) {
-        toast({
-          title: "تم إرسال الطلب بنجاح",
-          description: "سيتم التواصل معك في أقرب وقت ممكن",
-        });
-        
-        setFormData({
-          name: '',
-          phone: '',
-          email: '',
-          projectType: '',
-          customProjectType: '',
-          description: '',
-          meetingDate: ''
-        });
-        onClose();
-      } else {
-        throw new Error('فشل في إرسال البريد');
-      }
+      
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        projectType: '',
+        customProjectType: '',
+        description: '',
+        meetingDate: ''
+      });
+      onClose();
     } catch (error) {
       console.error('Error sending email:', error);
       toast({

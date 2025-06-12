@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,10 +40,26 @@ const AdminDashboard = () => {
     {
       id: 1,
       title: "استشارات الأعمال التقنية",
-      description: "نقدم استشارات متخصصة لتحسين العمليات وزيادة الكفاءة",
+      description: "نقدم استشارات متخصصة لتحسين العمليات وزيادة الكفاءة باستخدام أحدث التقنيات",
       price: "25 ريال عُماني/ساعة",
       image: "/placeholder.svg",
       features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"]
+    },
+    {
+      id: 2,
+      title: "تطوير تطبيقات الويب",
+      description: "تصميم وتطوير مواقع وتطبيقات ويب احترافية بأحدث التقنيات",
+      price: "500 ريال عُماني للمشروع",
+      image: "/placeholder.svg",
+      features: ["تصميم متجاوب", "أداء عالي", "أمان متقدم", "سهولة الاستخدام"]
+    },
+    {
+      id: 3,
+      title: "تطوير أنظمة إدارة المخزون",
+      description: "أنظمة ذكية لإدارة المخزون والمبيعات مع تقارير تفصيلية",
+      price: "1000 ريال عُماني للنظام",
+      image: "/placeholder.svg",
+      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"]
     }
   ]);
 
@@ -408,6 +425,12 @@ const AdminDashboard = () => {
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
+                <Input
+                  placeholder="رابط الصورة"
+                  value={newService.image}
+                  onChange={(e) => setNewService({...newService, image: e.target.value})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
                 <Textarea
                   placeholder="وصف الخدمة"
                   value={newService.description}
@@ -453,10 +476,17 @@ const AdminDashboard = () => {
                 <Card key={service.id} className="bg-gray-900 border-gray-700">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
-                        <p className="text-gray-300 mb-2">{service.description}</p>
-                        <Badge className="bg-yellow-500 text-black">{service.price}</Badge>
+                      <div className="flex gap-4 flex-1">
+                        <img 
+                          src={service.image} 
+                          alt={service.title}
+                          className="w-20 h-20 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
+                          <p className="text-gray-300 mb-2">{service.description}</p>
+                          <Badge className="bg-yellow-500 text-black">{service.price}</Badge>
+                        </div>
                       </div>
                       <div className="flex gap-2">
                         <Button size="sm" variant="outline" className="border-gray-600">
@@ -520,6 +550,12 @@ const AdminDashboard = () => {
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
+                <Input
+                  placeholder="رابط الصورة"
+                  value={newProduct.image}
+                  onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
                 <Textarea
                   placeholder="وصف المنتج"
                   value={newProduct.description}
@@ -539,22 +575,29 @@ const AdminDashboard = () => {
                 <Card key={product.id} className="bg-gray-900 border-gray-700">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-white mb-2">{product.title}</h3>
-                        <p className="text-gray-300 mb-2">{product.description}</p>
-                        <div className="flex gap-2 mb-2">
-                          <Badge className="bg-green-500 text-white">{product.category}</Badge>
-                          <Badge className="bg-yellow-500 text-black">{product.price}</Badge>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-400">
-                          <span className="flex items-center gap-1">
-                            <Download className="h-4 w-4" />
-                            {product.downloads}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Star className="h-4 w-4" />
-                            {product.rating}
-                          </span>
+                      <div className="flex gap-4 flex-1">
+                        <img 
+                          src={product.image} 
+                          alt={product.title}
+                          className="w-20 h-20 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-white mb-2">{product.title}</h3>
+                          <p className="text-gray-300 mb-2">{product.description}</p>
+                          <div className="flex gap-2 mb-2">
+                            <Badge className="bg-green-500 text-white">{product.category}</Badge>
+                            <Badge className="bg-yellow-500 text-black">{product.price}</Badge>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-gray-400">
+                            <span className="flex items-center gap-1">
+                              <Download className="h-4 w-4" />
+                              {product.downloads}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Star className="h-4 w-4" />
+                              {product.rating}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex gap-2">
@@ -621,12 +664,20 @@ const AdminDashboard = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <Input
-                  placeholder="رابط المشروع"
-                  value={newProject.projectUrl}
-                  onChange={(e) => setNewProject({...newProject, projectUrl: e.target.value})}
-                  className="bg-gray-800 border-gray-600 text-white"
-                />
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Input
+                    placeholder="رابط المشروع"
+                    value={newProject.projectUrl}
+                    onChange={(e) => setNewProject({...newProject, projectUrl: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                  <Input
+                    placeholder="رابط الشعار"
+                    value={newProject.logo}
+                    onChange={(e) => setNewProject({...newProject, logo: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
                 <Textarea
                   placeholder="وصف المشروع"
                   value={newProject.description}
@@ -646,12 +697,19 @@ const AdminDashboard = () => {
                 <Card key={project.id} className="bg-gray-900 border-gray-700">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-white mb-2">{project.name}</h3>
-                        <p className="text-gray-300 mb-2">{project.description}</p>
-                        <div className="flex gap-2 mb-2">
-                          <Badge className="bg-blue-500 text-white">{project.status}</Badge>
-                          <Badge variant="outline" className="border-gray-600 text-gray-300">{project.country}</Badge>
+                      <div className="flex gap-4 flex-1">
+                        <img 
+                          src={project.logo} 
+                          alt={project.name}
+                          className="w-20 h-20 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-white mb-2">{project.name}</h3>
+                          <p className="text-gray-300 mb-2">{project.description}</p>
+                          <div className="flex gap-2 mb-2">
+                            <Badge className="bg-blue-500 text-white">{project.status}</Badge>
+                            <Badge variant="outline" className="border-gray-600 text-gray-300">{project.country}</Badge>
+                          </div>
                         </div>
                       </div>
                       <div className="flex gap-2">
