@@ -42,7 +42,10 @@ const Navigation = () => {
           {/* Logo - Right Side */}
           <div className="flex items-center">
             <Link to="/" className="text-xl md:text-2xl font-bold text-yellow-500 hover:text-yellow-400 transition-colors">
-              شركة الكارت الأسود - The Black Card
+              <div className="flex flex-col leading-tight">
+                <span className="text-yellow-500">شركة الكارت الأسود</span>
+                <span className="text-yellow-400 text-sm">The Black Card</span>
+              </div>
             </Link>
           </div>
 
