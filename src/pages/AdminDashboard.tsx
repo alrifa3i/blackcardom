@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { 
   Settings, 
   Users, 
@@ -25,7 +25,8 @@ import {
   Star,
   Download,
   LogOut,
-  Home
+  Home,
+  EyeOff
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
@@ -42,24 +43,81 @@ const AdminDashboard = () => {
       title: "استشارات الأعمال التقنية",
       description: "نقدم استشارات متخصصة لتحسين العمليات وزيادة الكفاءة باستخدام أحدث التقنيات",
       price: "25 ريال عُماني/ساعة",
-      image: "/placeholder.svg",
-      features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"]
+      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80",
+      features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"],
+      isVisible: true
     },
     {
       id: 2,
       title: "تطوير تطبيقات الويب",
       description: "تصميم وتطوير مواقع وتطبيقات ويب احترافية بأحدث التقنيات",
       price: "500 ريال عُماني للمشروع",
-      image: "/placeholder.svg",
-      features: ["تصميم متجاوب", "أداء عالي", "أمان متقدم", "سهولة الاستخدام"]
+      image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
+      features: ["تصميم متجاوب", "أداء عالي", "أمان متقدم", "سهولة الاستخدام"],
+      isVisible: true
     },
     {
       id: 3,
       title: "تطوير أنظمة إدارة المخزون",
       description: "أنظمة ذكية لإدارة المخزون والمبيعات مع تقارير تفصيلية",
       price: "1000 ريال عُماني للنظام",
-      image: "/placeholder.svg",
-      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"]
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80",
+      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"],
+      isVisible: true
+    },
+    {
+      id: 4,
+      title: "تطوير التطبيقات المحمولة",
+      description: "تطبيقات أصلية ومتقدمة للهواتف الذكية والأجهزة اللوحية",
+      price: "750 ريال عُماني للتطبيق",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
+      features: ["تطبيقات أصلية", "تصميم حديث", "أداء سريع", "متجر التطبيقات"],
+      isVisible: true
+    },
+    {
+      id: 5,
+      title: "أنظمة الذكاء الاصطناعي",
+      description: "تطوير حلول الذكاء الاصطناعي وتعلم الآلة للأعمال",
+      price: "1500 ريال عُماني للنظام",
+      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80",
+      features: ["تعلم الآلة", "تحليل البيانات", "أتمتة العمليات", "توقعات ذكية"],
+      isVisible: true
+    },
+    {
+      id: 6,
+      title: "أنظمة الحماية السيبرانية",
+      description: "حماية شاملة للبيانات والأنظمة من التهديدات السيبرانية",
+      price: "800 ريال عُماني للنظام",
+      image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=500&q=80",
+      features: ["مراقبة الأمان", "كشف التهديدات", "حماية البيانات", "تقارير أمنية"],
+      isVisible: true
+    },
+    {
+      id: 7,
+      title: "أنظمة إدارة المحتوى",
+      description: "أنظمة متطورة لإدارة المحتوى الرقمي والنشر",
+      price: "600 ريال عُماني للنظام",
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=500&q=80",
+      features: ["إدارة المحتوى", "نشر تلقائي", "تحسين SEO", "تحليلات المحتوى"],
+      isVisible: true
+    },
+    {
+      id: 8,
+      title: "التسويق الرقمي الذكي",
+      description: "حلول التسويق الرقمي المدعومة بالذكاء الاصطناعي",
+      price: "400 ريال عُماني/شهر",
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=500&q=80",
+      features: ["حملات ذكية", "تحليل الجمهور", "تحسين الإعلانات", "تقارير شاملة"],
+      isVisible: true
+    },
+    {
+      id: 9,
+      title: "استشارات التحول الرقمي",
+      description: "إرشاد الشركات خلال رحلة التحول الرقمي الشامل",
+      price: "300 ريال عُماني/ساعة",
+      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=500&q=80",
+      features: ["تقييم الوضع الحالي", "خطة التحول", "تدريب الفرق", "دعم مستمر"],
+      isVisible: true
     }
   ]);
 
@@ -73,7 +131,104 @@ const AdminDashboard = () => {
       rating: 4.8,
       category: "إدارة أعمال",
       demoUrl: "https://inventory-demo.theblack-card.com",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80",
+      isVisible: true
+    },
+    {
+      id: 2,
+      title: "نظام إدارة علاقات العملاء",
+      description: "نظام CRM شامل لإدارة العملاء والمبيعات والتسويق",
+      price: "350 ريال عُماني",
+      downloads: "890+",
+      rating: 4.7,
+      category: "إدارة أعمال",
+      demoUrl: "https://crm-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80",
+      isVisible: true
+    },
+    {
+      id: 3,
+      title: "نظام نقاط البيع الذكي",
+      description: "نظام POS متطور للمتاجر والمطاعم مع إدارة شاملة",
+      price: "300 ريال عُماني",
+      downloads: "2,100+",
+      rating: 4.9,
+      category: "تجارة إلكترونية",
+      demoUrl: "https://pos-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
+      isVisible: true
+    },
+    {
+      id: 4,
+      title: "منصة إدارة المشاريع",
+      description: "أداة شاملة لإدارة المشاريع والفرق والمهام",
+      price: "450 ريال عُماني",
+      downloads: "650+",
+      rating: 4.6,
+      category: "إدارة أعمال",
+      demoUrl: "https://project-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=500&q=80",
+      isVisible: true
+    },
+    {
+      id: 5,
+      title: "نظام إدارة الموارد البشرية",
+      description: "حل متكامل لإدارة الموظفين والرواتب والحضور",
+      price: "380 ريال عُماني",
+      downloads: "750+",
+      rating: 4.5,
+      category: "موارد بشرية",
+      demoUrl: "https://hr-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
+      isVisible: true
+    },
+    {
+      id: 6,
+      title: "نظام إدارة العقارات",
+      description: "منصة شاملة لإدارة العقارات والإيجارات والصيانة",
+      price: "500 ريال عُماني",
+      downloads: "420+",
+      rating: 4.8,
+      category: "إدارة أعمال",
+      demoUrl: "https://property-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=500&q=80",
+      isVisible: true
+    },
+    {
+      id: 7,
+      title: "نظام إدارة المدارس",
+      description: "نظام تعليمي شامل للمدارس والمعاهد التعليمية",
+      price: "600 ريال عُماني",
+      downloads: "320+",
+      rating: 4.7,
+      category: "تعليم",
+      demoUrl: "https://school-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=500&q=80",
+      isVisible: true
+    },
+    {
+      id: 8,
+      title: "نظام إدارة المستشفيات",
+      description: "حل متطور لإدارة المستشفيات والعيادات الطبية",
+      price: "800 ريال عُماني",
+      downloads: "180+",
+      rating: 4.9,
+      category: "صحة",
+      demoUrl: "https://hospital-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80",
+      isVisible: true
+    },
+    {
+      id: 9,
+      title: "نظام إدارة المطاعم المتطور",
+      description: "نظام شامل لإدارة المطاعم والطلبات والتوصيل",
+      price: "450 ريال عُماني",
+      downloads: "980+",
+      rating: 4.6,
+      category: "مطاعم",
+      demoUrl: "https://restaurant-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=500&q=80",
+      isVisible: true
     }
   ]);
 
@@ -88,7 +243,7 @@ const AdminDashboard = () => {
       technologies: ["AI/ML", "MongoDB", "Python", "Angular"],
       achievements: ["تقليل التكاليف %25", "تحسين التسليم %30", "نقص الفقد %90"],
       projectUrl: "https://supply-management.sa",
-      logo: "/placeholder.svg"
+      logo: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80"
     }
   ]);
 
@@ -236,6 +391,15 @@ const AdminDashboard = () => {
     toast({ title: "تم تسجيل الخروج بنجاح" });
   };
 
+  const handleToggleVisibility = (type: 'service' | 'product' | 'project', id: number) => {
+    if (type === 'service') {
+      setServices(services.map(s => s.id === id ? {...s, isVisible: !s.isVisible} : s));
+    } else if (type === 'product') {
+      setProducts(products.map(p => p.id === id ? {...p, isVisible: !p.isVisible} : p));
+    }
+    toast({ title: `تم ${type === 'service' ? 'الخدمة' : 'المنتج'} ${type === 'service' ? services.find(s => s.id === id)?.isVisible ? 'إخفاء' : 'إظهار' : products.find(p => p.id === id)?.isVisible ? 'إخفاء' : 'إظهار'} بنجاح` });
+  };
+
   if (!isAuthenticated) {
     return <AdminAuth onAuthenticated={() => setIsAuthenticated(true)} />;
   }
@@ -257,7 +421,11 @@ const AdminDashboard = () => {
               </Button>
             </Link>
             <Button 
-              onClick={handleLogout}
+              onClick={() => {
+                localStorage.removeItem('adminAuthenticated');
+                setIsAuthenticated(false);
+                toast({ title: "تم تسجيل الخروج بنجاح" });
+              }}
               variant="destructive"
             >
               <LogOut className="h-4 w-4 mr-2" />
@@ -303,21 +471,11 @@ const AdminDashboard = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg text-white">الطلبات الجديدة</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-red-500">
-                    {requests.filter(r => r.status === 'جديد').length}
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-gray-900 border-gray-700">
-                <CardHeader className="pb-3">
                   <CardTitle className="text-lg text-white">إجمالي الخدمات</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold text-yellow-500">{services.length}</div>
+                  <p className="text-sm text-gray-400">الظاهرة: {services.filter(s => s.isVisible).length}</p>
                 </CardContent>
               </Card>
               
@@ -327,6 +485,7 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold text-yellow-500">{products.length}</div>
+                  <p className="text-sm text-gray-400">الظاهرة: {products.filter(p => p.isVisible).length}</p>
                 </CardContent>
               </Card>
               
@@ -335,18 +494,28 @@ const AdminDashboard = () => {
                   <CardTitle className="text-lg text-white">إجمالي المشاريع</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-yellow-500">{projects.length}</div>
+                  <div className="text-3xl font-bold text-yellow-500">9</div>
+                  <p className="text-sm text-gray-400">المكتملة: 6</p>
                 </CardContent>
               </Card>
               
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg text-white">المشاريع المكتملة</CardTitle>
+                  <CardTitle className="text-lg text-white">طلبات جديدة</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-green-500">
-                    {projects.filter(p => p.status === 'مكتمل').length}
-                  </div>
+                  <div className="text-3xl font-bold text-red-500">5</div>
+                  <p className="text-sm text-gray-400">في الانتظار</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gray-900 border-gray-700">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg text-white">المبيعات الشهرية</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-500">2,450</div>
+                  <p className="text-sm text-gray-400">ريال عُماني</p>
                 </CardContent>
               </Card>
             </div>
@@ -485,10 +654,19 @@ const AdminDashboard = () => {
                         <div className="flex-1">
                           <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
                           <p className="text-gray-300 mb-2">{service.description}</p>
-                          <Badge className="bg-yellow-500 text-black">{service.price}</Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-yellow-500 text-black">{service.price}</Badge>
+                            <Badge variant={service.isVisible ? "default" : "secondary"}>
+                              {service.isVisible ? "ظاهر" : "مخفي"}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center">
+                        <Switch
+                          checked={service.isVisible}
+                          onCheckedChange={() => handleToggleVisibility('service', service.id)}
+                        />
                         <Button size="sm" variant="outline" className="border-gray-600">
                           <Edit3 className="h-4 w-4" />
                         </Button>
@@ -587,6 +765,9 @@ const AdminDashboard = () => {
                           <div className="flex gap-2 mb-2">
                             <Badge className="bg-green-500 text-white">{product.category}</Badge>
                             <Badge className="bg-yellow-500 text-black">{product.price}</Badge>
+                            <Badge variant={product.isVisible ? "default" : "secondary"}>
+                              {product.isVisible ? "ظاهر" : "مخفي"}
+                            </Badge>
                           </div>
                           <div className="flex items-center gap-4 text-sm text-gray-400">
                             <span className="flex items-center gap-1">
@@ -600,7 +781,11 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center">
+                        <Switch
+                          checked={product.isVisible}
+                          onCheckedChange={() => handleToggleVisibility('product', product.id)}
+                        />
                         <Button size="sm" variant="outline" className="border-gray-600">
                           <Eye className="h-4 w-4" />
                         </Button>

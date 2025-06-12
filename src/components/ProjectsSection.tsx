@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, MapPin, Calendar, ExternalLink, Users, Zap, Shield, Globe } from 'lucide-react';
+import { ArrowRight, MapPin, Calendar, ExternalLink, Users, Zap, Shield, Globe, ChevronDown, ChevronUp } from 'lucide-react';
 import ServiceRequestForm from './ServiceRequestForm';
 
 const ProjectsSection = () => {
   const [showServiceForm, setShowServiceForm] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   const projects = [
     {
@@ -24,12 +25,13 @@ const ProjectsSection = () => {
         "تقليل نسبة الفقد بنسبة 90%"
       ],
       projectUrl: "https://supply-management.sa",
-      logo: "/placeholder.svg",
+      logo: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=200&q=80",
       stats: {
         users: "500+",
         efficiency: "95%",
         satisfaction: "4.9/5"
-      }
+      },
+      isVisible: true
     },
     {
       id: 2,
@@ -45,12 +47,13 @@ const ProjectsSection = () => {
         "معدل تحويل عالي 8.5%"
       ],
       projectUrl: "https://ecommerce-kuwait.com",
-      logo: "/placeholder.svg",
+      logo: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=200&q=80",
       stats: {
         users: "2,000+",
         efficiency: "98%",
         satisfaction: "4.8/5"
-      }
+      },
+      isVisible: true
     },
     {
       id: 3,
@@ -66,14 +69,150 @@ const ProjectsSection = () => {
         "زيادة رضا العملاء بنسبة 45%"
       ],
       projectUrl: "https://restaurant-app.ae",
-      logo: "/placeholder.svg",
+      logo: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=200&q=80",
       stats: {
         users: "300+",
         efficiency: "92%",
         satisfaction: "4.7/5"
-      }
+      },
+      isVisible: true
+    },
+    {
+      id: 4,
+      name: "منصة التعليم الإلكتروني",
+      country: "مسقط، سلطنة عُمان",
+      date: "2024",
+      description: "منصة تعليمية متطورة مع فصول افتراضية وتتبع التقدم وأدوات تفاعلية",
+      status: "مكتمل",
+      technologies: ["React", "WebRTC", "MongoDB", "AWS"],
+      achievements: [
+        "تحسين نتائج الطلاب بنسبة 60%",
+        "زيادة التفاعل بنسبة 80%",
+        "توفير 40% من التكاليف التشغيلية"
+      ],
+      projectUrl: "https://elearning-oman.com",
+      logo: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=200&q=80",
+      stats: {
+        users: "1,500+",
+        efficiency: "96%",
+        satisfaction: "4.8/5"
+      },
+      isVisible: true
+    },
+    {
+      id: 5,
+      name: "نظام إدارة المستشفى الذكي",
+      country: "الدوحة، دولة قطر",
+      date: "2024",
+      description: "نظام شامل لإدارة المستشفيات مع السجلات الطبية الإلكترونية وجدولة المواعيد",
+      status: "مكتمل",
+      technologies: ["Angular", "Spring Boot", "MySQL", "HL7"],
+      achievements: [
+        "تقليل أوقات الانتظار بنسبة 50%",
+        "تحسين دقة التشخيص بنسبة 30%",
+        "زيادة كفاءة الموظفين بنسبة 45%"
+      ],
+      projectUrl: "https://hospital-qatar.com",
+      logo: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=200&q=80",
+      stats: {
+        users: "800+",
+        efficiency: "94%",
+        satisfaction: "4.9/5"
+      },
+      isVisible: true
+    },
+    {
+      id: 6,
+      name: "تطبيق الخدمات الحكومية",
+      country: "المنامة، مملكة البحرين",
+      date: "2023",
+      description: "تطبيق موحد للخدمات الحكومية مع معالجة ذكية للطلبات ودفع إلكتروني",
+      status: "مكتمل",
+      technologies: ["Vue.js", "Django", "PostgreSQL", "Blockchain"],
+      achievements: [
+        "تقليل وقت المعالجة بنسبة 70%",
+        "زيادة رضا المواطنين بنسبة 85%",
+        "توفير 60% من التكاليف الإدارية"
+      ],
+      projectUrl: "https://gov-services-bh.com",
+      logo: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=200&q=80",
+      stats: {
+        users: "50,000+",
+        efficiency: "97%",
+        satisfaction: "4.7/5"
+      },
+      isVisible: true
+    },
+    {
+      id: 7,
+      name: "منصة التمويل الرقمي",
+      country: "أبوظبي، دولة الإمارات العربية المتحدة",
+      date: "2024",
+      description: "منصة مالية رقمية متطورة للخدمات المصرفية والاستثمار مع الذكاء الاصطناعي",
+      status: "قيد التطوير",
+      technologies: ["React Native", "Microservices", "Docker", "AI/ML"],
+      achievements: [
+        "معالجة أسرع للمعاملات بنسبة 80%",
+        "تحسين الأمان بنسبة 95%",
+        "زيادة قاعدة المستخدمين بنسبة 200%"
+      ],
+      projectUrl: "https://fintech-uae.com",
+      logo: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=200&q=80",
+      stats: {
+        users: "5,000+",
+        efficiency: "93%",
+        satisfaction: "4.6/5"
+      },
+      isVisible: true
+    },
+    {
+      id: 8,
+      name: "نظام إدارة النقل الذكي",
+      country: "الرياض، المملكة العربية السعودية",
+      date: "2023",
+      description: "نظام متطور لإدارة النقل العام مع تتبع المركبات وتحسين المسارات",
+      status: "مكتمل",
+      technologies: ["IoT", "React", "Python", "GPS Tracking"],
+      achievements: [
+        "تحسين كفاءة النقل بنسبة 40%",
+        "تقليل الازدحام بنسبة 30%",
+        "زيادة رضا الركاب بنسبة 55%"
+      ],
+      projectUrl: "https://transport-sa.com",
+      logo: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=200&q=80",
+      stats: {
+        users: "10,000+",
+        efficiency: "91%",
+        satisfaction: "4.5/5"
+      },
+      isVisible: true
+    },
+    {
+      id: 9,
+      name: "منصة إدارة الطاقة الذكية",
+      country: "مسقط، سلطنة عُمان",
+      date: "2024",
+      description: "نظام ذكي لمراقبة وإدارة استهلاك الطاقة في المباني والمنشآت",
+      status: "قيد التطوير",
+      technologies: ["IoT", "Machine Learning", "React", "InfluxDB"],
+      achievements: [
+        "توفير 35% من استهلاك الطاقة",
+        "تحسين الكفاءة بنسبة 50%",
+        "تقليل الانبعاثات بنسبة 25%"
+      ],
+      projectUrl: "https://smart-energy-oman.com",
+      logo: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=200&q=80",
+      stats: {
+        users: "200+",
+        efficiency: "89%",
+        satisfaction: "4.8/5"
+      },
+      isVisible: true
     }
   ];
+
+  const visibleProjects = projects.filter(project => project.isVisible);
+  const displayedProjects = showMore ? visibleProjects : visibleProjects.slice(0, 3);
 
   return (
     <>
@@ -88,12 +227,12 @@ const ProjectsSection = () => {
           </div>
 
           <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
+            {displayedProjects.map((project, index) => (
               <Card key={project.id} className="modern-card border-0 shadow-xl bg-gradient-to-br from-gray-800 to-gray-700 hover:shadow-2xl transition-all duration-300 group">
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center">
-                      <img src={project.logo} alt={project.name} className="w-8 h-8" />
+                    <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center overflow-hidden">
+                      <img src={project.logo} alt={project.name} className="w-full h-full object-cover" />
                     </div>
                     <Badge className={`${
                       project.status === 'مكتمل' ? 'bg-green-500' : 'bg-blue-500'
@@ -186,6 +325,28 @@ const ProjectsSection = () => {
               </Card>
             ))}
           </div>
+
+          {visibleProjects.length > 3 && (
+            <div className="text-center mt-12">
+              <Button
+                onClick={() => setShowMore(!showMore)}
+                variant="outline"
+                className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+              >
+                {showMore ? (
+                  <>
+                    عرض أقل
+                    <ChevronUp className="mr-2 h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    استكشاف المزيد
+                    <ChevronDown className="mr-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
 
           {/* Call to Action */}
           <div className="text-center mt-16">

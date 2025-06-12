@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Download, ExternalLink, ShoppingCart } from 'lucide-react';
+import { Star, Download, ExternalLink, ShoppingCart, ChevronDown, ChevronUp } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import PayPalButton from './PayPalButton';
 
 const ProductsSection = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   const products = [
     {
@@ -22,10 +23,126 @@ const ProductsSection = () => {
       rating: 4.8,
       category: "إدارة أعمال",
       demoUrl: "https://inventory-demo.theblack-card.com",
-      image: "/placeholder.svg",
-      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"]
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80",
+      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"],
+      isVisible: true
+    },
+    {
+      id: 2,
+      title: "نظام إدارة علاقات العملاء",
+      description: "نظام CRM شامل لإدارة العملاء والمبيعات والتسويق",
+      price: "350",
+      originalPrice: "350 ريال عُماني",
+      downloads: "890+",
+      rating: 4.7,
+      category: "إدارة أعمال",
+      demoUrl: "https://crm-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80",
+      features: ["إدارة العملاء", "تتبع المبيعات", "حملات تسويقية", "تقارير شاملة"],
+      isVisible: true
+    },
+    {
+      id: 3,
+      title: "نظام نقاط البيع الذكي",
+      description: "نظام POS متطور للمتاجر والمطاعم مع إدارة شاملة",
+      price: "300",
+      originalPrice: "300 ريال عُماني",
+      downloads: "2,100+",
+      rating: 4.9,
+      category: "تجارة إلكترونية",
+      demoUrl: "https://pos-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
+      features: ["معالجة سريعة", "إدارة المخزون", "تقارير مبيعات", "دعم متعدد الفروع"],
+      isVisible: true
+    },
+    {
+      id: 4,
+      title: "منصة إدارة المشاريع",
+      description: "أداة شاملة لإدارة المشاريع والفرق والمهام",
+      price: "450",
+      originalPrice: "450 ريال عُماني",
+      downloads: "650+",
+      rating: 4.6,
+      category: "إدارة أعمال",
+      demoUrl: "https://project-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=500&q=80",
+      features: ["تتبع المشاريع", "إدارة الفرق", "تقارير التقدم", "تعاون سحابي"],
+      isVisible: true
+    },
+    {
+      id: 5,
+      title: "نظام إدارة الموارد البشرية",
+      description: "حل متكامل لإدارة الموظفين والرواتب والحضور",
+      price: "380",
+      originalPrice: "380 ريال عُماني",
+      downloads: "750+",
+      rating: 4.5,
+      category: "موارد بشرية",
+      demoUrl: "https://hr-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
+      features: ["إدارة الموظفين", "حساب الرواتب", "تتبع الحضور", "تقييم الأداء"],
+      isVisible: true
+    },
+    {
+      id: 6,
+      title: "نظام إدارة العقارات",
+      description: "منصة شاملة لإدارة العقارات والإيجارات والصيانة",
+      price: "500",
+      originalPrice: "500 ريال عُماني",
+      downloads: "420+",
+      rating: 4.8,
+      category: "إدارة أعمال",
+      demoUrl: "https://property-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=500&q=80",
+      features: ["إدارة العقارات", "تتبع الإيجارات", "طلبات الصيانة", "تقارير مالية"],
+      isVisible: true
+    },
+    {
+      id: 7,
+      title: "نظام إدارة المدارس",
+      description: "نظام تعليمي شامل للمدارس والمعاهد التعليمية",
+      price: "600",
+      originalPrice: "600 ريال عُماني",
+      downloads: "320+",
+      rating: 4.7,
+      category: "تعليم",
+      demoUrl: "https://school-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=500&q=80",
+      features: ["إدارة الطلاب", "جدولة الحصص", "تتبع الدرجات", "تواصل مع الأهل"],
+      isVisible: true
+    },
+    {
+      id: 8,
+      title: "نظام إدارة المستشفيات",
+      description: "حل متطور لإدارة المستشفيات والعيادات الطبية",
+      price: "800",
+      originalPrice: "800 ريال عُماني",
+      downloads: "180+",
+      rating: 4.9,
+      category: "صحة",
+      demoUrl: "https://hospital-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80",
+      features: ["إدارة المرضى", "مواعيد الأطباء", "السجلات الطبية", "إدارة الأدوية"],
+      isVisible: true
+    },
+    {
+      id: 9,
+      title: "نظام إدارة المطاعم المتطور",
+      description: "نظام شامل لإدارة المطاعم والطلبات والتوصيل",
+      price: "450",
+      originalPrice: "450 ريال عُماني",
+      downloads: "980+",
+      rating: 4.6,
+      category: "مطاعم",
+      demoUrl: "https://restaurant-demo.theblack-card.com",
+      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=500&q=80",
+      features: ["إدارة القوائم", "معالجة الطلبات", "نظام التوصيل", "تقارير المبيعات"],
+      isVisible: true
     }
   ];
+
+  const visibleProducts = products.filter(product => product.isVisible);
+  const displayedProducts = showMore ? visibleProducts : visibleProducts.slice(0, 3);
 
   const handlePurchase = (product: any) => {
     setSelectedProduct(product);
@@ -51,7 +168,7 @@ const ProductsSection = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {products.map((product) => (
+            {displayedProducts.map((product) => (
               <Card key={product.id} className="modern-card bg-gradient-to-br from-gray-800 to-gray-700 border-0 shadow-lg group hover:shadow-2xl transition-all duration-300">
                 <CardHeader className="pb-4">
                   <div className="w-full h-48 bg-gray-600 rounded-lg mb-4 overflow-hidden">
@@ -108,6 +225,28 @@ const ProductsSection = () => {
               </Card>
             ))}
           </div>
+
+          {visibleProducts.length > 3 && (
+            <div className="text-center mt-12">
+              <Button
+                onClick={() => setShowMore(!showMore)}
+                variant="outline"
+                className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+              >
+                {showMore ? (
+                  <>
+                    عرض أقل
+                    <ChevronUp className="mr-2 h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    استكشاف المزيد
+                    <ChevronDown className="mr-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
