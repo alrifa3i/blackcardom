@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,11 +12,16 @@ import {
   MessageSquare,
   Share2,
   HelpCircle,
-  Plus
+  Plus,
+  Globe,
+  Code
 } from 'lucide-react';
 import AdminAuth from '@/components/AdminAuth';
 import SocialMediaSettings from '@/components/SocialMediaSettings';
 import FAQManagement from '@/components/FAQManagement';
+import WebsiteProjectsManagement from '@/components/WebsiteProjectsManagement';
+import WebApplicationsManagement from '@/components/WebApplicationsManagement';
+import WhatsAppAnalytics from '@/components/WhatsAppAnalytics';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -88,15 +94,21 @@ const AdminDashboard = () => {
 
         {/* التبويبات الرئيسية */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-8 bg-gray-800">
             <TabsTrigger value="overview" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
               نظرة عامة
             </TabsTrigger>
             <TabsTrigger value="users" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
               المستخدمين
             </TabsTrigger>
-            <TabsTrigger value="content" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              المحتوى
+            <TabsTrigger value="website-projects" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
+              مواقع الويب
+            </TabsTrigger>
+            <TabsTrigger value="web-applications" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
+              تطبيقات الويب
+            </TabsTrigger>
+            <TabsTrigger value="whatsapp" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
+              واتساب
             </TabsTrigger>
             <TabsTrigger value="social" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
               التواصل الاجتماعي
@@ -171,22 +183,16 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="content">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-yellow-500">إدارة المحتوى</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <FileText className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400 mb-4">قريباً - إدارة المحتوى والصفحات</p>
-                  <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    <Plus className="mr-2 h-4 w-4" />
-                    إضافة محتوى جديد
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="website-projects">
+            <WebsiteProjectsManagement />
+          </TabsContent>
+
+          <TabsContent value="web-applications">
+            <WebApplicationsManagement />
+          </TabsContent>
+
+          <TabsContent value="whatsapp">
+            <WhatsAppAnalytics />
           </TabsContent>
 
           <TabsContent value="social">

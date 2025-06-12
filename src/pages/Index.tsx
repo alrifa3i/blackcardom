@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,9 +9,12 @@ import AppleCard from '@/components/AppleCard';
 import ServicesSection from '@/components/ServicesSection';
 import ProductsSection from '@/components/ProductsSection';
 import ProjectsSection from '@/components/ProjectsSection';
+import WebsiteProjectsSection from '@/components/WebsiteProjectsSection';
+import WebApplicationsSection from '@/components/WebApplicationsSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import AuthSection from '@/components/AuthSection';
+import WhatsAppButton from '@/components/WhatsAppButton';
 
 const Index = () => {
   const scrollToSection = (sectionId: string) => {
@@ -144,12 +148,17 @@ const Index = () => {
       <ServicesSection />
       <ProductsSection />
       <ProjectsSection />
+      <WebsiteProjectsSection />
+      <WebApplicationsSection />
       
       {/* Add Authentication Section */}
       <AuthSection />
       
       <ContactSection />
       <Footer />
+      
+      {/* WhatsApp Button */}
+      <WhatsAppButton />
     </div>
   );
 };

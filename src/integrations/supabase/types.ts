@@ -845,6 +845,141 @@ export type Database = {
         }
         Relationships: []
       }
+      web_applications: {
+        Row: {
+          client_name: string | null
+          completion_date: string | null
+          created_at: string
+          description: string
+          display_order: number | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          is_visible: boolean | null
+          project_url: string | null
+          status: string | null
+          technologies: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description: string
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_visible?: boolean | null
+          project_url?: string | null
+          status?: string | null
+          technologies?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_visible?: boolean | null
+          project_url?: string | null
+          status?: string | null
+          technologies?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      website_projects: {
+        Row: {
+          client_name: string | null
+          completion_date: string | null
+          created_at: string
+          description: string
+          display_order: number | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          is_visible: boolean | null
+          project_url: string | null
+          status: string | null
+          technologies: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description: string
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_visible?: boolean | null
+          project_url?: string | null
+          status?: string | null
+          technologies?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_visible?: boolean | null
+          project_url?: string | null
+          status?: string | null
+          technologies?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_contacts: {
+        Row: {
+          contact_time: string
+          created_at: string
+          employee_name: string
+          id: string
+          ip_address: string | null
+          page_url: string | null
+          user_agent: string | null
+          visitor_location: string | null
+        }
+        Insert: {
+          contact_time?: string
+          created_at?: string
+          employee_name: string
+          id?: string
+          ip_address?: string | null
+          page_url?: string | null
+          user_agent?: string | null
+          visitor_location?: string | null
+        }
+        Update: {
+          contact_time?: string
+          created_at?: string
+          employee_name?: string
+          id?: string
+          ip_address?: string | null
+          page_url?: string | null
+          user_agent?: string | null
+          visitor_location?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
