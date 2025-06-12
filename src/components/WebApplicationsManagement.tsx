@@ -49,7 +49,7 @@ const WebApplicationsManagement = () => {
         .from('web_applications')
         .insert([{
           ...data,
-          technologies: JSON.stringify(data.technologies.split(',').map((t: string) => t.trim()))
+          technologies: data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean)
         }]);
       if (error) throw error;
     },
@@ -67,7 +67,7 @@ const WebApplicationsManagement = () => {
         .from('web_applications')
         .update({
           ...data,
-          technologies: JSON.stringify(data.technologies.split(',').map((t: string) => t.trim()))
+          technologies: data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean)
         })
         .eq('id', id);
       if (error) throw error;
@@ -116,7 +116,7 @@ const WebApplicationsManagement = () => {
     setEditingApp(app);
     setFormData({
       ...app,
-      technologies: JSON.parse(app.technologies || '[]').join(', ')
+      technologies: Array.isArray(app.technologies) ? app.technologies.join(', ') : ''
     });
     setShowForm(true);
   };
@@ -304,7 +304,7 @@ const WebApplicationsManagement = () => {
                       )}
                       {app.technologies && (
                         <div className="flex flex-wrap gap-1 mt-2">
-                          {JSON.parse(app.technologies).map((tech: string, index: number) => (
+                          {(Array.isArray(app.technologies) ? app.technologies : []).map((tech: string, index: number) => (
                             <Badge key={index} variant="outline" className="text-xs">
                               {tech}
                             </Badge>

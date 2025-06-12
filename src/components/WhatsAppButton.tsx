@@ -33,7 +33,7 @@ const WhatsAppButton = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const getVisitorLocation = () => {
+  const getVisitorLocation = (): Promise<string> => {
     return new Promise((resolve) => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(

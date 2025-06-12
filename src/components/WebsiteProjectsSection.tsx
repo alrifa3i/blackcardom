@@ -87,7 +87,7 @@ const WebsiteProjectsSection = () => {
                 
                 {project.technologies && (
                   <div className="flex flex-wrap gap-2">
-                    {JSON.parse(project.technologies).map((tech: string, index: number) => (
+                    {(Array.isArray(project.technologies) ? project.technologies : []).map((tech: string, index: number) => (
                       <Badge key={index} variant="outline" className="text-xs border-gray-600 text-gray-300">
                         {tech}
                       </Badge>

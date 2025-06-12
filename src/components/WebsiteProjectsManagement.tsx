@@ -49,7 +49,7 @@ const WebsiteProjectsManagement = () => {
         .from('website_projects')
         .insert([{
           ...data,
-          technologies: JSON.stringify(data.technologies.split(',').map((t: string) => t.trim()))
+          technologies: data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean)
         }]);
       if (error) throw error;
     },
@@ -67,7 +67,7 @@ const WebsiteProjectsManagement = () => {
         .from('website_projects')
         .update({
           ...data,
-          technologies: JSON.stringify(data.technologies.split(',').map((t: string) => t.trim()))
+          technologies: data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean)
         })
         .eq('id', id);
       if (error) throw error;
@@ -116,7 +116,7 @@ const WebsiteProjectsManagement = () => {
     setEditingProject(project);
     setFormData({
       ...project,
-      technologies: JSON.parse(project.technologies || '[]').join(', ')
+      technologies: Array.isArray(project.technologies) ? project.technologies.join(', ') : ''
     });
     setShowForm(true);
   };
@@ -304,7 +304,7 @@ const WebsiteProjectsManagement = () => {
                       )}
                       {project.technologies && (
                         <div className="flex flex-wrap gap-1 mt-2">
-                          {JSON.parse(project.technologies).map((tech: string, index: number) => (
+                          {(Array.isArray(project.technologies) ? project.technologies : []).map((tech: string, index: number) => (
                             <Badge key={index} variant="outline" className="text-xs">
                               {tech}
                             </Badge>

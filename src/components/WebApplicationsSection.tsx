@@ -87,7 +87,7 @@ const WebApplicationsSection = () => {
                 
                 {app.technologies && (
                   <div className="flex flex-wrap gap-2">
-                    {JSON.parse(app.technologies).map((tech: string, index: number) => (
+                    {(Array.isArray(app.technologies) ? app.technologies : []).map((tech: string, index: number) => (
                       <Badge key={index} variant="outline" className="text-xs border-gray-600 text-gray-300">
                         {tech}
                       </Badge>
