@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -321,7 +322,8 @@ const AdminDashboard = () => {
     const service = {
       id: services.length + 1,
       ...newService,
-      features: newService.features.filter(f => f.trim() !== '')
+      features: newService.features.filter(f => f.trim() !== ''),
+      isVisible: true
     };
     setServices([...services, service]);
     setNewService({ title: '', description: '', price: '', image: '', features: [''] });
@@ -333,7 +335,8 @@ const AdminDashboard = () => {
       id: products.length + 1,
       ...newProduct,
       downloads: "0+",
-      rating: 0
+      rating: 0,
+      isVisible: true
     };
     setProducts([...products, product]);
     setNewProduct({ title: '', description: '', price: '', category: '', demoUrl: '', image: '' });
