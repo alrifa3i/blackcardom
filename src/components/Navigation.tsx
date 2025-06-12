@@ -36,36 +36,24 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass-effect">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md border-b border-yellow-500/20">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Dashboard, Theme Selector and Join Buttons - Left Side */}
-          <div className="flex items-center gap-3">
-            <Link to="/admin" className="hidden sm:block">
-              <Button className="bg-yellow-500 text-black hover:bg-yellow-400 text-sm">
-                لوحة التحكم
-              </Button>
+          {/* Logo - Right Side */}
+          <div className="flex items-center">
+            <Link to="/" className="text-xl md:text-2xl font-bold text-yellow-500 hover:text-yellow-400 transition-colors">
+              شركة الكارت الأسود - The Black Card
             </Link>
-            <div className="hidden sm:block">
-              <ThemeSelector />
-            </div>
-            <Button 
-              onClick={scrollToAuth}
-              variant="outline" 
-              className="hidden sm:block border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-sm"
-            >
-              انضم الآن
-            </Button>
           </div>
 
           {/* Desktop Navigation - Center */}
-          <div className="hidden lg:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center space-x-8 rtl:space-x-reverse">
             {navItems.map((item) => (
               item.isRoute ? (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-white hover:text-yellow-400 transition-colors duration-200 font-medium text-sm"
+                  className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-sm px-3 py-2 rounded-md hover:bg-yellow-500/10"
                 >
                   {item.name}
                 </Link>
@@ -73,7 +61,7 @@ const Navigation = () => {
                 <button
                   key={item.name}
                   onClick={() => handleNavClick(item)}
-                  className="text-white hover:text-yellow-400 transition-colors duration-200 font-medium text-sm"
+                  className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-sm px-3 py-2 rounded-md hover:bg-yellow-500/10"
                 >
                   {item.name}
                 </button>
@@ -81,10 +69,22 @@ const Navigation = () => {
             ))}
           </div>
 
-          {/* Logo - Right Side */}
-          <div className="flex items-center">
-            <Link to="/" className="text-xl md:text-2xl font-bold gradient-text">
-              The Black Card
+          {/* Action Buttons - Left Side */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:block">
+              <ThemeSelector />
+            </div>
+            <Button 
+              onClick={scrollToAuth}
+              variant="outline" 
+              className="hidden sm:block border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-sm transition-all duration-300"
+            >
+              انضم الآن
+            </Button>
+            <Link to="/admin" className="hidden sm:block">
+              <Button className="bg-yellow-500 text-black hover:bg-yellow-400 text-sm transition-all duration-300">
+                لوحة التحكم
+              </Button>
             </Link>
           </div>
 
@@ -94,7 +94,7 @@ const Navigation = () => {
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(!isOpen)}
-              className="text-white p-2"
+              className="text-white p-2 hover:bg-yellow-500/10"
             >
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -103,14 +103,14 @@ const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="lg:hidden py-4 border-t border-white/10 bg-black/95 backdrop-blur-md">
-            <div className="flex flex-col space-y-4">
+          <div className="lg:hidden py-4 border-t border-yellow-500/20 bg-black/98 backdrop-blur-md">
+            <div className="flex flex-col space-y-3">
               {navItems.map((item) => (
                 item.isRoute ? (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="text-white hover:text-yellow-400 transition-colors duration-200 font-medium text-center py-2"
+                    className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-center py-3 px-4 rounded-lg hover:bg-yellow-500/10"
                     onClick={() => setIsOpen(false)}
                   >
                     {item.name}
@@ -119,28 +119,28 @@ const Navigation = () => {
                   <button
                     key={item.name}
                     onClick={() => handleNavClick(item)}
-                    className="text-white hover:text-yellow-400 transition-colors duration-200 font-medium text-center py-2"
+                    className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-center py-3 px-4 rounded-lg hover:bg-yellow-500/10"
                   >
                     {item.name}
                   </button>
                 )
               ))}
-              <div className="flex flex-col gap-3 mt-4">
-                <Link to="/admin">
-                  <Button className="bg-yellow-500 text-black hover:bg-yellow-400 w-full">
-                    لوحة التحكم
-                  </Button>
-                </Link>
+              <div className="flex flex-col gap-3 mt-4 px-4">
                 <div className="flex justify-center">
                   <ThemeSelector />
                 </div>
                 <Button 
                   onClick={scrollToAuth}
                   variant="outline" 
-                  className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black w-full"
+                  className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black w-full transition-all duration-300"
                 >
                   انضم الآن
                 </Button>
+                <Link to="/admin">
+                  <Button className="bg-yellow-500 text-black hover:bg-yellow-400 w-full transition-all duration-300">
+                    لوحة التحكم
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
