@@ -287,6 +287,36 @@ export type Database = {
         }
         Relationships: []
       }
+      faqs: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          order_index: number | null
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          order_index?: number | null
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          order_index?: number | null
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       geographic_locations: {
         Row: {
           address: string | null
@@ -746,6 +776,33 @@ export type Database = {
           price?: number
           type?: string
           unit?: string | null
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }

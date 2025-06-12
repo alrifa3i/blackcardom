@@ -32,14 +32,14 @@ const Index = () => {
             <div className="text-white space-y-6 md:space-y-8 text-center lg:text-right">
               <div className="space-y-4">
                 <Badge className="bg-yellow-500 text-black hover:bg-yellow-400 text-xs md:text-sm">
-                  إدارة المشاريع والحلول التقنية
+                  إدارة الأنظمة والحلول التقنية
                 </Badge>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                   مرحباً بك في
                   <span className="block gradient-text">The Black Card</span>
                 </h1>
                 <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0">
-                  نحن متخصصون في تقديم حلول إدارة المشاريع المتطورة وتطوير التطبيقات والأنظمة الذكية لتحويل رؤيتك إلى واقع رقمي مبتكر.
+                  نحن متخصصون في تقديم حلول إدارة الأنظمة المتطورة وتطوير التطبيقات والأنظمة الذكية لتحويل رؤيتك إلى واقع رقمي مبتكر.
                 </p>
               </div>
               
