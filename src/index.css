@@ -101,6 +101,36 @@
   }
 }
 
+/* أنيميشن الشريط المتحرك للنص العربي */
+@keyframes slide-in-arabic {
+  0% { 
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* أنيميشن الشريط المتحرك للنص الإنجليزي */
+@keyframes slide-in-english {
+  0% { 
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .apple-card {
   background: linear-gradient(135deg, var(--background, #000000), var(--muted, #1a1a1a), var(--background, #000000));
   background-size: 200% 200%;
@@ -278,4 +308,44 @@
     transform: none;
     box-shadow: initial;
   }
+}
+
+/* أنيميشن خاص بالموبايل للشريط المتحرك */
+@media (max-width: 768px) {
+  @keyframes slide-in-arabic {
+    0% { 
+      transform: translateX(-120%);
+      opacity: 0;
+    }
+    40% {
+      opacity: 1;
+    }
+    100% { 
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-english {
+    0% { 
+      transform: translateX(-120%);
+      opacity: 0;
+    }
+    40% {
+      opacity: 1;
+    }
+    100% { 
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* أنيميشن للشريط المتحرك */
+.animate-slide-in-arabic {
+  animation: slide-in-arabic 1s ease-out;
+}
+
+.animate-slide-in-english {
+  animation: slide-in-english 1s ease-out;
 }
