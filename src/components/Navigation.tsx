@@ -60,10 +60,10 @@ const Navigation = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md border-b border-yellow-500/20">
       <div className="container mx-auto px-2 sm:px-4 md:px-6">
         <div className="flex items-center justify-between h-14 sm:h-16">
-          {/* Logo - Right Side */}
-          <div className="flex items-center flex-shrink-0 min-w-0 max-w-[60%] sm:max-w-none">
+          {/* Logo - Left Side */}
+          <div className="flex items-center flex-shrink-0">
             <Link to="/" onClick={handleHomeClick} className="block">
-              <div className="relative w-full h-12 sm:h-14 md:h-16 overflow-hidden">
+              <div className="relative w-64 h-12 sm:h-14 md:h-16 overflow-hidden">
                 {/* الاسم العربي */}
                 <div 
                   className={`absolute inset-0 flex items-center justify-start transition-all duration-1000 ease-in-out ${
@@ -73,14 +73,12 @@ const Navigation = () => {
                   }`}
                 >
                   <span 
-                    className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap animate-slide-in-arabic"
+                    className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap text-xl md:text-2xl lg:text-3xl animate-slide-in-arabic"
                     style={{
                       backgroundSize: '200% 200%',
                       animation: showArabic ? 'gradient-shift 2s ease infinite, slide-in-arabic 1s ease-out' : 'none',
                       textShadow: '0 0 20px rgba(255, 215, 0, 0.5)',
                       filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))',
-                      fontSize: 'clamp(14px, 3.5vw, 28px)',
-                      lineHeight: '1.2'
                     }}
                   >
                     شركة الكارت الاسود
@@ -96,14 +94,12 @@ const Navigation = () => {
                   }`}
                 >
                   <span 
-                    className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap animate-slide-in-english"
+                    className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap text-xl md:text-2xl lg:text-3xl animate-slide-in-english"
                     style={{
                       backgroundSize: '200% 200%',
                       animation: !showArabic ? 'gradient-shift 2s ease infinite, slide-in-english 1s ease-out' : 'none',
                       textShadow: '0 0 20px rgba(255, 215, 0, 0.5)',
                       filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))',
-                      fontSize: 'clamp(14px, 3.5vw, 28px)',
-                      lineHeight: '1.2'
                     }}
                   >
                     The Black Card
@@ -137,7 +133,7 @@ const Navigation = () => {
             ))}
           </div>
 
-          {/* Action Buttons - Left Side */}
+          {/* Action Buttons - Right Side */}
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
             <div className="hidden sm:block">
               <ThemeSelector />
