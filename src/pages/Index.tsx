@@ -25,7 +25,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black relative">
+    <div className="min-h-screen bg-black">
       <Navigation />
       
       {/* Hero Section */}
@@ -40,9 +40,7 @@ const Index = () => {
                 </Badge>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                   مرحباً بك في
-                  <span className="block gradient-text">
-                    The Black Card
-                  </span>
+                  <span className="block gradient-text">The Black Card</span>
                 </h1>
                 <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0">
                   نحن متخصصون في تقديم حلول إدارة الأنظمة المتطورة وتطوير التطبيقات والأنظمة الذكية لتحويل رؤيتك إلى واقع رقمي مبتكر.
@@ -52,32 +50,32 @@ const Index = () => {
               <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center lg:justify-start">
                 <Button 
                   size="lg" 
-                  className="bg-yellow-500 text-black hover:bg-yellow-400 transition-all relative overflow-hidden"
+                  className="bg-yellow-500 text-black hover:bg-yellow-400 transition-all"
                   onClick={() => scrollToSection('services')}
                 >
-                  <span className="relative z-10">استكشف خدماتنا</span>
-                  <ArrowRight className="mr-2 h-5 w-5 relative z-10" />
+                  استكشف خدماتنا
+                  <ArrowRight className="mr-2 h-5 w-5" />
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="border-white text-white hover:bg-white hover:text-black relative overflow-hidden"
+                  className="border-white text-white hover:bg-white hover:text-black"
                   onClick={() => scrollToSection('contact')}
                 >
-                  <span className="relative z-10">تواصل معنا</span>
+                  تواصل معنا
                 </Button>
               </div>
               
               <div className="flex items-center justify-center lg:justify-start gap-4 md:gap-8 pt-6 md:pt-8">
-                <div className="text-center p-4 rounded-lg">
+                <div className="text-center">
                   <div className="text-2xl md:text-3xl font-bold text-yellow-500">50+</div>
                   <div className="text-xs md:text-sm text-gray-400">مشروع مكتمل</div>
                 </div>
-                <div className="text-center p-4 rounded-lg">
+                <div className="text-center">
                   <div className="text-2xl md:text-3xl font-bold text-yellow-500">5+</div>
                   <div className="text-xs md:text-sm text-gray-400">سنوات خبرة</div>
                 </div>
-                <div className="text-center p-4 rounded-lg">
+                <div className="text-center">
                   <div className="text-2xl md:text-3xl font-bold text-yellow-500">100%</div>
                   <div className="text-xs md:text-sm text-gray-400">رضا العملاء</div>
                 </div>
@@ -85,16 +83,18 @@ const Index = () => {
             </div>
             
             <div className="flex justify-center order-first lg:order-last">
-              <div>
-                <AppleCard />
-              </div>
+              <AppleCard />
             </div>
           </div>
         </div>
         
         {/* Floating elements */}
-        <div className="absolute top-20 left-4 md:left-10 floating"></div>
-        <div className="absolute bottom-20 right-4 md:right-10 floating" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-20 left-4 md:left-10 floating">
+          <div className="w-12 h-12 md:w-16 md:h-16 bg-yellow-500/20 rounded-full blur-xl"></div>
+        </div>
+        <div className="absolute bottom-20 right-4 md:right-10 floating" style={{animationDelay: '2s'}}>
+          <div className="w-16 h-16 md:w-24 md:h-24 bg-yellow-500/10 rounded-full blur-xl"></div>
+        </div>
       </section>
 
       {/* Features Section */}
@@ -131,7 +131,7 @@ const Index = () => {
                 description: "خدمات متنوعة تغطي جميع احتياجاتك"
               }
             ].map((feature, index) => (
-              <Card key={index} className="text-center p-4 md:p-6 border-0 shadow-lg bg-gradient-to-br from-gray-800 to-gray-700">
+              <Card key={index} className="modern-card text-center p-4 md:p-6 border-0 shadow-lg bg-gradient-to-br from-gray-800 to-gray-700">
                 <CardContent className="pt-4 md:pt-6">
                   <div className="w-12 h-12 md:w-16 md:h-16 bg-yellow-500 text-black rounded-full flex items-center justify-center mx-auto mb-4">
                     {feature.icon}
