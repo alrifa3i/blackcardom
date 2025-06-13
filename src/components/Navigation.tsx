@@ -12,6 +12,8 @@ const Navigation = () => {
     { name: 'الرئيسية', href: '/', isRoute: true },
     { name: 'خدماتنا', href: '#services', isRoute: false },
     { name: 'منتجاتنا', href: '#products', isRoute: false },
+    { name: 'تصميم مواقع', href: '#website-projects', isRoute: false },
+    { name: 'تطبيقات ويب', href: '#web-applications', isRoute: false },
     { name: 'مشاريعنا', href: '#projects', isRoute: false },
     { name: 'من نحن', href: '/about', isRoute: true },
     { name: 'تواصل معنا', href: '#contact', isRoute: false },
