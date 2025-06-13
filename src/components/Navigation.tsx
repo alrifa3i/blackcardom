@@ -61,61 +61,53 @@ const Navigation = () => {
       <div className="container mx-auto px-2 sm:px-4 md:px-6">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo - Right Side */}
-          <div className="flex items-center flex-shrink-0 min-w-0 flex-1 sm:flex-initial">
-            <Link to="/" onClick={handleHomeClick} className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold hover:scale-105 transition-transform duration-300 block w-full sm:w-auto overflow-hidden">
-              <div className="relative min-h-[40px] sm:min-h-[50px] md:min-h-[60px] w-full overflow-hidden">
+          <div className="flex items-center flex-shrink-0 min-w-0 max-w-[60%] sm:max-w-none">
+            <Link to="/" onClick={handleHomeClick} className="block">
+              <div className="relative w-full h-12 sm:h-14 md:h-16 overflow-hidden">
                 {/* الاسم العربي */}
                 <div 
-                  className={`absolute inset-0 flex items-center transition-all duration-1000 ease-in-out ${
+                  className={`absolute inset-0 flex items-center justify-start transition-all duration-1000 ease-in-out ${
                     showArabic 
                       ? 'opacity-100 transform translate-x-0' 
                       : 'opacity-0 transform translate-x-full'
                   }`}
                 >
-                  <div className="relative overflow-hidden w-full">
-                    <span 
-                      className={`bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap ${
-                        showArabic ? 'animate-slide-in-arabic' : ''
-                      }`}
-                      style={{
-                        backgroundSize: '200% 200%',
-                        animation: showArabic ? 'gradient-shift 2s ease infinite, slide-in-arabic 1s ease-out' : 'none',
-                        textShadow: '0 0 20px rgba(255, 215, 0, 0.5)',
-                        filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))',
-                        fontSize: 'clamp(16px, 4vw, 28px)',
-                        lineHeight: '1.2'
-                      }}
-                    >
-                      شركة الكارت الاسود
-                    </span>
-                  </div>
+                  <span 
+                    className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap animate-slide-in-arabic"
+                    style={{
+                      backgroundSize: '200% 200%',
+                      animation: showArabic ? 'gradient-shift 2s ease infinite, slide-in-arabic 1s ease-out' : 'none',
+                      textShadow: '0 0 20px rgba(255, 215, 0, 0.5)',
+                      filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))',
+                      fontSize: 'clamp(14px, 3.5vw, 28px)',
+                      lineHeight: '1.2'
+                    }}
+                  >
+                    شركة الكارت الاسود
+                  </span>
                 </div>
                 
                 {/* الاسم الإنجليزي */}
                 <div 
-                  className={`absolute inset-0 flex items-center transition-all duration-1000 ease-in-out ${
+                  className={`absolute inset-0 flex items-center justify-start transition-all duration-1000 ease-in-out ${
                     !showArabic 
                       ? 'opacity-100 transform translate-x-0' 
                       : 'opacity-0 transform -translate-x-full'
                   }`}
                 >
-                  <div className="relative overflow-hidden w-full">
-                    <span 
-                      className={`bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap ${
-                        !showArabic ? 'animate-slide-in-english' : ''
-                      }`}
-                      style={{
-                        backgroundSize: '200% 200%',
-                        animation: !showArabic ? 'gradient-shift 2s ease infinite, slide-in-english 1s ease-out' : 'none',
-                        textShadow: '0 0 20px rgba(255, 215, 0, 0.5)',
-                        filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))',
-                        fontSize: 'clamp(16px, 4vw, 28px)',
-                        lineHeight: '1.2'
-                      }}
-                    >
-                      The Black Card
-                    </span>
-                  </div>
+                  <span 
+                    className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap animate-slide-in-english"
+                    style={{
+                      backgroundSize: '200% 200%',
+                      animation: !showArabic ? 'gradient-shift 2s ease infinite, slide-in-english 1s ease-out' : 'none',
+                      textShadow: '0 0 20px rgba(255, 215, 0, 0.5)',
+                      filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))',
+                      fontSize: 'clamp(14px, 3.5vw, 28px)',
+                      lineHeight: '1.2'
+                    }}
+                  >
+                    The Black Card
+                  </span>
                 </div>
               </div>
             </Link>
