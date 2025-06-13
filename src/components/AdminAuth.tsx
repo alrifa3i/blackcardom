@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Lock, Eye, EyeOff } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
 
 interface AdminAuthProps {
   onAuthenticated: () => void;
@@ -54,6 +55,19 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
       <div className="container mx-auto px-6 max-w-md">
+        {/* زر العودة إلى الرئيسية */}
+        <div className="mb-6">
+          <Link to="/">
+            <Button 
+              variant="ghost" 
+              className="text-white hover:text-yellow-400 hover:bg-yellow-500/10 transition-all duration-300"
+            >
+              <ArrowLeft className="h-4 w-4 ml-2" />
+              العودة إلى الرئيسية
+            </Button>
+          </Link>
+        </div>
+
         <Card className="bg-gray-900 border-gray-700 shadow-2xl">
           <CardHeader className="text-center pb-6">
             <div className="w-16 h-16 bg-yellow-500 text-black rounded-full flex items-center justify-center mx-auto mb-4">
