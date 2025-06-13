@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +37,103 @@ const ServicesManagement = () => {
       return data;
     }
   });
+
+  // Default services to populate the database
+  const defaultServices = [
+    {
+      name: "تطوير أنظمة إدارة المخزون",
+      description: "أنظمة ذكية ومتطورة لإدارة المخزون والمستودعات مع تتبع دقيق للمنتجات",
+      type: "development",
+      price: 1000,
+      unit: "نظام",
+      is_active: true
+    },
+    {
+      name: "تطوير تطبيقات الويب",
+      description: "تصميم وتطوير تطبيقات ويب احترافية باستخدام أحدث التقنيات",
+      type: "development",
+      price: 800,
+      unit: "مشروع",
+      is_active: true
+    },
+    {
+      name: "استشارات الأعمال التقنية",
+      description: "استشارات متخصصة لتحسين العمليات وزيادة الكفاءة باستخدام التقنيات الحديثة",
+      type: "consulting",
+      price: 25,
+      unit: "ساعة",
+      is_active: true
+    },
+    {
+      name: "أنظمة الحماية السيبرانية",
+      description: "حلول أمنية متطورة لحماية البيانات والأنظمة من التهديدات السيبرانية",
+      type: "security",
+      price: 1200,
+      unit: "نظام",
+      is_active: true
+    },
+    {
+      name: "أنظمة الذكاء الاصطناعي",
+      description: "تطوير حلول الذكاء الاصطناعي وتعلم الآلة المتقدمة للأعمال",
+      type: "ai",
+      price: 1800,
+      unit: "نظام",
+      is_active: true
+    },
+    {
+      name: "تطوير التطبيقات المحمولة",
+      description: "تطبيقات أصلية ومتطورة للهواتف الذكية والأجهزة اللوحية",
+      type: "mobile",
+      price: 1500,
+      unit: "تطبيق",
+      is_active: true
+    },
+    {
+      name: "استشارات التحول الرقمي",
+      description: "إرشاد الشركات خلال رحلة التحول الرقمي الشامل والمتطور",
+      type: "consulting",
+      price: 50,
+      unit: "ساعة",
+      is_active: true
+    },
+    {
+      name: "التسويق الرقمي الذكي",
+      description: "حلول التسويق الرقمي المدعومة بالذكاء الاصطناعي والتحليلات المتقدمة",
+      type: "marketing",
+      price: 400,
+      unit: "شهر",
+      is_active: true
+    },
+    {
+      name: "أنظمة إدارة المحتوى",
+      description: "منصات متطورة لإدارة المحتوى الرقمي والنشر الذكي",
+      type: "cms",
+      price: 900,
+      unit: "نظام",
+      is_active: true
+    }
+  ];
+
+  // Initialize services if none exist
+  const initializeMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('services')
+        .insert(defaultServices);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-services'] });
+      toast({ title: "تم إضافة الخدمات الافتراضية بنجاح" });
+    }
+  });
+
+  // Auto-initialize if no services exist
+  useEffect(() => {
+    if (services && services.length === 0) {
+      initializeMutation.mutate();
+    }
+  }, [services]);
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -118,13 +214,24 @@ const ServicesManagement = () => {
             <Zap className="h-5 w-5" />
             إدارة الخدمات
           </CardTitle>
-          <Button
-            onClick={() => setShowForm(true)}
-            className="bg-yellow-500 text-black hover:bg-yellow-400"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            إضافة خدمة جديدة
-          </Button>
+          <div className="flex gap-2">
+            {services && services.length === 0 && (
+              <Button
+                onClick={() => initializeMutation.mutate()}
+                variant="outline"
+                className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+              >
+                إضافة الخدمات الافتراضية
+              </Button>
+            )}
+            <Button
+              onClick={() => setShowForm(true)}
+              className="bg-yellow-500 text-black hover:bg-yellow-400"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              إضافة خدمة جديدة
+            </Button>
+          </div>
         </div>
       </CardHeader>
       
@@ -162,6 +269,11 @@ const ServicesManagement = () => {
                       <option value="design">تصميم</option>
                       <option value="consulting">استشارات</option>
                       <option value="maintenance">صيانة</option>
+                      <option value="security">أمان</option>
+                      <option value="ai">ذكاء اصطناعي</option>
+                      <option value="mobile">تطبيقات محمولة</option>
+                      <option value="marketing">تسويق</option>
+                      <option value="cms">إدارة محتوى</option>
                     </select>
                   </div>
                 </div>
@@ -197,10 +309,12 @@ const ServicesManagement = () => {
                       onChange={(e) => setFormData({...formData, unit: e.target.value})}
                       className="w-full px-3 py-2 bg-gray-600 border border-gray-500 text-white rounded-md"
                     >
-                      <option value="project">مشروع</option>
-                      <option value="hour">ساعة</option>
-                      <option value="month">شهر</option>
-                      <option value="year">سنة</option>
+                      <option value="مشروع">مشروع</option>
+                      <option value="ساعة">ساعة</option>
+                      <option value="شهر">شهر</option>
+                      <option value="سنة">سنة</option>
+                      <option value="نظام">نظام</option>
+                      <option value="تطبيق">تطبيق</option>
                     </select>
                   </div>
                 </div>
@@ -234,7 +348,13 @@ const ServicesManagement = () => {
             </div>
           ) : services?.length === 0 ? (
             <div className="text-center py-8">
-              <div className="text-gray-400">لا توجد خدمات حالياً</div>
+              <div className="text-gray-400 mb-4">لا توجد خدمات حالياً</div>
+              <Button
+                onClick={() => initializeMutation.mutate()}
+                className="bg-yellow-500 text-black hover:bg-yellow-400"
+              >
+                إضافة الخدمات الافتراضية
+              </Button>
             </div>
           ) : (
             services?.map((service) => (
@@ -256,7 +376,7 @@ const ServicesManagement = () => {
                       )}
                       <div className="flex items-center gap-4 text-sm">
                         <span className="text-yellow-500 font-semibold">
-                          ${service.price} / {service.unit}
+                          {service.price} ريال عُماني / {service.unit}
                         </span>
                       </div>
                     </div>
