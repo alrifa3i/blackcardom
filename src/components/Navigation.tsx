@@ -58,15 +58,15 @@ const Navigation = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md border-b border-yellow-500/20">
-      <div className="container mx-auto px-3 sm:px-4 md:px-6">
+      <div className="container mx-auto px-2 sm:px-4 md:px-6">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo - Right Side */}
-          <div className="flex items-center flex-shrink-0">
-            <Link to="/" onClick={handleHomeClick} className="text-lg sm:text-xl md:text-2xl font-bold hover:scale-105 transition-transform duration-300">
-              <div className="flex flex-col leading-tight relative overflow-hidden min-h-[40px] sm:min-h-[50px]">
+          <div className="flex items-center flex-shrink-0 min-w-0 flex-1 sm:flex-initial">
+            <Link to="/" onClick={handleHomeClick} className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold hover:scale-105 transition-transform duration-300 block w-full sm:w-auto">
+              <div className="flex flex-col leading-tight relative overflow-hidden min-h-[32px] sm:min-h-[40px] md:min-h-[50px] w-full">
                 {/* الاسم العربي */}
                 <span 
-                  className={`absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold transition-all duration-700 ease-in-out whitespace-nowrap ${
+                  className={`absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold transition-all duration-700 ease-in-out ${
                     showArabic 
                       ? 'opacity-100 transform translate-y-0' 
                       : 'opacity-0 transform -translate-y-full'
@@ -76,15 +76,19 @@ const Navigation = () => {
                     animation: showArabic ? 'gradient-shift 2s ease infinite, glow-pulse 3s ease-in-out infinite' : 'none',
                     textShadow: '0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)',
                     filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))',
-                    fontSize: 'clamp(14px, 4vw, 24px)'
+                    fontSize: 'clamp(12px, 3.5vw, 24px)',
+                    lineHeight: '1.2',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    width: '100%'
                   }}
                 >
-                  شركة الكارت الأسود
+                  شركة الكارت الاسود
                 </span>
                 
                 {/* الاسم الإنجليزي */}
                 <span 
-                  className={`bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold transition-all duration-700 ease-in-out whitespace-nowrap ${
+                  className={`bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold transition-all duration-700 ease-in-out ${
                     !showArabic 
                       ? 'opacity-100 transform translate-y-0' 
                       : 'opacity-0 transform translate-y-full'
@@ -94,7 +98,11 @@ const Navigation = () => {
                     animation: !showArabic ? 'gradient-shift 2s ease infinite, glow-pulse 3s ease-in-out infinite' : 'none',
                     textShadow: '0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)',
                     filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))',
-                    fontSize: 'clamp(14px, 4vw, 24px)'
+                    fontSize: 'clamp(12px, 3.5vw, 24px)',
+                    lineHeight: '1.2',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    width: '100%'
                   }}
                 >
                   The Black Card
@@ -128,34 +136,34 @@ const Navigation = () => {
           </div>
 
           {/* Action Buttons - Left Side */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
             <div className="hidden sm:block">
               <ThemeSelector />
             </div>
             <Button 
               onClick={scrollToAuth}
               variant="outline" 
-              className="hidden sm:block border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-sm transition-all duration-300"
+              className="hidden md:block border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-xs lg:text-sm transition-all duration-300 px-2 lg:px-4"
             >
               انضم الآن
             </Button>
-            <Link to="/admin" className="hidden sm:block">
-              <Button className="bg-yellow-500 text-black hover:bg-yellow-400 text-sm transition-all duration-300">
+            <Link to="/admin" className="hidden md:block">
+              <Button className="bg-yellow-500 text-black hover:bg-yellow-400 text-xs lg:text-sm transition-all duration-300 px-2 lg:px-4">
                 لوحة التحكم
               </Button>
             </Link>
           </div>
 
           {/* Mobile menu section */}
-          <div className="lg:hidden flex items-center gap-2">
-            <span className="text-yellow-500 font-medium text-xs sm:text-sm">القائمة</span>
+          <div className="lg:hidden flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2">
+            <span className="text-yellow-500 font-medium text-xs">القائمة</span>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(!isOpen)}
-              className="text-white p-2 hover:bg-yellow-500/10"
+              className="text-white p-1.5 sm:p-2 hover:bg-yellow-500/10"
             >
-              {isOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
+              {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
           </div>
         </div>
