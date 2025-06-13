@@ -5,114 +5,54 @@ import { useSectionObserver } from '@/hooks/useSectionObserver';
 interface SectionColors {
   primary: string;
   secondary: string;
-  accent: string;
   background: string;
-  foreground: string;
-  muted: string;
-  card: string;
-  border: string;
-  gradient: string;
 }
 
 const sectionThemes: Record<string, SectionColors> = {
   home: {
-    primary: '#FFD700',
-    secondary: '#FFA500',
-    accent: '#FFD700',
-    background: '#000000',
-    foreground: '#FFFFFF',
-    muted: '#1a1a1a',
-    card: '#2a2a2a',
-    border: '#333333',
-    gradient: 'linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)'
+    primary: '#FFD700',    // ذهبي
+    secondary: '#FFA500',  // برتقالي ذهبي
+    background: '#000000'  // أسود
   },
   features: {
-    primary: '#E5E7EB',
-    secondary: '#9CA3AF',
-    accent: '#F3F4F6',
-    background: '#111827',
-    foreground: '#F9FAFB',
-    muted: '#1F2937',
-    card: '#374151',
-    border: '#4B5563',
-    gradient: 'linear-gradient(135deg, #111827 0%, #1F2937 50%, #111827 100%)'
+    primary: '#FFFFFF',    // أبيض
+    secondary: '#E5E7EB',  // رمادي فاتح
+    background: '#1F2937'  // رمادي داكن
   },
   services: {
-    primary: '#10B981',
-    secondary: '#059669',
-    accent: '#34D399',
-    background: '#064E3B',
-    foreground: '#ECFDF5',
-    muted: '#065F46',
-    card: '#047857',
-    border: '#059669',
-    gradient: 'linear-gradient(135deg, #064E3B 0%, #065F46 50%, #064E3B 100%)'
+    primary: '#10B981',    // أخضر
+    secondary: '#34D399',  // أخضر فاتح
+    background: '#064E3B'  // أخضر داكن
   },
   products: {
-    primary: '#8B5CF6',
-    secondary: '#7C3AED',
-    accent: '#A78BFA',
-    background: '#581C87',
-    foreground: '#FAF5FF',
-    muted: '#6B21A8',
-    card: '#7C2D92',
-    border: '#8B5CF6',
-    gradient: 'linear-gradient(135deg, #581C87 0%, #6B21A8 50%, #581C87 100%)'
+    primary: '#8B5CF6',    // بنفسجي
+    secondary: '#A78BFA',  // بنفسجي فاتح
+    background: '#581C87'  // بنفسجي داكن
   },
   projects: {
-    primary: '#F59E0B',
-    secondary: '#D97706',
-    accent: '#FCD34D',
-    background: '#92400E',
-    foreground: '#FFFBEB',
-    muted: '#B45309',
-    card: '#D97706',
-    border: '#F59E0B',
-    gradient: 'linear-gradient(135deg, #92400E 0%, #B45309 50%, #92400E 100%)'
+    primary: '#F59E0B',    // برتقالي
+    secondary: '#FCD34D',  // أصفر برتقالي
+    background: '#92400E'  // برتقالي داكن
   },
   'website-projects': {
-    primary: '#3B82F6',
-    secondary: '#2563EB',
-    accent: '#93C5FD',
-    background: '#1E3A8A',
-    foreground: '#EFF6FF',
-    muted: '#1E40AF',
-    card: '#2563EB',
-    border: '#3B82F6',
-    gradient: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #1E3A8A 100%)'
+    primary: '#3B82F6',    // أزرق
+    secondary: '#93C5FD',  // أزرق فاتح
+    background: '#1E3A8A'  // أزرق داكن
   },
   'web-applications': {
-    primary: '#EF4444',
-    secondary: '#DC2626',
-    accent: '#FCA5A5',
-    background: '#991B1B',
-    foreground: '#FEF2F2',
-    muted: '#B91C1C',
-    card: '#DC2626',
-    border: '#EF4444',
-    gradient: 'linear-gradient(135deg, #991B1B 0%, #B91C1C 50%, #991B1B 100%)'
+    primary: '#EF4444',    // أحمر
+    secondary: '#FCA5A5',  // أحمر فاتح
+    background: '#991B1B'  // أحمر داكن
   },
   auth: {
-    primary: '#06B6D4',
-    secondary: '#0891B2',
-    accent: '#67E8F9',
-    background: '#0E7490',
-    foreground: '#F0F9FF',
-    muted: '#0369A1',
-    card: '#0284C7',
-    border: '#06B6D4',
-    gradient: 'linear-gradient(135deg, #0E7490 0%, #0369A1 50%, #0E7490 100%)'
+    primary: '#06B6D4',    // سماوي
+    secondary: '#67E8F9',  // سماوي فاتح
+    background: '#0E7490'  // سماوي داكن
   },
   contact: {
-    primary: '#FFD700',
-    secondary: '#FFA500',
-    accent: '#FFD700',
-    background: '#000000',
-    foreground: '#FFFFFF',
-    muted: '#1a1a1a',
-    card: '#2a2a2a',
-    border: '#333333',
-    gradient: 'linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)'
+    primary: '#FFD700',    // ذهبي (نفس الرئيسية)
+    secondary: '#FFA500',  // برتقالي ذهبي
+    background: '#000000'  // أسود
   }
 };
 
@@ -139,22 +79,20 @@ export const DynamicThemeProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const root = document.documentElement;
     const body = document.body;
     
-    // تطبيق الألوان مع تأثيرات انتقالية
-    root.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-    body.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+    // تطبيق تأثيرات انتقالية سلسة
+    root.style.transition = 'all 1s cubic-bezier(0.4, 0, 0.2, 1)';
+    body.style.transition = 'all 1s cubic-bezier(0.4, 0, 0.2, 1)';
     
-    // تطبيق الألوان الجديدة
-    Object.entries(colors).forEach(([property, value]) => {
-      if (property !== 'gradient') {
-        root.style.setProperty(`--${property}`, value);
-      }
-    });
+    // تطبيق الألوان الأساسية
+    root.style.setProperty('--primary', colors.primary);
+    root.style.setProperty('--secondary', colors.secondary);
+    root.style.setProperty('--section-background', colors.background);
     
-    // تطبيق الخلفية والنص
-    body.style.background = colors.gradient;
-    body.style.color = colors.foreground;
+    // تطبيق خلفية الجسم الرئيسي
+    body.style.background = colors.background;
+    body.style.color = colors.primary;
     
-    // تطبيق الألوان على العناصر المخصصة
+    // تطبيق الأنماط الديناميكية للعناصر
     const updateDynamicStyles = () => {
       const existingStyle = document.getElementById('dynamic-section-styles');
       if (existingStyle) {
@@ -164,56 +102,65 @@ export const DynamicThemeProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const style = document.createElement('style');
       style.id = 'dynamic-section-styles';
       style.innerHTML = `
+        /* الألوان الأساسية */
+        .text-yellow-500, .text-primary, .gradient-text { 
+          color: ${colors.primary} !important; 
+          transition: color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
         .bg-yellow-500, .bg-primary { 
           background-color: ${colors.primary} !important; 
-          transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          transition: background-color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        .text-yellow-500, .text-primary { 
-          color: ${colors.primary} !important; 
-          transition: color 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }
+        
         .border-yellow-500, .border-primary { 
           border-color: ${colors.primary} !important; 
-          transition: border-color 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          transition: border-color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        .hover\\:bg-yellow-500:hover, .hover\\:bg-primary:hover { 
-          background-color: ${colors.secondary} !important; 
-        }
+        
+        /* تأثيرات التمرير */
+        .hover\\:bg-yellow-500:hover, .hover\\:bg-primary:hover,
         .hover\\:bg-yellow-400:hover { 
           background-color: ${colors.secondary} !important; 
         }
-        .bg-blue-600, .bg-secondary { 
-          background-color: ${colors.secondary} !important; 
-          transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        
+        /* خلفيات الأقسام */
+        section[id] {
+          background-color: ${colors.background} !important;
+          transition: background-color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        .hover\\:bg-blue-500:hover, .hover\\:bg-secondary:hover { 
-          background-color: ${colors.accent} !important; 
+        
+        /* البطاقات والعناصر */
+        .bg-gray-900, .bg-gray-800, .bg-black {
+          background-color: ${colors.background} !important;
+          transition: background-color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        .gradient-text {
-          background: linear-gradient(45deg, ${colors.primary}, ${colors.secondary}, ${colors.accent}) !important;
-          background-size: 200% 200% !important;
-          -webkit-background-clip: text !important;
-          -webkit-text-fill-color: transparent !important;
-          background-clip: text !important;
-          transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        
+        .border-gray-700, .border-gray-600 {
+          border-color: ${colors.secondary}40 !important;
+          transition: border-color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        .modern-card, .service-card, .project-card {
-          background: linear-gradient(145deg, ${colors.muted}, ${colors.card}) !important;
-          border-color: ${colors.border} !important;
-          transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        
+        /* النصوص */
+        .text-white {
+          color: ${colors.primary} !important;
+          transition: color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        .modern-card:hover, .service-card:hover, .project-card:hover {
-          border-color: ${colors.primary} !important;
-          box-shadow: 0 15px 35px ${colors.primary}15 !important;
+        
+        .text-gray-300, .text-gray-400 {
+          color: ${colors.secondary} !important;
+          transition: color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        .glass-effect {
-          background: ${colors.background}CC !important;
-          border-color: ${colors.border}40 !important;
-          transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }
+        
+        /* تأثيرات خاصة */
         .hero-gradient {
-          background: ${colors.gradient} !important;
-          transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          background: linear-gradient(135deg, ${colors.background} 0%, ${colors.background}CC 50%, ${colors.background} 100%) !important;
+          transition: background 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
+        /* تحديد القسم النشط */
+        section[id].active-section {
+          box-shadow: inset 0 0 0 2px ${colors.primary}40;
         }
       `;
       document.head.appendChild(style);
