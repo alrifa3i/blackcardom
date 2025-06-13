@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,7 @@ import ThemeSelector from '@/components/ThemeSelector';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showArabic, setShowArabic] = useState(true);
 
   const navItems = [
     { name: 'الرئيسية', href: '/', isRoute: true },
@@ -18,6 +19,15 @@ const Navigation = () => {
     { name: 'من نحن', href: '/about', isRoute: true },
     { name: 'تواصل معنا', href: '#contact', isRoute: false },
   ];
+
+  // تبديل اللغة كل 3 ثوانٍ
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowArabic(prev => !prev);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -52,10 +62,41 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo - Right Side */}
           <div className="flex items-center">
-            <Link to="/" onClick={handleHomeClick} className="text-xl md:text-2xl font-bold text-yellow-500 hover:text-yellow-400 transition-colors">
-              <div className="flex flex-col leading-tight">
-                <span className="text-yellow-500">شركة الكارت الأسود</span>
-                <span className="text-yellow-400 text-sm">The Black Card</span>
+            <Link to="/" onClick={handleHomeClick} className="text-xl md:text-2xl font-bold hover:scale-105 transition-transform duration-300">
+              <div className="flex flex-col leading-tight relative overflow-hidden">
+                {/* الاسم العربي */}
+                <span 
+                  className={`absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold transition-all duration-700 ease-in-out ${
+                    showArabic 
+                      ? 'opacity-100 transform translate-y-0' 
+                      : 'opacity-0 transform -translate-y-full'
+                  }`}
+                  style={{
+                    backgroundSize: '200% 200%',
+                    animation: showArabic ? 'gradient-shift 2s ease infinite, glow-pulse 3s ease-in-out infinite' : 'none',
+                    textShadow: '0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)',
+                    filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))'
+                  }}
+                >
+                  شركة الكارت الأسود
+                </span>
+                
+                {/* الاسم الإنجليزي */}
+                <span 
+                  className={`bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold transition-all duration-700 ease-in-out ${
+                    !showArabic 
+                      ? 'opacity-100 transform translate-y-0' 
+                      : 'opacity-0 transform translate-y-full'
+                  }`}
+                  style={{
+                    backgroundSize: '200% 200%',
+                    animation: !showArabic ? 'gradient-shift 2s ease infinite, glow-pulse 3s ease-in-out infinite' : 'none',
+                    textShadow: '0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)',
+                    filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))'
+                  }}
+                >
+                  The Black Card
+                </span>
               </div>
             </Link>
           </div>
@@ -165,6 +206,17 @@ const Navigation = () => {
           </div>
         )}
       </div>
+
+      <style jsx>{`
+        @keyframes glow-pulse {
+          0%, 100% { 
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.4));
+          }
+          50% { 
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+          }
+        }
+      `}</style>
     </nav>
   );
 };
