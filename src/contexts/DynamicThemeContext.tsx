@@ -10,49 +10,49 @@ interface SectionColors {
 
 const sectionThemes: Record<string, SectionColors> = {
   home: {
-    primary: '#FFD700',    // ذهبي
-    secondary: '#FFA500',  // برتقالي ذهبي
-    background: '#000000'  // أسود
+    primary: '#FFFFFF',     // أبيض
+    secondary: '#C0C0C0',   // فضي
+    background: '#2C3E50'   // فضي مزرق داكن
   },
   features: {
-    primary: '#FFFFFF',    // أبيض
-    secondary: '#E5E7EB',  // رمادي فاتح
-    background: '#1F2937'  // رمادي داكن
+    primary: '#C0C0C0',     // فضي
+    secondary: '#FFFFFF',   // أبيض
+    background: '#34495E'   // فضي مزرق متوسط
   },
   services: {
-    primary: '#10B981',    // أخضر
-    secondary: '#34D399',  // أخضر فاتح
-    background: '#064E3B'  // أخضر داكن
+    primary: '#708090',     // فضي مزرق
+    secondary: '#C0C0C0',   // فضي
+    background: '#2C3E50'   // فضي مزرق داكن
   },
   products: {
-    primary: '#8B5CF6',    // بنفسجي
-    secondary: '#A78BFA',  // بنفسجي فاتح
-    background: '#581C87'  // بنفسجي داكن
+    primary: '#FFFFFF',     // أبيض
+    secondary: '#708090',   // فضي مزرق
+    background: '#34495E'   // فضي مزرق متوسط
   },
   projects: {
-    primary: '#F59E0B',    // برتقالي
-    secondary: '#FCD34D',  // أصفر برتقالي
-    background: '#92400E'  // برتقالي داكن
+    primary: '#C0C0C0',     // فضي
+    secondary: '#708090',   // فضي مزرق
+    background: '#2C3E50'   // فضي مزرق داكن
   },
   'website-projects': {
-    primary: '#3B82F6',    // أزرق
-    secondary: '#93C5FD',  // أزرق فاتح
-    background: '#1E3A8A'  // أزرق داكن
+    primary: '#708090',     // فضي مزرق
+    secondary: '#FFFFFF',   // أبيض
+    background: '#34495E'   // فضي مزرق متوسط
   },
   'web-applications': {
-    primary: '#EF4444',    // أحمر
-    secondary: '#FCA5A5',  // أحمر فاتح
-    background: '#991B1B'  // أحمر داكن
+    primary: '#FFFFFF',     // أبيض
+    secondary: '#C0C0C0',   // فضي
+    background: '#2C3E50'   // فضي مزرق داكن
   },
   auth: {
-    primary: '#06B6D4',    // سماوي
-    secondary: '#67E8F9',  // سماوي فاتح
-    background: '#0E7490'  // سماوي داكن
+    primary: '#C0C0C0',     // فضي
+    secondary: '#708090',   // فضي مزرق
+    background: '#34495E'   // فضي مزرق متوسط
   },
   contact: {
-    primary: '#FFD700',    // ذهبي (نفس الرئيسية)
-    secondary: '#FFA500',  // برتقالي ذهبي
-    background: '#000000'  // أسود
+    primary: '#FFFFFF',     // أبيض
+    secondary: '#C0C0C0',   // فضي
+    background: '#2C3E50'   // فضي مزرق داكن
   }
 };
 
@@ -79,9 +79,9 @@ export const DynamicThemeProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const root = document.documentElement;
     const body = document.body;
     
-    // تطبيق تأثيرات انتقالية سلسة
-    root.style.transition = 'all 1s cubic-bezier(0.4, 0, 0.2, 1)';
-    body.style.transition = 'all 1s cubic-bezier(0.4, 0, 0.2, 1)';
+    // تطبيق تأثيرات انتقالية هادئة
+    root.style.transition = 'all 0.8s ease-in-out';
+    body.style.transition = 'all 0.8s ease-in-out';
     
     // تطبيق الألوان الأساسية
     root.style.setProperty('--primary', colors.primary);
@@ -92,7 +92,7 @@ export const DynamicThemeProvider: React.FC<{ children: React.ReactNode }> = ({ 
     body.style.background = colors.background;
     body.style.color = colors.primary;
     
-    // تطبيق الأنماط الديناميكية للعناصر
+    // تطبيق الأنماط الديناميكية البسيطة
     const updateDynamicStyles = () => {
       const existingStyle = document.getElementById('dynamic-section-styles');
       if (existingStyle) {
@@ -105,17 +105,17 @@ export const DynamicThemeProvider: React.FC<{ children: React.ReactNode }> = ({ 
         /* الألوان الأساسية */
         .text-yellow-500, .text-primary, .gradient-text { 
           color: ${colors.primary} !important; 
-          transition: color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          transition: color 0.8s ease-in-out !important;
         }
         
         .bg-yellow-500, .bg-primary { 
           background-color: ${colors.primary} !important; 
-          transition: background-color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          transition: background-color 0.8s ease-in-out !important;
         }
         
         .border-yellow-500, .border-primary { 
           border-color: ${colors.primary} !important; 
-          transition: border-color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          transition: border-color 0.8s ease-in-out !important;
         }
         
         /* تأثيرات التمرير */
@@ -127,56 +127,41 @@ export const DynamicThemeProvider: React.FC<{ children: React.ReactNode }> = ({ 
         /* خلفيات الأقسام */
         section[id] {
           background-color: ${colors.background} !important;
-          transition: background-color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          transition: background-color 0.8s ease-in-out !important;
         }
         
         /* البطاقات والعناصر */
         .bg-gray-900, .bg-gray-800, .bg-black {
           background-color: ${colors.background} !important;
-          transition: background-color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          transition: background-color 0.8s ease-in-out !important;
         }
         
         .border-gray-700, .border-gray-600 {
-          border-color: ${colors.secondary}40 !important;
-          transition: border-color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          border-color: ${colors.secondary}80 !important;
+          transition: border-color 0.8s ease-in-out !important;
         }
         
         /* النصوص */
         .text-white {
           color: ${colors.primary} !important;
-          transition: color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          transition: color 0.8s ease-in-out !important;
         }
         
         .text-gray-300, .text-gray-400 {
           color: ${colors.secondary} !important;
-          transition: color 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          transition: color 0.8s ease-in-out !important;
         }
         
         /* تأثيرات خاصة */
         .hero-gradient {
-          background: linear-gradient(135deg, ${colors.background} 0%, ${colors.background}CC 50%, ${colors.background} 100%) !important;
-          transition: background 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }
-        
-        /* تحديد القسم النشط */
-        section[id].active-section {
-          box-shadow: inset 0 0 0 2px ${colors.primary}40;
+          background: linear-gradient(135deg, ${colors.background} 0%, ${colors.background}E6 50%, ${colors.background} 100%) !important;
+          transition: background 0.8s ease-in-out !important;
         }
       `;
       document.head.appendChild(style);
     };
 
     updateDynamicStyles();
-    
-    // إضافة كلاس للقسم النشط
-    document.querySelectorAll('section[id]').forEach(section => {
-      section.classList.remove('active-section');
-    });
-    
-    const activeElement = document.getElementById(activeSection);
-    if (activeElement) {
-      activeElement.classList.add('active-section');
-    }
     
   }, [activeSection, colors]);
 
