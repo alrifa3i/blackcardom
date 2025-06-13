@@ -37,7 +37,8 @@ const ServicesSection = () => {
       unit: "نظام",
       type: "development",
       image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80",
-      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"]
+      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"],
+      is_active: true
     },
     {
       id: 2,
@@ -47,7 +48,8 @@ const ServicesSection = () => {
       unit: "مشروع",
       type: "development",
       image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
-      features: ["تصميم متجاوب", "أداء عالي", "أمان متقدم", "سهولة الاستخدام"]
+      features: ["تصميم متجاوب", "أداء عالي", "أمان متقدم", "سهولة الاستخدام"],
+      is_active: true
     },
     {
       id: 3,
@@ -57,7 +59,8 @@ const ServicesSection = () => {
       unit: "ساعة",
       type: "consulting",
       image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80",
-      features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"]
+      features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"],
+      is_active: true
     },
     {
       id: 4,
@@ -67,7 +70,8 @@ const ServicesSection = () => {
       unit: "نظام",
       type: "security",
       image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=500&q=80",
-      features: ["مراقبة الأمان", "كشف التهديدات", "حماية البيانات", "تقارير أمنية"]
+      features: ["مراقبة الأمان", "كشف التهديدات", "حماية البيانات", "تقارير أمنية"],
+      is_active: true
     },
     {
       id: 5,
@@ -77,7 +81,8 @@ const ServicesSection = () => {
       unit: "نظام",
       type: "ai",
       image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80",
-      features: ["تعلم الآلة", "تحليل البيانات", "أتمتة العمليات", "توقعات ذكية"]
+      features: ["تعلم الآلة", "تحليل البيانات", "أتمتة العمليات", "توقعات ذكية"],
+      is_active: true
     },
     {
       id: 6,
@@ -87,7 +92,8 @@ const ServicesSection = () => {
       unit: "تطبيق",
       type: "mobile",
       image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
-      features: ["تطبيقات أصلية", "تصميم حديث", "أداء سريع", "متجر التطبيقات"]
+      features: ["تطبيقات أصلية", "تصميم حديث", "أداء سريع", "متجر التطبيقات"],
+      is_active: true
     },
     {
       id: 7,
@@ -97,7 +103,8 @@ const ServicesSection = () => {
       unit: "ساعة",
       type: "consulting",
       image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=500&q=80",
-      features: ["تقييم الوضع الحالي", "خطة التحول", "تدريب الفرق", "دعم مستمر"]
+      features: ["تقييم الوضع الحالي", "خطة التحول", "تدريب الفرق", "دعم مستمر"],
+      is_active: true
     },
     {
       id: 8,
@@ -107,7 +114,8 @@ const ServicesSection = () => {
       unit: "شهر",
       type: "marketing",
       image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=500&q=80",
-      features: ["حملات ذكية", "تحليل الجمهور", "تحسين الإعلانات", "تقارير شاملة"]
+      features: ["حملات ذكية", "تحليل الجمهور", "تحسين الإعلانات", "تقارير شاملة"],
+      is_active: true
     },
     {
       id: 9,
@@ -117,7 +125,8 @@ const ServicesSection = () => {
       unit: "نظام",
       type: "cms",
       image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=500&q=80",
-      features: ["إدارة المحتوى", "نشر تلقائي", "تحسين SEO", "تحليلات المحتوى"]
+      features: ["إدارة المحتوى", "نشر تلقائي", "تحسين SEO", "تحليلات المحتوى"],
+      is_active: true
     }
   ];
 
