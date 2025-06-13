@@ -103,8 +103,9 @@ const Navigation = () => {
             </Link>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="lg:hidden">
+          {/* Mobile menu section */}
+          <div className="lg:hidden flex items-center gap-3">
+            <span className="text-yellow-500 font-medium text-sm">القائمة</span>
             <Button
               variant="ghost"
               size="sm"
