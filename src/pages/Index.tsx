@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,7 +98,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 md:py-20 bg-gray-900">
+      <section className="py-16 md:py-20 bg-gray-900">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12 md:mb-16">
             <Badge className="mb-4 bg-yellow-500 text-black">لماذا تختارنا</Badge>
@@ -144,30 +145,16 @@ const Index = () => {
         </div>
       </section>
 
-      <div id="services">
-        <ServicesSection />
-      </div>
-      <div id="products">
-        <ProductsSection />
-      </div>
-      <div id="projects">
-        <ProjectsSection />
-      </div>
-      <div id="website-projects">
-        <WebsiteProjectsSection />
-      </div>
-      <div id="web-applications">
-        <WebApplicationsSection />
-      </div>
+      <ServicesSection />
+      <ProductsSection />
+      <ProjectsSection />
+      <WebsiteProjectsSection />
+      <WebApplicationsSection />
       
       {/* Add Authentication Section */}
-      <div id="auth">
-        <AuthSection />
-      </div>
+      <AuthSection />
       
-      <div id="contact">
-        <ContactSection />
-      </div>
+      <ContactSection />
       <Footer />
       
       {/* WhatsApp Button */}
