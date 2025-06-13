@@ -15,7 +15,10 @@ import {
   Plus,
   Globe,
   Code,
-  TrendingUp
+  TrendingUp,
+  Zap,
+  Package,
+  FolderOpen
 } from 'lucide-react';
 import AdminAuth from '@/components/AdminAuth';
 import SocialMediaSettings from '@/components/SocialMediaSettings';
@@ -25,6 +28,8 @@ import WebApplicationsManagement from '@/components/WebApplicationsManagement';
 import WhatsAppAnalytics from '@/components/WhatsAppAnalytics';
 import WhatsAppSettings from '@/components/WhatsAppSettings';
 import GoogleAdsAnalytics from '@/components/GoogleAdsAnalytics';
+import ServicesManagement from '@/components/ServicesManagement';
+import ProductsManagement from '@/components/ProductsManagement';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -97,12 +102,15 @@ const AdminDashboard = () => {
 
         {/* التبويبات الرئيسية */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-10 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-12 bg-gray-800">
             <TabsTrigger value="overview" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
               نظرة عامة
             </TabsTrigger>
-            <TabsTrigger value="users" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              المستخدمين
+            <TabsTrigger value="services" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
+              خدماتنا
+            </TabsTrigger>
+            <TabsTrigger value="products" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
+              منتجاتنا
             </TabsTrigger>
             <TabsTrigger value="website-projects" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
               مواقع الويب
@@ -124,6 +132,9 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="faq" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
               الأسئلة الشائعة
+            </TabsTrigger>
+            <TabsTrigger value="users" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
+              المستخدمين
             </TabsTrigger>
             <TabsTrigger value="settings" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
               الإعدادات
@@ -172,6 +183,14 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="services">
+            <ServicesManagement />
+          </TabsContent>
+
+          <TabsContent value="products">
+            <ProductsManagement />
           </TabsContent>
 
           <TabsContent value="users">
