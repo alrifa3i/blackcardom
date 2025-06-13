@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
   Users, 
@@ -18,7 +17,15 @@ import {
   TrendingUp,
   Zap,
   Package,
-  FolderOpen
+  FolderOpen,
+  Monitor,
+  Smartphone,
+  Shield,
+  Brain,
+  Megaphone,
+  FileEdit,
+  Home,
+  ChevronRight
 } from 'lucide-react';
 import AdminAuth from '@/components/AdminAuth';
 import SocialMediaSettings from '@/components/SocialMediaSettings';
@@ -33,6 +40,7 @@ import ProductsManagement from '@/components/ProductsManagement';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [activeSection, setActiveSection] = useState('overview');
 
   if (!isAuthenticated) {
     return <AdminAuth onAuthenticated={() => setIsAuthenticated(true)} />;
@@ -43,220 +51,256 @@ const AdminDashboard = () => {
       title: "إجمالي المستخدمين",
       value: "1,234",
       change: "+12%",
-      icon: <Users className="h-6 w-6" />
+      icon: <Users className="h-6 w-6" />,
+      color: "text-blue-500"
     },
     {
       title: "الطلبات الجديدة",
       value: "56",
       change: "+5%",
-      icon: <FileText className="h-6 w-6" />
+      icon: <FileText className="h-6 w-6" />,
+      color: "text-green-500"
     },
     {
       title: "المشاريع النشطة",
       value: "23",
       change: "+8%",
-      icon: <BarChart3 className="h-6 w-6" />
+      icon: <BarChart3 className="h-6 w-6" />,
+      color: "text-yellow-500"
     },
     {
       title: "الرسائل",
       value: "89",
       change: "+15%",
-      icon: <MessageSquare className="h-6 w-6" />
+      icon: <MessageSquare className="h-6 w-6" />,
+      color: "text-purple-500"
     }
   ];
 
-  return (
-    <div className="min-h-screen bg-black">
-      <div className="bg-gray-900 border-b border-gray-700">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-white">لوحة التحكم الإدارية</h1>
-              <p className="text-gray-400 mt-2">إدارة شاملة لجميع جوانب النظام</p>
+  const menuSections = [
+    {
+      title: "النظرة العامة",
+      items: [
+        { id: 'overview', name: 'لوحة التحكم الرئيسية', icon: Home, description: 'عرض الإحصائيات العامة' }
+      ]
+    },
+    {
+      title: "إدارة المحتوى",
+      items: [
+        { id: 'services', name: 'إدارة الخدمات', icon: Zap, description: 'إضافة وتعديل الخدمات' },
+        { id: 'products', name: 'إدارة المنتجات', icon: Package, description: 'إدارة المنتجات والعروض' },
+        { id: 'faq', name: 'الأسئلة الشائعة', icon: HelpCircle, description: 'إدارة الأسئلة والأجوبة' }
+      ]
+    },
+    {
+      title: "إدارة المشاريع",
+      items: [
+        { id: 'website-projects', name: 'مشاريع المواقع', icon: Globe, description: 'مشاريع تطوير المواقع' },
+        { id: 'web-applications', name: 'تطبيقات الويب', icon: Monitor, description: 'تطبيقات الويب المتقدمة' }
+      ]
+    },
+    {
+      title: "التسويق والإعلانات",
+      items: [
+        { id: 'whatsapp', name: 'تحليلات واتساب', icon: MessageSquare, description: 'إحصائيات المراسلات' },
+        { id: 'google-ads', name: 'إعلانات جوجل', icon: TrendingUp, description: 'تحليلات الحملات الإعلانية' },
+        { id: 'social', name: 'وسائل التواصل', icon: Share2, description: 'إدارة الشبكات الاجتماعية' }
+      ]
+    },
+    {
+      title: "الإعدادات",
+      items: [
+        { id: 'whatsapp-settings', name: 'إعدادات واتساب', icon: Settings, description: 'تكوين أرقام واتساب' },
+        { id: 'users', name: 'إدارة المستخدمين', icon: Users, description: 'إدارة حسابات المستخدمين' },
+        { id: 'settings', name: 'إعدادات النظام', icon: Settings, description: 'الإعدادات العامة' }
+      ]
+    }
+  ];
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return (
+          <div className="space-y-6">
+            {/* إحصائيات سريعة */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat, index) => (
+                <Card key={index} className="bg-gray-800 border-gray-700 hover:border-yellow-500 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-gray-400 text-sm">{stat.title}</p>
+                        <p className="text-2xl font-bold text-white">{stat.value}</p>
+                        <p className="text-green-500 text-sm">{stat.change}</p>
+                      </div>
+                      <div className={stat.color}>
+                        {stat.icon}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-            <Badge className="bg-yellow-500 text-black">مدير النظام</Badge>
-          </div>
-        </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* إحصائيات سريعة */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <Card key={index} className="bg-gray-800 border-gray-700">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">{stat.title}</p>
-                    <p className="text-2xl font-bold text-white">{stat.value}</p>
-                    <p className="text-green-500 text-sm">{stat.change}</p>
-                  </div>
-                  <div className="text-yellow-500">
-                    {stat.icon}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* التبويبات الرئيسية */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-12 bg-gray-800">
-            <TabsTrigger value="overview" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              نظرة عامة
-            </TabsTrigger>
-            <TabsTrigger value="services" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              خدماتنا
-            </TabsTrigger>
-            <TabsTrigger value="products" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              منتجاتنا
-            </TabsTrigger>
-            <TabsTrigger value="website-projects" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              مواقع الويب
-            </TabsTrigger>
-            <TabsTrigger value="web-applications" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              تطبيقات الويب
-            </TabsTrigger>
-            <TabsTrigger value="whatsapp" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              واتساب
-            </TabsTrigger>
-            <TabsTrigger value="google-ads" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              Google Ads
-            </TabsTrigger>
-            <TabsTrigger value="whatsapp-settings" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              إعدادات واتساب
-            </TabsTrigger>
-            <TabsTrigger value="social" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              التواصل الاجتماعي
-            </TabsTrigger>
-            <TabsTrigger value="faq" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              الأسئلة الشائعة
-            </TabsTrigger>
-            <TabsTrigger value="users" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              المستخدمين
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="text-white data-[state=active]:bg-yellow-500 data-[state=active]:text-black">
-              الإعدادات
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview">
-            <div className="grid gap-6">
+            {/* الأنشطة الأخيرة */}
+            <div className="grid md:grid-cols-2 gap-6">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-yellow-500">نظرة عامة على النظام</CardTitle>
+                  <CardTitle className="text-yellow-500">الأنشطة الأخيرة</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-white font-semibold mb-3">الأنشطة الأخيرة</h3>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 p-3 bg-gray-700 rounded">
-                          <Users className="h-4 w-4 text-green-500" />
-                          <span className="text-gray-300">مستخدم جديد سجل في النظام</span>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-gray-700 rounded">
-                          <FileText className="h-4 w-4 text-blue-500" />
-                          <span className="text-gray-300">طلب خدمة جديد تم استلامه</span>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-gray-700 rounded">
-                          <MessageSquare className="h-4 w-4 text-yellow-500" />
-                          <span className="text-gray-300">رسالة دعم فني جديدة</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-white font-semibold mb-3">المهام المعلقة</h3>
-                      <div className="space-y-3">
-                        <div className="p-3 bg-gray-700 rounded">
-                          <p className="text-white font-medium">مراجعة طلبات الخدمة</p>
-                          <p className="text-gray-400 text-sm">5 طلبات في انتظار المراجعة</p>
-                        </div>
-                        <div className="p-3 bg-gray-700 rounded">
-                          <p className="text-white font-medium">الرد على الرسائل</p>
-                          <p className="text-gray-400 text-sm">12 رسالة في انتظار الرد</p>
-                        </div>
-                      </div>
-                    </div>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-3 p-3 bg-gray-700 rounded">
+                    <Users className="h-4 w-4 text-green-500" />
+                    <span className="text-gray-300">مستخدم جديد سجل في النظام</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-700 rounded">
+                    <FileText className="h-4 w-4 text-blue-500" />
+                    <span className="text-gray-300">طلب خدمة جديد تم استلامه</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-700 rounded">
+                    <MessageSquare className="h-4 w-4 text-yellow-500" />
+                    <span className="text-gray-300">رسالة دعم فني جديدة</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-yellow-500">المهام المعلقة</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-3 bg-gray-700 rounded">
+                    <p className="text-white font-medium">مراجعة طلبات الخدمة</p>
+                    <p className="text-gray-400 text-sm">5 طلبات في انتظار المراجعة</p>
+                  </div>
+                  <div className="p-3 bg-gray-700 rounded">
+                    <p className="text-white font-medium">الرد على الرسائل</p>
+                    <p className="text-gray-400 text-sm">12 رسالة في انتظار الرد</p>
                   </div>
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
+          </div>
+        );
 
-          <TabsContent value="services">
-            <ServicesManagement />
-          </TabsContent>
+      case 'services':
+        return <ServicesManagement />;
+      case 'products':
+        return <ProductsManagement />;
+      case 'website-projects':
+        return <WebsiteProjectsManagement />;
+      case 'web-applications':
+        return <WebApplicationsManagement />;
+      case 'whatsapp':
+        return <WhatsAppAnalytics />;
+      case 'google-ads':
+        return <GoogleAdsAnalytics />;
+      case 'whatsapp-settings':
+        return <WhatsAppSettings />;
+      case 'social':
+        return <SocialMediaSettings />;
+      case 'faq':
+        return <FAQManagement />;
+      case 'users':
+        return (
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-yellow-500">إدارة المستخدمين</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <Users className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-400 mb-4">قريباً - إدارة شاملة للمستخدمين</p>
+                <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
+                  <Plus className="mr-2 h-4 w-4" />
+                  إضافة مستخدم جديد
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      case 'settings':
+        return (
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-yellow-500">إعدادات النظام</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <Settings className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-400 mb-4">قريباً - إعدادات شاملة للنظام</p>
+                <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
+                  <Settings className="mr-2 h-4 w-4" />
+                  إدارة الإعدادات
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      default:
+        return null;
+    }
+  };
 
-          <TabsContent value="products">
-            <ProductsManagement />
-          </TabsContent>
+  return (
+    <div className="min-h-screen bg-black">
+      {/* الهيدر */}
+      <div className="bg-gray-900 border-b border-gray-700 sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-white">لوحة التحكم الإدارية</h1>
+              <p className="text-gray-400 text-sm">إدارة شاملة لجميع جوانب النظام</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Badge className="bg-yellow-500 text-black">مدير النظام</Badge>
+            </div>
+          </div>
+        </div>
+      </div>
 
-          <TabsContent value="users">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-yellow-500">إدارة المستخدمين</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Users className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400 mb-4">قريباً - إدارة شاملة للمستخدمين</p>
-                  <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    <Plus className="mr-2 h-4 w-4" />
-                    إضافة مستخدم جديد
-                  </Button>
+      <div className="flex">
+        {/* القائمة الجانبية */}
+        <div className="w-80 bg-gray-900 border-r border-gray-700 min-h-screen">
+          <div className="p-4">
+            <div className="space-y-6">
+              {menuSections.map((section) => (
+                <div key={section.title}>
+                  <h3 className="text-gray-400 text-sm font-semibold mb-3 px-2">{section.title}</h3>
+                  <div className="space-y-1">
+                    {section.items.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => setActiveSection(item.id)}
+                        className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-right transition-colors ${
+                          activeSection === item.id
+                            ? 'bg-yellow-500 text-black'
+                            : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                        }`}
+                      >
+                        <item.icon className="h-5 w-5 flex-shrink-0" />
+                        <div className="flex-1 text-right">
+                          <div className="font-medium">{item.name}</div>
+                          <div className={`text-xs ${activeSection === item.id ? 'text-black/70' : 'text-gray-500'}`}>
+                            {item.description}
+                          </div>
+                        </div>
+                        <ChevronRight className={`h-4 w-4 transition-transform ${
+                          activeSection === item.id ? 'rotate-90' : ''
+                        }`} />
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              ))}
+            </div>
+          </div>
+        </div>
 
-          <TabsContent value="website-projects">
-            <WebsiteProjectsManagement />
-          </TabsContent>
-
-          <TabsContent value="web-applications">
-            <WebApplicationsManagement />
-          </TabsContent>
-
-          <TabsContent value="whatsapp">
-            <WhatsAppAnalytics />
-          </TabsContent>
-
-          <TabsContent value="google-ads">
-            <GoogleAdsAnalytics />
-          </TabsContent>
-
-          <TabsContent value="whatsapp-settings">
-            <WhatsAppSettings />
-          </TabsContent>
-
-          <TabsContent value="social">
-            <SocialMediaSettings />
-          </TabsContent>
-
-          <TabsContent value="faq">
-            <FAQManagement />
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-yellow-500">إعدادات النظام</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Settings className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400 mb-4">قريباً - إعدادات شاملة للنظام</p>
-                  <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    <Settings className="mr-2 h-4 w-4" />
-                    إدارة الإعدادات
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {/* المحتوى الرئيسي */}
+        <div className="flex-1 p-6">
+          {renderContent()}
+        </div>
       </div>
     </div>
   );
