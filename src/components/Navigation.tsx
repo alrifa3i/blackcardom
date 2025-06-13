@@ -57,7 +57,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md border-b border-yellow-500/20 ajax-hologram">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md border-b border-yellow-500/20">
       <div className="container mx-auto px-2 sm:px-4 md:px-6">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo - Left Side */}
@@ -73,7 +73,7 @@ const Navigation = () => {
                   }`}
                 >
                   <span 
-                    className="ajax-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap text-xl md:text-2xl lg:text-3xl animate-slide-in-arabic"
+                    className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap text-xl md:text-2xl lg:text-3xl animate-slide-in-arabic"
                     style={{
                       backgroundSize: '200% 200%',
                       animation: showArabic ? 'gradient-shift 2s ease infinite, slide-in-arabic 1s ease-out' : 'none',
@@ -94,7 +94,7 @@ const Navigation = () => {
                   }`}
                 >
                   <span 
-                    className="ajax-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap text-xl md:text-2xl lg:text-3xl animate-slide-in-english"
+                    className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap text-xl md:text-2xl lg:text-3xl animate-slide-in-english"
                     style={{
                       backgroundSize: '200% 200%',
                       animation: !showArabic ? 'gradient-shift 2s ease infinite, slide-in-english 1s ease-out' : 'none',
@@ -117,7 +117,7 @@ const Navigation = () => {
                   key={item.name}
                   to={item.href}
                   onClick={item.href === '/' ? handleHomeClick : undefined}
-                  className="ajax-nav-item text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-sm px-3 py-2 rounded-md hover:bg-yellow-500/10"
+                  className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-sm px-3 py-2 rounded-md hover:bg-yellow-500/10"
                 >
                   {item.name}
                 </Link>
@@ -125,7 +125,7 @@ const Navigation = () => {
                 <button
                   key={item.name}
                   onClick={() => handleNavClick(item)}
-                  className="ajax-nav-item text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-sm px-3 py-2 rounded-md hover:bg-yellow-500/10"
+                  className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-sm px-3 py-2 rounded-md hover:bg-yellow-500/10"
                 >
                   {item.name}
                 </button>
@@ -141,12 +141,12 @@ const Navigation = () => {
             <Button 
               onClick={scrollToAuth}
               variant="outline" 
-              className="ajax-button hidden md:block border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-xs lg:text-sm transition-all duration-300 px-2 lg:px-4"
+              className="hidden md:block border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-xs lg:text-sm transition-all duration-300 px-2 lg:px-4"
             >
               انضم الآن
             </Button>
             <Link to="/admin" className="hidden md:block">
-              <Button className="ajax-button bg-yellow-500 text-black hover:bg-yellow-400 text-xs lg:text-sm transition-all duration-300 px-2 lg:px-4">
+              <Button className="bg-yellow-500 text-black hover:bg-yellow-400 text-xs lg:text-sm transition-all duration-300 px-2 lg:px-4">
                 لوحة التحكم
               </Button>
             </Link>
@@ -154,12 +154,12 @@ const Navigation = () => {
 
           {/* Mobile menu section */}
           <div className="lg:hidden flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2">
-            <span className="text-yellow-500 font-medium text-xs ajax-text">القائمة</span>
+            <span className="text-yellow-500 font-medium text-xs">القائمة</span>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(!isOpen)}
-              className="ajax-button text-white p-1.5 sm:p-2 hover:bg-yellow-500/10"
+              className="text-white p-1.5 sm:p-2 hover:bg-yellow-500/10"
             >
               {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
@@ -168,9 +168,9 @@ const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="lg:hidden py-4 border-t border-yellow-500/20 bg-black/98 backdrop-blur-md ajax-card">
+          <div className="lg:hidden py-4 border-t border-yellow-500/20 bg-black/98 backdrop-blur-md">
             <div className="text-center mb-4">
-              <span className="text-yellow-500 font-bold text-lg ajax-text">القائمة</span>
+              <span className="text-yellow-500 font-bold text-lg">القائمة</span>
             </div>
             <div className="flex flex-col space-y-3">
               {navItems.map((item) => (
@@ -178,7 +178,7 @@ const Navigation = () => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="ajax-nav-item text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-center py-3 px-4 rounded-lg hover:bg-yellow-500/10"
+                    className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-center py-3 px-4 rounded-lg hover:bg-yellow-500/10"
                     onClick={item.href === '/' ? handleHomeClick : () => setIsOpen(false)}
                   >
                     {item.name}
@@ -187,7 +187,7 @@ const Navigation = () => {
                   <button
                     key={item.name}
                     onClick={() => handleNavClick(item)}
-                    className="ajax-nav-item text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-center py-3 px-4 rounded-lg hover:bg-yellow-500/10"
+                    className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-center py-3 px-4 rounded-lg hover:bg-yellow-500/10"
                   >
                     {item.name}
                   </button>
@@ -200,12 +200,12 @@ const Navigation = () => {
                 <Button 
                   onClick={scrollToAuth}
                   variant="outline" 
-                  className="ajax-button border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black w-full transition-all duration-300"
+                  className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black w-full transition-all duration-300"
                 >
                   انضم الآن
                 </Button>
                 <Link to="/admin">
-                  <Button className="ajax-button bg-yellow-500 text-black hover:bg-yellow-400 w-full transition-all duration-300">
+                  <Button className="bg-yellow-500 text-black hover:bg-yellow-400 w-full transition-all duration-300">
                     لوحة التحكم
                   </Button>
                 </Link>
