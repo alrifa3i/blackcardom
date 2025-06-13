@@ -206,17 +206,6 @@ const Navigation = () => {
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes glow-pulse {
-          0%, 100% { 
-            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.4));
-          }
-          50% { 
-            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
-          }
-        }
-      `}</style>
     </nav>
   );
 };
