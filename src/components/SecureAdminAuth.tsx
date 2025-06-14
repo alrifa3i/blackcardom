@@ -13,7 +13,7 @@ interface SecureAdminAuthProps {
 }
 
 const SecureAdminAuth: React.FC<SecureAdminAuthProps> = ({ onAuthenticated }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +22,12 @@ const SecureAdminAuth: React.FC<SecureAdminAuthProps> = ({ onAuthenticated }) =>
 
   const MAX_LOGIN_ATTEMPTS = 5;
   const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+
+  // Admin credentials
+  const ADMIN_CREDENTIALS = {
+    username: 'Admin2025',
+    password: 'AhmedOman2025$'
+  };
 
   useEffect(() => {
     // Check for existing session
@@ -86,17 +92,12 @@ const SecureAdminAuth: React.FC<SecureAdminAuthProps> = ({ onAuthenticated }) =>
       }
 
       // Validate input
-      if (!email.trim() || !password.trim()) {
-        throw new Error('يرجى إدخال البريد الإلكتروني وكلمة المرور');
+      if (!username.trim() || !password.trim()) {
+        throw new Error('يرجى إدخال اسم المستخدم وكلمة المرور');
       }
 
-      // Attempt login with Supabase Auth
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password
-      });
-
-      if (error) {
+      // Check credentials
+      if (username.trim() !== ADMIN_CREDENTIALS.username || password !== ADMIN_CREDENTIALS.password) {
         // Increment failed attempts
         const newAttempts = loginAttempts + 1;
         setLoginAttempts(newAttempts);
@@ -105,21 +106,13 @@ const SecureAdminAuth: React.FC<SecureAdminAuthProps> = ({ onAuthenticated }) =>
         throw new Error('بيانات تسجيل الدخول غير صحيحة');
       }
 
-      if (!data.user) {
-        throw new Error('فشل في تسجيل الدخول');
-      }
-
-      // Verify admin role
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role, username')
-        .eq('id', data.user.id)
-        .single();
-
-      if (profileError || profile?.role !== 'admin') {
-        await supabase.auth.signOut();
-        throw new Error('ليس لديك صلاحيات إدارية');
-      }
+      // Create admin user object for successful login
+      const adminUser = {
+        id: 'admin-user-2025',
+        username: ADMIN_CREDENTIALS.username,
+        email: 'admin@techservices.com',
+        role: 'admin'
+      };
 
       // Reset login attempts on successful login
       setLoginAttempts(0);
@@ -131,10 +124,10 @@ const SecureAdminAuth: React.FC<SecureAdminAuthProps> = ({ onAuthenticated }) =>
         await supabase.rpc('log_activity', {
           p_action: 'admin_login_secure',
           p_details: { 
-            username: profile.username,
+            username: ADMIN_CREDENTIALS.username,
             login_type: 'secure_admin_panel',
             timestamp: new Date().toISOString(),
-            ip_address: 'client_side' // In production, get from server
+            ip_address: 'client_side'
           }
         });
       } catch (logError) {
@@ -143,10 +136,10 @@ const SecureAdminAuth: React.FC<SecureAdminAuthProps> = ({ onAuthenticated }) =>
       
       toast({ 
         title: "تم تسجيل الدخول بنجاح",
-        description: `مرحباً ${profile.username}`
+        description: `مرحباً ${ADMIN_CREDENTIALS.username}`
       });
       
-      onAuthenticated(data.user);
+      onAuthenticated(adminUser);
     } catch (error: any) {
       console.error('Login error:', error);
       
@@ -155,7 +148,7 @@ const SecureAdminAuth: React.FC<SecureAdminAuthProps> = ({ onAuthenticated }) =>
         await supabase.rpc('log_activity', {
           p_action: 'admin_login_failed',
           p_details: { 
-            email,
+            username,
             attempt_number: loginAttempts + 1,
             timestamp: new Date().toISOString(),
             error_message: error.message
@@ -233,14 +226,14 @@ const SecureAdminAuth: React.FC<SecureAdminAuthProps> = ({ onAuthenticated }) =>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  type="email"
-                  placeholder="البريد الإلكتروني"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  placeholder="اسم المستخدم"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="bg-gray-800 border-gray-600 text-white pl-10"
                   disabled={isLoading || isLockedOut}
                   required
-                  autoComplete="email"
+                  autoComplete="username"
                 />
               </div>
               
@@ -267,7 +260,7 @@ const SecureAdminAuth: React.FC<SecureAdminAuthProps> = ({ onAuthenticated }) =>
               
               <Button 
                 type="submit"
-                disabled={isLoading || !email || !password || isLockedOut}
+                disabled={isLoading || !username || !password || isLockedOut}
                 className="w-full bg-yellow-500 text-black hover:bg-yellow-400 disabled:opacity-50"
               >
                 {isLoading ? "جارٍ المعالجة..." : "تسجيل الدخول الآمن"}
@@ -276,7 +269,7 @@ const SecureAdminAuth: React.FC<SecureAdminAuthProps> = ({ onAuthenticated }) =>
             
             <div className="text-center">
               <p className="text-gray-500 text-sm">
-                استخدم حساب المدير المخزن في قاعدة البيانات
+                استخدم بيانات المدير المحدثة
               </p>
               <div className="flex items-center justify-center gap-2 mt-2">
                 <Lock className="h-3 w-3 text-green-500" />
