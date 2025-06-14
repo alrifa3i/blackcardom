@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,9 +11,38 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
+// Define types for special services
+interface SpecialService {
+  id: string;
+  name: string;
+  description?: string;
+  detailed_description?: string;
+  base_service_id?: string;
+  project_types?: string[];
+  features?: string[];
+  icon?: string;
+  color?: string;
+  is_featured?: boolean;
+  is_active: boolean;
+  display_order?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Service {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  unit?: string;
+  type: string;
+  is_active: boolean;
+  created_at: string;
+}
+
 const SpecialServicesManagement = () => {
   const [showForm, setShowForm] = useState(false);
-  const [editingService, setEditingService] = useState<any>(null);
+  const [editingService, setEditingService] = useState<SpecialService | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -34,7 +62,7 @@ const SpecialServicesManagement = () => {
   // Get regular services for linking
   const { data: services } = useQuery({
     queryKey: ['admin-services'],
-    queryFn: async () => {
+    queryFn: async (): Promise<Service[]> => {
       const { data, error } = await supabase
         .from('services')
         .select('*')
@@ -42,21 +70,21 @@ const SpecialServicesManagement = () => {
         .order('name');
       
       if (error) throw error;
-      return data;
+      return (data || []) as Service[];
     }
   });
 
   // Get special services
   const { data: specialServices, isLoading } = useQuery({
     queryKey: ['special-services'],
-    queryFn: async () => {
+    queryFn: async (): Promise<SpecialService[]> => {
       const { data, error } = await supabase
         .from('special_services')
         .select('*')
         .order('display_order', { ascending: true });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as SpecialService[];
     }
   });
 
@@ -193,11 +221,11 @@ const SpecialServicesManagement = () => {
     setShowForm(false);
   };
 
-  const handleEdit = (service: any) => {
+  const handleEdit = (service: SpecialService) => {
     setEditingService(service);
     setFormData({
       name: service.name,
-      description: service.description,
+      description: service.description || '',
       detailed_description: service.detailed_description || '',
       base_service_id: service.base_service_id || '',
       project_types: service.project_types || [],

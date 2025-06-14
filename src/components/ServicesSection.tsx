@@ -8,6 +8,24 @@ import ServiceRequestForm from './ServiceRequestForm';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+// Define types for special services
+interface SpecialService {
+  id: string;
+  name: string;
+  description?: string;
+  detailed_description?: string;
+  base_service_id?: string;
+  project_types?: string[];
+  features?: string[];
+  icon?: string;
+  color?: string;
+  is_featured?: boolean;
+  is_active: boolean;
+  display_order?: number;
+  created_at: string;
+  updated_at: string;
+}
+
 const ServicesSection = () => {
   const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -28,10 +46,10 @@ const ServicesSection = () => {
     }
   });
 
-  // Fetch special services from database
+  // Fetch special services from database with proper typing
   const { data: specialServices = [], isLoading: specialServicesLoading } = useQuery({
     queryKey: ['special-services-public'],
-    queryFn: async () => {
+    queryFn: async (): Promise<SpecialService[]> => {
       const { data, error } = await supabase
         .from('special_services')
         .select('*')
@@ -39,7 +57,7 @@ const ServicesSection = () => {
         .order('display_order', { ascending: true });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as SpecialService[];
     }
   });
 
@@ -202,7 +220,7 @@ const ServicesSection = () => {
                       )}
                       <CardHeader className="pb-4">
                         <div className="w-full h-48 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg mb-4 overflow-hidden flex items-center justify-center">
-                          <div className="text-6xl opacity-20" style={{ color: service.color }}>
+                          <div className="text-6xl opacity-20" style={{ color: service.color || '#3B82F6' }}>
                             ⭐
                           </div>
                         </div>

@@ -806,6 +806,65 @@ export type Database = {
         }
         Relationships: []
       }
+      special_services: {
+        Row: {
+          base_service_id: string | null
+          color: string | null
+          created_at: string | null
+          description: string | null
+          detailed_description: string | null
+          display_order: number | null
+          features: Json | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          is_featured: boolean | null
+          name: string
+          project_types: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          base_service_id?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          detailed_description?: string | null
+          display_order?: number | null
+          features?: Json | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          name: string
+          project_types?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          base_service_id?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          detailed_description?: string | null
+          display_order?: number | null
+          features?: Json | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          name?: string
+          project_types?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "special_services_base_service_id_fkey"
+            columns: ["base_service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transport: {
         Row: {
           capacity: string | null
