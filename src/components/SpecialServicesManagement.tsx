@@ -30,17 +30,6 @@ interface SpecialService {
   updated_at: string;
 }
 
-interface Service {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  unit?: string;
-  type: string;
-  is_active: boolean;
-  created_at: string;
-}
-
 const SpecialServicesManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingService, setEditingService] = useState<SpecialService | null>(null);
@@ -48,7 +37,6 @@ const SpecialServicesManagement = () => {
     name: '',
     description: '',
     detailed_description: '',
-    base_service_id: '',
     project_types: [] as string[],
     features: [] as string[],
     icon: '',
@@ -59,21 +47,6 @@ const SpecialServicesManagement = () => {
   });
 
   const queryClient = useQueryClient();
-
-  // Get regular services for linking
-  const { data: services } = useQuery({
-    queryKey: ['admin-services'],
-    queryFn: async (): Promise<Service[]> => {
-      const { data, error } = await supabase
-        .from('services')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
-      
-      if (error) throw error;
-      return (data || []) as Service[];
-    }
-  });
 
   // Get special services
   const { data: specialServices, isLoading } = useQuery({
@@ -250,7 +223,6 @@ const SpecialServicesManagement = () => {
       name: '',
       description: '',
       detailed_description: '',
-      base_service_id: '',
       project_types: [],
       features: [],
       icon: '',
@@ -269,7 +241,6 @@ const SpecialServicesManagement = () => {
       name: service.name,
       description: service.description || '',
       detailed_description: service.detailed_description || '',
-      base_service_id: service.base_service_id || '',
       project_types: service.project_types || [],
       features: service.features || [],
       icon: service.icon || '',
@@ -321,7 +292,6 @@ const SpecialServicesManagement = () => {
       name: mainService.name,
       description: mainService.description,
       detailed_description: `خدمة متخصصة في ${mainService.name} تقدم حلولاً شاملة ومتطورة لتلبية احتياجات عملك`,
-      base_service_id: '',
       project_types: [mainService.name],
       features: mainService.features,
       icon: mainService.icon,
@@ -407,33 +377,15 @@ const SpecialServicesManagement = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name" className="text-white">اسم الخدمة الخاصة</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="bg-gray-600 border-gray-500 text-white"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="base_service_id" className="text-white">ربط بخدمة أساسية</Label>
-                    <select
-                      id="base_service_id"
-                      value={formData.base_service_id}
-                      onChange={(e) => setFormData({...formData, base_service_id: e.target.value})}
-                      className="w-full px-3 py-2 bg-gray-600 border border-gray-500 text-white rounded-md"
-                    >
-                      <option value="">اختر خدمة أساسية</option>
-                      {services?.map((service) => (
-                        <option key={service.id} value={service.id}>
-                          {service.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                <div>
+                  <Label htmlFor="name" className="text-white">اسم الخدمة الخاصة</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="bg-gray-600 border-gray-500 text-white"
+                    required
+                  />
                 </div>
                 
                 <div>
@@ -601,12 +553,6 @@ const SpecialServicesManagement = () => {
                           {service.is_active ? <Eye className="h-3 w-3 mr-1" /> : <EyeOff className="h-3 w-3 mr-1" />}
                           {service.is_active ? 'نشطة' : 'غير نشطة'}
                         </Badge>
-                        {service.base_service_id && (
-                          <Badge variant="outline" className="text-xs">
-                            <Link className="h-3 w-3 mr-1" />
-                            مرتبطة
-                          </Badge>
-                        )}
                       </div>
                       {service.description && (
                         <p className="text-gray-300 text-sm mb-2">{service.description}</p>
