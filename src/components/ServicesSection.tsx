@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { Check, ArrowLeft, ChevronDown, ChevronUp, Star } from 'lucide-react';
 import ServiceRequestForm from './ServiceRequestForm';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,9 +11,10 @@ import { supabase } from '@/integrations/supabase/client';
 const ServicesSection = () => {
   const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [showSpecialServices, setShowSpecialServices] = useState(true);
 
-  // Fetch services from database
-  const { data: services = [], isLoading } = useQuery({
+  // Fetch regular services from database
+  const { data: services = [], isLoading: servicesLoading } = useQuery({
     queryKey: ['services'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -21,6 +22,21 @@ const ServicesSection = () => {
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Fetch special services from database
+  const { data: specialServices = [], isLoading: specialServicesLoading } = useQuery({
+    queryKey: ['special-services-public'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('special_services')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
       
       if (error) throw error;
       return data || [];
@@ -139,6 +155,7 @@ const ServicesSection = () => {
 
   const visibleServices = displayServices.filter(service => service.is_active !== false);
   const displayedServices = showMore ? visibleServices : visibleServices.slice(0, 3);
+  const featuredSpecialServices = specialServices.filter(service => service.is_featured);
 
   return (
     <>
@@ -151,78 +168,173 @@ const ServicesSection = () => {
               نقدم مجموعة شاملة من الخدمات التقنية المتطورة لتلبية احتياجات عملك وتحقيق أهدافك الرقمية
             </p>
           </div>
-          
-          {isLoading ? (
-            <div className="text-center py-8">
-              <div className="text-gray-400">جاري التحميل...</div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {displayedServices.map((service) => (
-                <Card key={service.id} className="modern-card bg-gradient-to-br from-gray-800 to-gray-700 border-0 shadow-lg group hover:shadow-2xl transition-all duration-300">
-                  <CardHeader className="pb-4">
-                    <div className="w-full h-48 bg-gray-600 rounded-lg mb-4 overflow-hidden">
-                      <img 
-                        src={service.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80"} 
-                        alt={service.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <CardTitle className="text-xl font-bold text-white mb-2">{service.name}</CardTitle>
-                    <p className="text-gray-300 text-sm">{service.description}</p>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      {(service.features || ["ميزة أساسية", "دعم فني", "تدريب شامل", "ضمان الجودة"]).map((feature, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <Check className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                          <span className="text-gray-300 text-sm">{feature}</span>
+
+          {/* Special Services Section */}
+          {specialServices.length > 0 && (
+            <div className="mb-16">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-2">
+                  <Star className="h-6 w-6 text-yellow-500" />
+                  <h3 className="text-2xl font-bold text-white">خدماتنا الخاصة</h3>
+                  <Badge className="bg-yellow-500 text-black">مميزة</Badge>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSpecialServices(!showSpecialServices)}
+                  className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+                >
+                  {showSpecialServices ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+              </div>
+
+              {showSpecialServices && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
+                  {specialServices.map((service) => (
+                    <Card key={service.id} className="modern-card bg-gradient-to-br from-gray-800 to-gray-700 border-0 shadow-lg group hover:shadow-2xl transition-all duration-300 relative overflow-hidden">
+                      {service.is_featured && (
+                        <div className="absolute top-4 right-4 z-10">
+                          <Badge className="bg-yellow-500 text-black">
+                            <Star className="h-3 w-3 mr-1" />
+                            مميزة
+                          </Badge>
                         </div>
-                      ))}
-                    </div>
-                    
-                    <div className="pt-4 border-t border-gray-600">
-                      <div className="flex items-center justify-between mb-4">
-                        <Badge className="bg-yellow-500 text-black font-bold">
-                          {service.price} ريال عُماني / {service.unit}
-                        </Badge>
-                      </div>
-                      
-                      <Button 
-                        className="w-full bg-yellow-500 text-black hover:bg-yellow-400 transition-colors"
-                        onClick={() => setIsRequestFormOpen(true)}
-                      >
-                        طلب الخدمة
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      )}
+                      <CardHeader className="pb-4">
+                        <div className="w-full h-48 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg mb-4 overflow-hidden flex items-center justify-center">
+                          <div className="text-6xl opacity-20" style={{ color: service.color }}>
+                            ⭐
+                          </div>
+                        </div>
+                        <CardTitle className="text-xl font-bold text-white mb-2">{service.name}</CardTitle>
+                        <p className="text-gray-300 text-sm">{service.description}</p>
+                        {service.detailed_description && (
+                          <p className="text-gray-400 text-xs mt-2">{service.detailed_description}</p>
+                        )}
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          {service.features && service.features.map((feature: string, index: number) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <Check className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                              <span className="text-gray-300 text-sm">{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {service.project_types && service.project_types.length > 0 && (
+                          <div className="pt-2 border-t border-gray-600">
+                            <div className="text-xs text-gray-400 mb-2">المشاريع المرتبطة:</div>
+                            <div className="flex flex-wrap gap-1">
+                              {service.project_types.slice(0, 3).map((project: string, index: number) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {project}
+                                </Badge>
+                              ))}
+                              {service.project_types.length > 3 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{service.project_types.length - 3} المزيد
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="pt-4 border-t border-gray-600">
+                          <Button 
+                            className="w-full bg-yellow-500 text-black hover:bg-yellow-400 transition-colors"
+                            onClick={() => setIsRequestFormOpen(true)}
+                          >
+                            طلب الخدمة الخاصة
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
-          {visibleServices.length > 3 && (
-            <div className="text-center mt-12">
-              <Button
-                onClick={() => setShowMore(!showMore)}
-                variant="outline"
-                className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
-              >
-                {showMore ? (
-                  <>
-                    عرض أقل
-                    <ChevronUp className="mr-2 h-4 w-4" />
-                  </>
-                ) : (
-                  <>
-                    استكشاف المزيد
-                    <ChevronDown className="mr-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
+          {/* Regular Services Section */}
+          <div>
+            <div className="flex items-center gap-2 mb-8">
+              <h3 className="text-2xl font-bold text-white">خدماتنا الأساسية</h3>
             </div>
-          )}
+            
+            {servicesLoading ? (
+              <div className="text-center py-8">
+                <div className="text-gray-400">جاري التحميل...</div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                {displayedServices.map((service) => (
+                  <Card key={service.id} className="modern-card bg-gradient-to-br from-gray-800 to-gray-700 border-0 shadow-lg group hover:shadow-2xl transition-all duration-300">
+                    <CardHeader className="pb-4">
+                      <div className="w-full h-48 bg-gray-600 rounded-lg mb-4 overflow-hidden">
+                        <img 
+                          src={service.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80"} 
+                          alt={service.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <CardTitle className="text-xl font-bold text-white mb-2">{service.name}</CardTitle>
+                      <p className="text-gray-300 text-sm">{service.description}</p>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        {(service.features || ["ميزة أساسية", "دعم فني", "تدريب شامل", "ضمان الجودة"]).map((feature, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <Check className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                            <span className="text-gray-300 text-sm">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="pt-4 border-t border-gray-600">
+                        <div className="flex items-center justify-between mb-4">
+                          <Badge className="bg-yellow-500 text-black font-bold">
+                            {service.price} ريال عُماني / {service.unit}
+                          </Badge>
+                        </div>
+                        
+                        <Button 
+                          className="w-full bg-yellow-500 text-black hover:bg-yellow-400 transition-colors"
+                          onClick={() => setIsRequestFormOpen(true)}
+                        >
+                          طلب الخدمة
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {visibleServices.length > 3 && (
+              <div className="text-center mt-12">
+                <Button
+                  onClick={() => setShowMore(!showMore)}
+                  variant="outline"
+                  className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+                >
+                  {showMore ? (
+                    <>
+                      عرض أقل
+                      <ChevronUp className="mr-2 h-4 w-4" />
+                    </>
+                  ) : (
+                    <>
+                      استكشاف المزيد
+                      <ChevronDown className="mr-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

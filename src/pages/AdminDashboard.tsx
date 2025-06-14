@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +24,8 @@ import {
   Megaphone,
   FileEdit,
   Home,
-  ChevronRight
+  ChevronRight,
+  Star
 } from 'lucide-react';
 import AdminAuth from '@/components/AdminAuth';
 import SocialMediaSettings from '@/components/SocialMediaSettings';
@@ -37,6 +37,7 @@ import WhatsAppSettings from '@/components/WhatsAppSettings';
 import GoogleAdsAnalytics from '@/components/GoogleAdsAnalytics';
 import ServicesManagement from '@/components/ServicesManagement';
 import ProductsManagement from '@/components/ProductsManagement';
+import SpecialServicesManagement from '@/components/SpecialServicesManagement';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -85,9 +86,10 @@ const AdminDashboard = () => {
       ]
     },
     {
-      title: "إدارة المحتوى",
+      title: "إدارة المحتوى والخدمات",
       items: [
-        { id: 'services', name: 'إدارة الخدمات', icon: Zap, description: 'إضافة وتعديل الخدمات' },
+        { id: 'services', name: 'إدارة الخدمات', icon: Zap, description: 'إضافة وتعديل الخدمات الأساسية' },
+        { id: 'special-services', name: 'خدماتنا الخاصة', icon: Star, description: 'إدارة الخدمات المميزة والمتخصصة' },
         { id: 'products', name: 'إدارة المنتجات', icon: Package, description: 'إدارة المنتجات والعروض' },
         { id: 'faq', name: 'الأسئلة الشائعة', icon: HelpCircle, description: 'إدارة الأسئلة والأجوبة' }
       ]
@@ -185,6 +187,8 @@ const AdminDashboard = () => {
 
       case 'services':
         return <ServicesManagement />;
+      case 'special-services':
+        return <SpecialServicesManagement />;
       case 'products':
         return <ProductsManagement />;
       case 'website-projects':
