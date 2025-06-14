@@ -11,6 +11,7 @@ import { Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import ImageUpload from './ImageUpload';
 
 const WebApplicationsManagement = () => {
   const [showForm, setShowForm] = useState(false);
@@ -187,26 +188,21 @@ const WebApplicationsManagement = () => {
                     required
                   />
                 </div>
+
+                <ImageUpload
+                  currentImageUrl={formData.image_url}
+                  onImageChange={(url) => setFormData({...formData, image_url: url})}
+                  label="صورة التطبيق"
+                />
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="image_url" className="text-white">رابط الصورة</Label>
-                    <Input
-                      id="image_url"
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                      className="bg-gray-600 border-gray-500 text-white"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="project_url" className="text-white">رابط التطبيق</Label>
-                    <Input
-                      id="project_url"
-                      value={formData.project_url}
-                      onChange={(e) => setFormData({...formData, project_url: e.target.value})}
-                      className="bg-gray-600 border-gray-500 text-white"
-                    />
-                  </div>
+                <div>
+                  <Label htmlFor="project_url" className="text-white">رابط التطبيق</Label>
+                  <Input
+                    id="project_url"
+                    value={formData.project_url}
+                    onChange={(e) => setFormData({...formData, project_url: e.target.value})}
+                    className="bg-gray-600 border-gray-500 text-white"
+                  />
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -287,7 +283,16 @@ const WebApplicationsManagement = () => {
             applications?.map((app) => (
               <Card key={app.id} className="bg-gray-700 border-gray-600">
                 <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4">
+                    {app.image_url && (
+                      <div className="flex-shrink-0">
+                        <img 
+                          src={app.image_url} 
+                          alt={app.title}
+                          className="w-20 h-20 object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-white font-semibold">{app.title}</h3>

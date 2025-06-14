@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Plus, Edit, Trash2, Package, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import ImageUpload from './ImageUpload';
 
 const ProductsManagement = () => {
   const [showForm, setShowForm] = useState(false);
@@ -20,7 +21,7 @@ const ProductsManagement = () => {
       description: 'نظام شامل لإدارة المحتوى مع لوحة تحكم متقدمة',
       price: 2999,
       category: 'systems',
-      image_url: '/placeholder.svg',
+      image_url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80',
       features: ['لوحة تحكم شاملة', 'إدارة المستخدمين', 'تحليلات متقدمة', 'أمان عالي'],
       is_featured: true,
       is_available: true,
@@ -32,7 +33,7 @@ const ProductsManagement = () => {
       description: 'متجر إلكتروني متكامل مع نظام دفع آمن',
       price: 3999,
       category: 'ecommerce',
-      image_url: '/placeholder.svg',
+      image_url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80',
       features: ['نظام دفع متكامل', 'إدارة المخزون', 'تتبع الطلبات', 'تحليلات المبيعات'],
       is_featured: true,
       is_available: true,
@@ -178,6 +179,12 @@ const ProductsManagement = () => {
                     required
                   />
                 </div>
+
+                <ImageUpload
+                  currentImageUrl={formData.image_url}
+                  onImageChange={(url) => setFormData({...formData, image_url: url})}
+                  label="صورة المنتج"
+                />
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -200,16 +207,6 @@ const ProductsManagement = () => {
                       className="bg-gray-600 border-gray-500 text-white"
                     />
                   </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="image_url" className="text-white">رابط الصورة</Label>
-                  <Input
-                    id="image_url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                    className="bg-gray-600 border-gray-500 text-white"
-                  />
                 </div>
                 
                 <div>
@@ -265,7 +262,16 @@ const ProductsManagement = () => {
             products.map((product) => (
               <Card key={product.id} className="bg-gray-700 border-gray-600">
                 <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4">
+                    {product.image_url && (
+                      <div className="flex-shrink-0">
+                        <img 
+                          src={product.image_url} 
+                          alt={product.name}
+                          className="w-20 h-20 object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-white font-semibold">{product.name}</h3>

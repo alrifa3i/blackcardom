@@ -11,6 +11,7 @@ import { Plus, Edit, Trash2, Zap } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import ImageUpload from './ImageUpload';
 
 const PROJECT_ID = 'military-tech-project';
 
@@ -24,6 +25,7 @@ const ServicesManagement = () => {
     price: 0,
     unit: 'project',
     is_active: true,
+    image_url: '',
     project_id: PROJECT_ID
   });
 
@@ -193,6 +195,7 @@ const ServicesManagement = () => {
       price: 0,
       unit: 'project',
       is_active: true,
+      image_url: '',
       project_id: PROJECT_ID
     });
     setEditingService(null);
@@ -291,6 +294,12 @@ const ServicesManagement = () => {
                     rows={3}
                   />
                 </div>
+
+                <ImageUpload
+                  currentImageUrl={formData.image_url}
+                  onImageChange={(url) => setFormData({...formData, image_url: url})}
+                  label="صورة الخدمة"
+                />
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -362,7 +371,16 @@ const ServicesManagement = () => {
             services?.map((service) => (
               <Card key={service.id} className="bg-gray-700 border-gray-600">
                 <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4">
+                    {service.image_url && (
+                      <div className="flex-shrink-0">
+                        <img 
+                          src={service.image_url} 
+                          alt={service.name}
+                          className="w-20 h-20 object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-white font-semibold">{service.name}</h3>
