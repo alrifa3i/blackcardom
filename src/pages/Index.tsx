@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,8 +15,15 @@ import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import AuthSection from '@/components/AuthSection';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import { initializeGoogleAnalytics } from '@/utils/googleAnalytics';
 
 const Index = () => {
+  useEffect(() => {
+    // Initialize Google Analytics on page load
+    // Replace 'GA_MEASUREMENT_ID' with your actual Google Analytics 4 Measurement ID
+    initializeGoogleAnalytics('GA_MEASUREMENT_ID');
+  }, []);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {

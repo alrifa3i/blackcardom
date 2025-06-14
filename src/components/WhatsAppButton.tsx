@@ -1,6 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { trackWhatsAppClick } from '@/utils/googleAnalytics';
+import { ANALYTICS_CONFIG } from '@/config/analytics';
 
 const WhatsAppButton = () => {
   const [employeeName, setEmployeeName] = useState('');
@@ -85,6 +86,13 @@ const WhatsAppButton = () => {
     console.log('WhatsApp button clicked!');
     
     try {
+      // Track analytics with configuration
+      trackWhatsAppClick({
+        employeeName,
+        pageUrl: window.location.href,
+        pageTitle: document.title
+      }, ANALYTICS_CONFIG.googleAdsConversion);
+      
       await logWhatsAppContact();
       
       const firstName = employeeName.split(' ')[0];
