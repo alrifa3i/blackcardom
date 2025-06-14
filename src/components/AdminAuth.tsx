@@ -99,9 +99,9 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
             });
             
             // تجاهل مشكلة تأكيد البريد والمتابعة
-            const { data: session } = await supabase.auth.getSession();
-            if (session.data.session?.user) {
-              await setupAdminProfile(session.data.session.user.id);
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+              await setupAdminProfile(session.user.id);
               onAuthenticated();
               return;
             }
