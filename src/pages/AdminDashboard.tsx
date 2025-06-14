@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -51,60 +50,47 @@ import { useToast } from '@/hooks/use-toast';
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentAdmin, setCurrentAdmin] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    // التحقق من جلسة المستخدم
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (profile?.role === 'admin') {
-          setCurrentUser(profile);
-          setIsAuthenticated(true);
-        }
+    // التحقق من جلسة المدير
+    const checkAuth = () => {
+      const isAuth = localStorage.getItem('admin_authenticated');
+      const username = localStorage.getItem('admin_username');
+      const loginTime = localStorage.getItem('admin_login_time');
+      
+      if (isAuth === 'true' && username) {
+        setCurrentAdmin({
+          username,
+          loginTime: loginTime ? new Date(loginTime) : new Date(),
+          role: 'admin'
+        });
+        setIsAuthenticated(true);
       }
     };
 
     checkAuth();
-
-    // مراقبة تغييرات الجلسة
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        setIsAuthenticated(false);
-        setCurrentUser(null);
-      } else if (session) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (profile?.role === 'admin') {
-          setCurrentUser(profile);
-          setIsAuthenticated(true);
-        }
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
 
   const handleLogout = async () => {
     try {
       // تسجيل نشاط تسجيل الخروج
-      await supabase.rpc('log_activity', {
-        p_action: 'user_logout',
-        p_details: { logout_type: 'admin_panel' }
-      });
+      const username = localStorage.getItem('admin_username');
+      if (username) {
+        await supabase.rpc('log_activity', {
+          p_action: 'admin_logout',
+          p_details: { username, logout_type: 'admin_panel', timestamp: new Date().toISOString() }
+        });
+      }
       
-      await supabase.auth.signOut();
+      // حذف بيانات الجلسة
+      localStorage.removeItem('admin_authenticated');
+      localStorage.removeItem('admin_username');
+      localStorage.removeItem('admin_login_time');
+      
+      setIsAuthenticated(false);
+      setCurrentAdmin(null);
       
       toast({
         title: "تم تسجيل الخروج بنجاح",
@@ -113,10 +99,16 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Logout error:', error);
       toast({
-        title: "خطأ في تسجيل الخروج",
-        description: "يرجى المحاولة مرة أخرى",
-        variant: "destructive"
+        title: "تم تسجيل الخروج",
+        description: "تم تسجيل الخروج بنجاح",
       });
+      
+      // حذف بيانات الجلسة حتى لو فشل التسجيل
+      localStorage.removeItem('admin_authenticated');
+      localStorage.removeItem('admin_username');
+      localStorage.removeItem('admin_login_time');
+      setIsAuthenticated(false);
+      setCurrentAdmin(null);
     }
   };
 
@@ -305,14 +297,14 @@ const AdminDashboard = () => {
               <p className="text-gray-400 text-sm">إدارة شاملة لجميع جوانب النظام</p>
             </div>
             <div className="flex items-center gap-4">
-              {currentUser && (
+              {currentAdmin && (
                 <div className="flex items-center gap-2">
                   <div className="text-right">
-                    <p className="text-white font-medium">{currentUser.username}</p>
-                    <p className="text-gray-400 text-xs">{currentUser.email}</p>
+                    <p className="text-white font-medium">{currentAdmin.username}</p>
+                    <p className="text-gray-400 text-xs">مدير النظام</p>
                   </div>
                   <div className="w-10 h-10 bg-yellow-500 text-black rounded-full flex items-center justify-center font-bold">
-                    {currentUser.username.charAt(0).toUpperCase()}
+                    {currentAdmin.username.charAt(0).toUpperCase()}
                   </div>
                 </div>
               )}

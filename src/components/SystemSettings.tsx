@@ -32,7 +32,7 @@ const SystemSettings = () => {
     key: '',
     value: '',
     description: '',
-    data_type: 'string' as const,
+    data_type: 'string' as 'string' | 'number' | 'boolean' | 'json',
     is_public: false
   });
   const { toast } = useToast();
@@ -363,7 +363,12 @@ const SystemSettings = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-gray-300">نوع البيانات</Label>
-              <Select value={newSetting.data_type} onValueChange={(value: 'string' | 'number' | 'boolean' | 'json') => setNewSetting({ ...newSetting, data_type: value })}>
+              <Select 
+                value={newSetting.data_type} 
+                onValueChange={(value: 'string' | 'number' | 'boolean' | 'json') => 
+                  setNewSetting({ ...newSetting, data_type: value })
+                }
+              >
                 <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                   <SelectValue />
                 </SelectTrigger>

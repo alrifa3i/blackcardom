@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Lock, Eye, EyeOff, ArrowLeft, Mail, User } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,28 +13,23 @@ interface AdminAuthProps {
 }
 
 const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // بيانات تسجيل الدخول المحددة
+  const ADMIN_CREDENTIALS = {
+    username: 'Admin2025',
+    password: 'AhmedOman2025$'
+  };
+
   useEffect(() => {
-    // التحقق من وجود جلسة مصادقة
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        // التحقق من أن المستخدم مدير
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (profile?.role === 'admin') {
-          onAuthenticated();
-        }
+    // التحقق من وجود جلسة مصادقة مخزنة محلياً
+    const checkSession = () => {
+      const isAuthenticated = localStorage.getItem('admin_authenticated');
+      if (isAuthenticated === 'true') {
+        onAuthenticated();
       }
     };
 
@@ -45,37 +40,32 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      // التحقق من بيانات تسجيل الدخول
+      if (username !== ADMIN_CREDENTIALS.username || password !== ADMIN_CREDENTIALS.password) {
+        throw new Error('اسم المستخدم أو كلمة المرور غير صحيحة');
+      }
+
+      // حفظ حالة المصادقة محلياً
+      localStorage.setItem('admin_authenticated', 'true');
+      localStorage.setItem('admin_username', username);
+      localStorage.setItem('admin_login_time', new Date().toISOString());
+
+      // تسجيل نشاط تسجيل الدخول في قاعدة البيانات
+      try {
+        await supabase.rpc('log_activity', {
+          p_action: 'admin_login',
+          p_details: { username, login_type: 'admin_panel', timestamp: new Date().toISOString() }
+        });
+      } catch (logError) {
+        console.warn('Failed to log activity:', logError);
+      }
+      
+      toast({ 
+        title: "تم تسجيل الدخول بنجاح",
+        description: `مرحباً ${username}`
       });
       
-      if (error) throw error;
-      
-      if (data.user) {
-        // التحقق من أن المستخدم مدير
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
-        
-        if (profileError) throw profileError;
-        
-        if (profile?.role !== 'admin') {
-          await supabase.auth.signOut();
-          throw new Error('ليس لديك صلاحية للوصول إلى لوحة التحكم');
-        }
-        
-        // تسجيل نشاط تسجيل الدخول
-        await supabase.rpc('log_activity', {
-          p_action: 'user_login',
-          p_details: { email, login_type: 'admin_panel' }
-        });
-        
-        toast({ title: "تم تسجيل الدخول بنجاح" });
-        onAuthenticated();
-      }
+      onAuthenticated();
     } catch (error: any) {
       console.error('Login error:', error);
       toast({ 
@@ -88,51 +78,9 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
     }
   };
 
-  const handleSignup = async () => {
-    setIsLoading(true);
-    
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            username: username
-          }
-        }
-      });
-      
-      if (error) throw error;
-      
-      if (data.user) {
-        toast({ 
-          title: "تم إنشاء الحساب بنجاح",
-          description: "يرجى تسجيل الدخول الآن"
-        });
-        setIsLogin(true);
-        setEmail('');
-        setPassword('');
-        setUsername('');
-      }
-    } catch (error: any) {
-      console.error('Signup error:', error);
-      toast({ 
-        title: "خطأ في إنشاء الحساب", 
-        description: error.message || "يرجى المحاولة مرة أخرى",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLogin) {
-      handleLogin();
-    } else {
-      handleSignup();
-    }
+    handleLogin();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -163,40 +111,21 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
               <Lock className="h-8 w-8" />
             </div>
             <CardTitle className="text-2xl font-bold text-white">
-              {isLogin ? 'دخول لوحة التحكم' : 'إنشاء حساب إداري'}
+              دخول لوحة التحكم
             </CardTitle>
             <p className="text-gray-400 mt-2">
-              {isLogin 
-                ? 'يرجى إدخال بيانات المدير للوصول إلى لوحة التحكم'
-                : 'إنشاء حساب إداري جديد للوصول إلى لوحة التحكم'
-              }
+              يرجى إدخال بيانات المدير للوصول إلى لوحة التحكم
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    type="text"
-                    placeholder="اسم المستخدم"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    className="bg-gray-800 border-gray-600 text-white pl-10"
-                    disabled={isLoading}
-                    required
-                  />
-                </div>
-              )}
-              
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  type="email"
-                  placeholder="البريد الإلكتروني"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  placeholder="اسم المستخدم"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   onKeyPress={handleKeyPress}
                   className="bg-gray-800 border-gray-600 text-white pl-10"
                   disabled={isLoading}
@@ -226,32 +155,17 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
               
               <Button 
                 type="submit"
-                disabled={isLoading || !email || !password || (!isLogin && !username)}
+                disabled={isLoading || !username || !password}
                 className="w-full bg-yellow-500 text-black hover:bg-yellow-400"
               >
-                {isLoading 
-                  ? "جارٍ المعالجة..." 
-                  : isLogin ? "تسجيل الدخول" : "إنشاء الحساب"
-                }
+                {isLoading ? "جارٍ المعالجة..." : "تسجيل الدخول"}
               </Button>
             </form>
             
             <div className="text-center">
-              <button
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setEmail('');
-                  setPassword('');
-                  setUsername('');
-                }}
-                className="text-yellow-400 hover:text-yellow-300 text-sm transition-colors"
-                disabled={isLoading}
-              >
-                {isLogin 
-                  ? 'ليس لديك حساب؟ إنشاء حساب جديد'
-                  : 'لديك حساب؟ تسجيل الدخول'
-                }
-              </button>
+              <p className="text-gray-500 text-sm">
+                استخدم بيانات المدير المحددة للوصول
+              </p>
             </div>
           </CardContent>
         </Card>
