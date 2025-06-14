@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { trackWhatsAppClick } from '@/utils/googleAnalytics';
-import { ANALYTICS_CONFIG } from '@/config/analytics';
+import { getAnalyticsSettings } from '@/config/analytics';
 
 const WhatsAppButton = () => {
   const [employeeName, setEmployeeName] = useState('');
   const [employeeNameEn, setEmployeeNameEn] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [showArabic, setShowArabic] = useState(true);
+  const [analyticsConfig, setAnalyticsConfig] = useState(null);
 
   const omanEmployees = [
     { ar: 'أحمد المحروقي', en: 'Ahmed Al-Mahroqi' },
@@ -23,6 +24,14 @@ const WhatsAppButton = () => {
   ];
 
   useEffect(() => {
+    // تحميل إعدادات Analytics من قاعدة البيانات
+    const loadAnalyticsConfig = async () => {
+      const config = await getAnalyticsSettings();
+      setAnalyticsConfig(config);
+    };
+
+    loadAnalyticsConfig();
+
     // اختيار موظف عشوائي عند تحميل الصفحة
     const randomEmployee = omanEmployees[Math.floor(Math.random() * omanEmployees.length)];
     setEmployeeName(randomEmployee.ar);
@@ -83,15 +92,17 @@ const WhatsAppButton = () => {
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('WhatsApp button clicked!');
+    console.log('WhatsApp button clicked with analytics config:', analyticsConfig);
     
     try {
-      // Track analytics with configuration
-      trackWhatsAppClick({
-        employeeName,
-        pageUrl: window.location.href,
-        pageTitle: document.title
-      }, ANALYTICS_CONFIG.googleAdsConversion);
+      // Track analytics with current configuration from database
+      if (analyticsConfig) {
+        trackWhatsAppClick({
+          employeeName,
+          pageUrl: window.location.href,
+          pageTitle: document.title
+        }, analyticsConfig.googleAdsConversion);
+      }
       
       await logWhatsAppContact();
       
