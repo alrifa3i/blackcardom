@@ -304,7 +304,7 @@ const ServicesSection = () => {
                     <CardHeader className="pb-4">
                       <div className="w-full h-48 bg-gray-600 rounded-lg mb-4 overflow-hidden">
                         <img 
-                          src={service.image || service.image_url || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80"} 
+                          src={service.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80"} 
                           alt={service.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
