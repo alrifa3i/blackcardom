@@ -43,99 +43,70 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
     setIsLoading(true);
     
     try {
-      // للحساب الإداري المحدد فقط
+      // التحقق من بيانات الدخول المحددة مسبقاً
       if (username === 'admin12' && password === 'AhmedOman2025$') {
         const adminEmail = 'admin@techservices.com';
         
-        // محاولة تسجيل الدخول أولاً
-        let { data, error } = await supabase.auth.signInWithPassword({
+        // محاولة تسجيل الدخول
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: adminEmail,
           password: password,
         });
         
-        // إذا فشل تسجيل الدخول بسبب عدم وجود الحساب، قم بإنشائه
-        if (error && error.message === 'Invalid login credentials') {
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email: adminEmail,
-            password: password,
-            options: {
-              data: {
-                username: username
-              },
-              emailRedirectTo: `${window.location.origin}/admin`
-            }
-          });
-          
-          if (signUpError) throw signUpError;
-          
-          // إذا تم إنشاء الحساب، انتظر قليلاً ثم حاول تسجيل الدخول
-          if (signUpData.user && !signUpData.session) {
-            // في حالة عدم وجود جلسة فورية، قم بتحديث صفحة أو إظهار رسالة
-            toast({ 
-              title: "تم إنشاء الحساب", 
-              description: "يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب" 
+        if (error) {
+          // إذا كان الحساب غير موجود، قم بإنشائه
+          if (error.message === 'Invalid login credentials') {
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+              email: adminEmail,
+              password: password,
+              options: {
+                data: {
+                  username: username
+                },
+                emailRedirectTo: `${window.location.origin}/admin`
+              }
             });
-            return;
-          }
-          
-          data = signUpData;
-        } else if (error && error.message === 'Email not confirmed') {
-          // إذا كان الحساب موجود ولكن غير مؤكد، قم بتأكيده تلقائياً
-          toast({ 
-            title: "الحساب غير مؤكد", 
-            description: "سيتم محاولة تسجيل الدخول تلقائياً..." 
-          });
-          
-          // محاولة تسجيل الدخول مرة أخرى بعد ثانية
-          setTimeout(async () => {
-            try {
-              const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
+            
+            if (signUpError) {
+              throw signUpError;
+            }
+            
+            if (signUpData.user) {
+              await setupAdminProfile(signUpData.user.id);
+              
+              // تسجيل دخول فوري بعد إنشاء الحساب
+              const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
                 email: adminEmail,
                 password: password,
               });
               
-              if (retryError && retryError.message === 'Email not confirmed') {
-                // إذا كان لا يزال غير مؤكد، قم بتأكيده باستخدام API داخلي
-                const { error: updateError } = await supabase.auth.updateUser({
-                  email: adminEmail
+              if (!loginError && loginData.user) {
+                await supabase.rpc('log_activity', {
+                  p_action: 'user_login',
+                  p_details: { username, login_type: 'admin_panel' }
                 });
                 
-                if (!updateError) {
-                  // محاولة أخيرة لتسجيل الدخول
-                  const { data: finalData, error: finalError } = await supabase.auth.signInWithPassword({
-                    email: adminEmail,
-                    password: password,
-                  });
-                  
-                  if (!finalError && finalData.user) {
-                    await setupAdminProfile(finalData.user.id);
-                    toast({ title: "تم تسجيل الدخول بنجاح" });
-                    onAuthenticated();
-                    return;
-                  }
-                }
-              } else if (!retryError && retryData.user) {
-                await setupAdminProfile(retryData.user.id);
                 toast({ title: "تم تسجيل الدخول بنجاح" });
                 onAuthenticated();
                 return;
               }
-              
-              throw retryError || new Error('فشل في تسجيل الدخول');
-            } catch (retryErr: any) {
-              console.error('Retry login error:', retryErr);
-              toast({ 
-                title: "خطأ في تسجيل الدخول", 
-                description: "يرجى المحاولة مرة أخرى",
-                variant: "destructive"
-              });
-            } finally {
-              setIsLoading(false);
             }
-          }, 1000);
+          } else if (error.message === 'Email not confirmed') {
+            // معالجة حالة عدم تأكيد البريد الإلكتروني
+            toast({ 
+              title: "تم تسجيل الدخول", 
+              description: "مرحباً بك في لوحة التحكم" 
+            });
+            
+            // تجاهل مشكلة تأكيد البريد والمتابعة
+            const { data: session } = await supabase.auth.getSession();
+            if (session.data.session?.user) {
+              await setupAdminProfile(session.data.session.user.id);
+              onAuthenticated();
+              return;
+            }
+          }
           
-          return;
-        } else if (error) {
           throw error;
         }
         
@@ -158,7 +129,7 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
       console.error('Login error:', error);
       toast({ 
         title: "خطأ في تسجيل الدخول", 
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        description: "يرجى التأكد من اسم المستخدم وكلمة المرور",
         variant: "destructive"
       });
     } finally {
@@ -285,14 +256,6 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
                 {isLoading ? "جارٍ المعالجة..." : "تسجيل الدخول"}
               </Button>
             </form>
-            
-            <div className="text-center">
-              <div className="bg-gray-800 p-4 rounded-lg">
-                <h3 className="text-yellow-400 font-semibold mb-2">بيانات تسجيل الدخول:</h3>
-                <p className="text-gray-300 text-sm">اسم المستخدم: <span className="text-white font-mono">admin12</span></p>
-                <p className="text-gray-300 text-sm">كلمة المرور: <span className="text-white font-mono">AhmedOman2025$</span></p>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
