@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Edit2, Trash2, Settings, Globe, Shield, Zap } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Settings, Save, Plus, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -25,13 +25,9 @@ interface SystemSetting {
 
 const SystemSettings = () => {
   const [settings, setSettings] = useState<SystemSetting[]>([]);
-  const [editingSetting, setEditingSetting] = useState<SystemSetting | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const { toast } = useToast();
-
-  const [formData, setFormData] = useState({
+  const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [newSetting, setNewSetting] = useState({
     category: '',
     key: '',
     value: '',
@@ -39,6 +35,7 @@ const SystemSettings = () => {
     data_type: 'string' as const,
     is_public: false
   });
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchSettings();
@@ -46,63 +43,26 @@ const SystemSettings = () => {
 
   const fetchSettings = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('system_settings')
         .select('*')
-        .order('category', { ascending: true });
+        .order('category', { ascending: true })
+        .order('key', { ascending: true });
       
       if (error) throw error;
-      setSettings(data || []);
+      
+      // تصحيح نوع البيانات
+      const typedData = (data || []).map(setting => ({
+        ...setting,
+        data_type: setting.data_type as 'string' | 'number' | 'boolean' | 'json'
+      }));
+      
+      setSettings(typedData);
     } catch (error) {
       console.error('Error fetching settings:', error);
       toast({
         title: "خطأ في تحميل الإعدادات",
-        description: "يرجى المحاولة مرة أخرى",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      if (editingSetting) {
-        // تحديث إعداد موجود
-        const { error } = await supabase
-          .from('system_settings')
-          .update(formData)
-          .eq('id', editingSetting.id);
-        
-        if (error) throw error;
-        
-        toast({
-          title: "تم تحديث الإعداد بنجاح",
-          description: "تم حفظ التغييرات",
-        });
-      } else {
-        // إنشاء إعداد جديد
-        const { error } = await supabase
-          .from('system_settings')
-          .insert([formData]);
-        
-        if (error) throw error;
-        
-        toast({
-          title: "تم إضافة الإعداد بنجاح",
-          description: "تم إنشاء إعداد جديد",
-        });
-      }
-
-      setIsDialogOpen(false);
-      setEditingSetting(null);
-      setFormData({ category: '', key: '', value: '', description: '', data_type: 'string', is_public: false });
-      fetchSettings();
-    } catch (error) {
-      console.error('Error saving setting:', error);
-      toast({
-        title: "خطأ في حفظ الإعداد",
         description: "يرجى المحاولة مرة أخرى",
         variant: "destructive",
       });
@@ -111,22 +71,70 @@ const SystemSettings = () => {
     }
   };
 
-  const handleEdit = (setting: SystemSetting) => {
-    setEditingSetting(setting);
-    setFormData({
-      category: setting.category,
-      key: setting.key,
-      value: setting.value,
-      description: setting.description || '',
-      data_type: setting.data_type,
-      is_public: setting.is_public
-    });
-    setIsDialogOpen(true);
+  const handleSaveSetting = async (setting: SystemSetting) => {
+    try {
+      const { error } = await supabase
+        .from('system_settings')
+        .update({
+          value: setting.value,
+          description: setting.description,
+          is_public: setting.is_public
+        })
+        .eq('id', setting.id);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "تم حفظ الإعداد بنجاح",
+        description: `تم تحديث ${setting.key}`,
+      });
+      
+      setEditingId(null);
+      fetchSettings();
+    } catch (error) {
+      console.error('Error updating setting:', error);
+      toast({
+        title: "خطأ في حفظ الإعداد",
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا الإعداد؟')) return;
+  const handleAddSetting = async () => {
+    try {
+      const { error } = await supabase
+        .from('system_settings')
+        .insert([newSetting]);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "تم إضافة الإعداد بنجاح",
+        description: `تم إنشاء ${newSetting.key}`,
+      });
+      
+      setNewSetting({
+        category: '',
+        key: '',
+        value: '',
+        description: '',
+        data_type: 'string',
+        is_public: false
+      });
+      
+      fetchSettings();
+    } catch (error) {
+      console.error('Error adding setting:', error);
+      toast({
+        title: "خطأ في إضافة الإعداد",
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive",
+      });
+    }
+  };
 
+  const handleDeleteSetting = async (id: string) => {
     try {
       const { error } = await supabase
         .from('system_settings')
@@ -137,7 +145,6 @@ const SystemSettings = () => {
       
       toast({
         title: "تم حذف الإعداد بنجاح",
-        description: "تم إزالة الإعداد من النظام",
       });
       
       fetchSettings();
@@ -151,215 +158,243 @@ const SystemSettings = () => {
     }
   };
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'site': return <Globe className="h-4 w-4" />;
-      case 'security': return <Shield className="h-4 w-4" />;
-      case 'features': return <Zap className="h-4 w-4" />;
-      default: return <Settings className="h-4 w-4" />;
+  const renderSettingValue = (setting: SystemSetting) => {
+    const isEditing = editingId === setting.id;
+    
+    if (setting.data_type === 'boolean') {
+      return (
+        <Switch
+          checked={setting.value === 'true'}
+          onCheckedChange={(checked) => {
+            if (isEditing) {
+              const updatedSettings = settings.map(s => 
+                s.id === setting.id ? { ...s, value: checked.toString() } : s
+              );
+              setSettings(updatedSettings);
+            }
+          }}
+          disabled={!isEditing}
+        />
+      );
     }
-  };
-
-  const getCategoryBadge = (category: string) => {
-    const categoryColors = {
-      site: 'bg-blue-500 text-white',
-      security: 'bg-red-500 text-white',
-      features: 'bg-green-500 text-white',
-      default: 'bg-gray-500 text-white'
-    };
+    
+    if (setting.data_type === 'json') {
+      return (
+        <Textarea
+          value={setting.value}
+          onChange={(e) => {
+            if (isEditing) {
+              const updatedSettings = settings.map(s => 
+                s.id === setting.id ? { ...s, value: e.target.value } : s
+              );
+              setSettings(updatedSettings);
+            }
+          }}
+          readOnly={!isEditing}
+          className={`bg-gray-700 border-gray-600 text-white font-mono text-sm ${!isEditing ? 'cursor-not-allowed' : ''}`}
+          rows={3}
+        />
+      );
+    }
     
     return (
-      <Badge className={categoryColors[category as keyof typeof categoryColors] || categoryColors.default}>
-        {getCategoryIcon(category)}
-        <span className="mr-1">{category}</span>
-      </Badge>
+      <Input
+        value={setting.value}
+        onChange={(e) => {
+          if (isEditing) {
+            const updatedSettings = settings.map(s => 
+              s.id === setting.id ? { ...s, value: e.target.value } : s
+            );
+            setSettings(updatedSettings);
+          }
+        }}
+        type={setting.data_type === 'number' ? 'number' : 'text'}
+        readOnly={!isEditing}
+        className={`bg-gray-700 border-gray-600 text-white ${!isEditing ? 'cursor-not-allowed' : ''}`}
+      />
     );
   };
 
-  const categories = ['all', ...Array.from(new Set(settings.map(s => s.category)))];
-  const filteredSettings = selectedCategory === 'all' 
-    ? settings 
-    : settings.filter(s => s.category === selectedCategory);
+  const groupedSettings = settings.reduce((groups, setting) => {
+    if (!groups[setting.category]) {
+      groups[setting.category] = [];
+    }
+    groups[setting.category].push(setting);
+    return groups;
+  }, {} as Record<string, SystemSetting[]>);
 
-  const openNewDialog = () => {
-    setEditingSetting(null);
-    setFormData({ category: '', key: '', value: '', description: '', data_type: 'string', is_public: false });
-    setIsDialogOpen(true);
-  };
+  if (loading) {
+    return (
+      <Card className="bg-gray-800 border-gray-700">
+        <CardContent className="flex items-center justify-center py-8">
+          <div className="text-gray-400">جاري تحميل الإعدادات...</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className="bg-gray-800 border-gray-700">
-      <CardHeader>
-        <div className="flex justify-between items-center">
+    <div className="space-y-6">
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader>
           <CardTitle className="text-yellow-500 flex items-center gap-2">
             <Settings className="h-5 w-5" />
             إعدادات النظام
           </CardTitle>
-          <div className="flex gap-2">
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-40 bg-gray-700 border-gray-600 text-white">
-                <SelectValue placeholder="تصفية حسب الفئة" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-700 border-gray-600">
-                <SelectItem value="all">جميع الفئات</SelectItem>
-                {categories.slice(1).map(category => (
-                  <SelectItem key={category} value={category}>{category}</SelectItem>
+        </CardHeader>
+        <CardContent>
+          {Object.entries(groupedSettings).map(([category, categorySettings]) => (
+            <div key={category} className="mb-8">
+              <h3 className="text-xl font-semibold text-white mb-4 capitalize">
+                {category}
+              </h3>
+              <div className="space-y-4">
+                {categorySettings.map((setting) => (
+                  <div key={setting.id} className="bg-gray-700 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h4 className="text-white font-medium">{setting.key}</h4>
+                        {setting.description && (
+                          <p className="text-gray-400 text-sm">{setting.description}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {editingId === setting.id ? (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => handleSaveSetting(setting)}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              <Save className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setEditingId(null)}
+                              className="border-gray-600 text-gray-300"
+                            >
+                              إلغاء
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setEditingId(setting.id)}
+                              className="border-gray-600 text-gray-300 hover:bg-gray-600"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDeleteSetting(setting.id)}
+                              className="border-red-600 text-red-400 hover:bg-red-600/10"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-gray-300">القيمة</Label>
+                      {renderSettingValue(setting)}
+                    </div>
+                  </div>
                 ))}
-              </SelectContent>
-            </Select>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button onClick={openNewDialog} className="bg-yellow-500 text-black hover:bg-yellow-400">
-                  <Plus className="mr-2 h-4 w-4" />
-                  إضافة إعداد
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-gray-800 border-gray-700 max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle className="text-white">
-                    {editingSetting ? 'تعديل الإعداد' : 'إضافة إعداد جديد'}
-                  </DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Input
-                        placeholder="الفئة (مثل: site, security)"
-                        value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        required
-                        className="bg-gray-700 border-gray-600 text-white"
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        placeholder="المفتاح (مثل: site_name)"
-                        value={formData.key}
-                        onChange={(e) => setFormData({ ...formData, key: e.target.value })}
-                        required
-                        className="bg-gray-700 border-gray-600 text-white"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Textarea
-                      placeholder="القيمة"
-                      value={formData.value}
-                      onChange={(e) => setFormData({ ...formData, value: e.target.value })}
-                      required
-                      rows={3}
-                      className="bg-gray-700 border-gray-600 text-white"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Input
-                      placeholder="الوصف (اختياري)"
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Select value={formData.data_type} onValueChange={(value: any) => setFormData({ ...formData, data_type: value })}>
-                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                          <SelectValue placeholder="نوع البيانات" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-700 border-gray-600">
-                          <SelectItem value="string">نص</SelectItem>
-                          <SelectItem value="number">رقم</SelectItem>
-                          <SelectItem value="boolean">صحيح/خطأ</SelectItem>
-                          <SelectItem value="json">JSON</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="is_public"
-                        checked={formData.is_public}
-                        onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
-                        className="rounded"
-                      />
-                      <label htmlFor="is_public" className="text-white">إعداد عام</label>
-                    </div>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-yellow-500 text-black hover:bg-yellow-400"
-                  >
-                    {loading ? 'جاري الحفظ...' : (editingSetting ? 'تحديث الإعداد' : 'إضافة الإعداد')}
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {filteredSettings.map((setting) => (
-            <div key={setting.id} className="bg-gray-700 p-4 rounded-lg">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    {getCategoryBadge(setting.category)}
-                    <h3 className="text-white font-medium">{setting.key}</h3>
-                    {setting.is_public && (
-                      <Badge variant="outline" className="border-green-500 text-green-500">
-                        عام
-                      </Badge>
-                    )}
-                    <Badge variant="outline" className="border-blue-500 text-blue-500">
-                      {setting.data_type}
-                    </Badge>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <p className="text-gray-300 text-sm font-mono bg-gray-800 p-2 rounded">
-                      {setting.value}
-                    </p>
-                    {setting.description && (
-                      <p className="text-gray-400 text-xs">{setting.description}</p>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleEdit(setting)}
-                    className="border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
-                  >
-                    <Edit2 className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleDelete(setting.id)}
-                    className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
               </div>
             </div>
           ))}
-          
-          {filteredSettings.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-gray-400">لا توجد إعدادات في هذه الفئة</p>
+        </CardContent>
+      </Card>
+
+      {/* إضافة إعداد جديد */}
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-yellow-500 flex items-center gap-2">
+            <Plus className="h-5 w-5" />
+            إضافة إعداد جديد
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-gray-300">التصنيف</Label>
+              <Input
+                value={newSetting.category}
+                onChange={(e) => setNewSetting({ ...newSetting, category: e.target.value })}
+                className="bg-gray-700 border-gray-600 text-white"
+                placeholder="مثال: site, security"
+              />
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            <div>
+              <Label className="text-gray-300">المفتاح</Label>
+              <Input
+                value={newSetting.key}
+                onChange={(e) => setNewSetting({ ...newSetting, key: e.target.value })}
+                className="bg-gray-700 border-gray-600 text-white"
+                placeholder="مثال: site_name"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <Label className="text-gray-300">القيمة</Label>
+            <Input
+              value={newSetting.value}
+              onChange={(e) => setNewSetting({ ...newSetting, value: e.target.value })}
+              className="bg-gray-700 border-gray-600 text-white"
+            />
+          </div>
+          
+          <div>
+            <Label className="text-gray-300">الوصف</Label>
+            <Input
+              value={newSetting.description}
+              onChange={(e) => setNewSetting({ ...newSetting, description: e.target.value })}
+              className="bg-gray-700 border-gray-600 text-white"
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-gray-300">نوع البيانات</Label>
+              <Select value={newSetting.data_type} onValueChange={(value: 'string' | 'number' | 'boolean' | 'json') => setNewSetting({ ...newSetting, data_type: value })}>
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600">
+                  <SelectItem value="string">نص</SelectItem>
+                  <SelectItem value="number">رقم</SelectItem>
+                  <SelectItem value="boolean">منطقي</SelectItem>
+                  <SelectItem value="json">JSON</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center space-x-2 mt-6">
+              <Switch
+                checked={newSetting.is_public}
+                onCheckedChange={(checked) => setNewSetting({ ...newSetting, is_public: checked })}
+              />
+              <Label className="text-gray-300">متاح للجمهور</Label>
+            </div>
+          </div>
+          
+          <Button
+            onClick={handleAddSetting}
+            disabled={!newSetting.category || !newSetting.key || !newSetting.value}
+            className="bg-yellow-500 text-black hover:bg-yellow-400"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            إضافة الإعداد
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

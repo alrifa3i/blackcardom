@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -53,7 +52,14 @@ const ActivityLogs = () => {
         .limit(100);
       
       if (error) throw error;
-      setLogs(data || []);
+      
+      // تصحيح نوع البيانات
+      const typedData = (data || []).map(log => ({
+        ...log,
+        ip_address: log.ip_address ? String(log.ip_address) : undefined
+      }));
+      
+      setLogs(typedData);
     } catch (error) {
       console.error('Error fetching logs:', error);
       toast({

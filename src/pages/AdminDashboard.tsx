@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,8 @@ import {
   ChevronRight,
   Star,
   Activity,
-  Database
+  Database,
+  LogOut
 } from 'lucide-react';
 import AdminAuth from '@/components/AdminAuth';
 import SocialMediaSettings from '@/components/SocialMediaSettings';
@@ -44,10 +45,80 @@ import SpecialServicesManagement from '@/components/SpecialServicesManagement';
 import UserManagement from '@/components/UserManagement';
 import SystemSettings from '@/components/SystemSettings';
 import ActivityLogs from '@/components/ActivityLogs';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // التحقق من جلسة المستخدم
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (profile?.role === 'admin') {
+          setCurrentUser(profile);
+          setIsAuthenticated(true);
+        }
+      }
+    };
+
+    checkAuth();
+
+    // مراقبة تغييرات الجلسة
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+      } else if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (profile?.role === 'admin') {
+          setCurrentUser(profile);
+          setIsAuthenticated(true);
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      // تسجيل نشاط تسجيل الخروج
+      await supabase.rpc('log_activity', {
+        p_action: 'user_logout',
+        p_details: { logout_type: 'admin_panel' }
+      });
+      
+      await supabase.auth.signOut();
+      
+      toast({
+        title: "تم تسجيل الخروج بنجاح",
+        description: "شكراً لاستخدامك لوحة التحكم"
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: "خطأ في تسجيل الخروج",
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive"
+      });
+    }
+  };
 
   if (!isAuthenticated) {
     return <AdminAuth onAuthenticated={() => setIsAuthenticated(true)} />;
@@ -234,7 +305,26 @@ const AdminDashboard = () => {
               <p className="text-gray-400 text-sm">إدارة شاملة لجميع جوانب النظام</p>
             </div>
             <div className="flex items-center gap-4">
+              {currentUser && (
+                <div className="flex items-center gap-2">
+                  <div className="text-right">
+                    <p className="text-white font-medium">{currentUser.username}</p>
+                    <p className="text-gray-400 text-xs">{currentUser.email}</p>
+                  </div>
+                  <div className="w-10 h-10 bg-yellow-500 text-black rounded-full flex items-center justify-center font-bold">
+                    {currentUser.username.charAt(0).toUpperCase()}
+                  </div>
+                </div>
+              )}
               <Badge className="bg-yellow-500 text-black">مدير النظام</Badge>
+              <Button 
+                onClick={handleLogout}
+                variant="outline"
+                className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white transition-colors"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                تسجيل الخروج
+              </Button>
             </div>
           </div>
         </div>
