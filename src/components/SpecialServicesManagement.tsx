@@ -51,29 +51,114 @@ const SpecialServicesManagement = () => {
 
   // Get special services
   const { data: specialServices, isLoading } = useQuery({
-    queryKey: ['admin-special-services'],
+    queryKey: ['admin-special-services', PROJECT_ID],
     queryFn: async (): Promise<SpecialService[]> => {
+      console.log('Fetching special services for project:', PROJECT_ID);
       const { data, error } = await supabase
         .from('special_services')
         .select('*')
         .eq('project_id', PROJECT_ID)
         .order('display_order', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching special services:', error);
+        throw error;
+      }
+      
+      console.log('Fetched special services:', data);
       return (data || []) as SpecialService[];
+    }
+  });
+
+  // Initialize special services for military project
+  const initializeMutation = useMutation({
+    mutationFn: async () => {
+      console.log('Initializing special services for project:', PROJECT_ID);
+      
+      // First, delete any existing special services for this project
+      const { error: deleteError } = await supabase
+        .from('special_services')
+        .delete()
+        .eq('project_id', PROJECT_ID);
+      
+      if (deleteError) {
+        console.error('Error deleting existing special services:', deleteError);
+        throw deleteError;
+      }
+
+      // Default special services for military tech project
+      const defaultSpecialServices = [
+        {
+          name: "خدمات الأمن السيبراني المتقدمة",
+          description: "حماية شاملة للأنظمة العسكرية الحساسة",
+          detailed_description: "خدمات أمن سيبراني متطورة تشمل الحماية من التهديدات المتقدمة وأنظمة الكشف المبكر",
+          project_types: ["أنظمة القيادة", "شبكات الاتصال", "قواعد البيانات العسكرية"],
+          features: ["مراقبة 24/7", "كشف التهديدات المتقدمة", "استجابة فورية", "تحليل الثغرات"],
+          icon: "🛡️",
+          color: "#DC2626",
+          is_featured: true,
+          is_active: true,
+          display_order: 1,
+          project_id: PROJECT_ID
+        },
+        {
+          name: "أنظمة الذكاء الاصطناعي للاستطلاع",
+          description: "تقنيات ذكية لتحليل البيانات الاستطلاعية",
+          detailed_description: "حلول ذكاء اصطناعي متطورة لتحليل البيانات والصور والإشارات للأغراض العسكرية",
+          project_types: ["استطلاع جوي", "مراقبة حدودية", "تحليل الصور"],
+          features: ["تحليل الصور بالذكاء الاصطناعي", "كشف الأنماط", "التنبؤ التكتيكي", "معالجة البيانات الضخمة"],
+          icon: "🤖",
+          color: "#7C3AED",
+          is_featured: true,
+          is_active: true,
+          display_order: 2,
+          project_id: PROJECT_ID
+        },
+        {
+          name: "حلول الاتصالات المشفرة",
+          description: "أنظمة اتصال آمنة ومشفرة للعمليات العسكرية",
+          detailed_description: "شبكات اتصال عسكرية آمنة بتشفير متطور لضمان سرية الاتصالات",
+          project_types: ["اتصالات تكتيكية", "شبكات القيادة", "اتصالات الطوارئ"],
+          features: ["تشفير عسكري", "مقاومة التشويش", "شبكات متنقلة", "اتصال متعدد القنوات"],
+          icon: "📡",
+          color: "#059669",
+          is_featured: false,
+          is_active: true,
+          display_order: 3,
+          project_id: PROJECT_ID
+        }
+      ];
+
+      const { error: insertError } = await supabase
+        .from('special_services')
+        .insert(defaultSpecialServices);
+        
+      if (insertError) {
+        console.error('Error inserting default special services:', insertError);
+        throw insertError;
+      }
+      
+      console.log('Successfully initialized special services for project:', PROJECT_ID);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-special-services', PROJECT_ID] });
+      queryClient.invalidateQueries({ queryKey: ['special-services-public'] });
+      toast({ title: "تم إضافة الخدمات الخاصة الافتراضية بنجاح" });
     }
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
       const serviceData = { ...data, project_id: PROJECT_ID };
+      console.log('Creating special service:', serviceData);
       const { error } = await supabase
         .from('special_services')
         .insert([serviceData]);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-special-services'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-special-services', PROJECT_ID] });
+      queryClient.invalidateQueries({ queryKey: ['special-services-public'] });
       toast({ title: "تم إضافة الخدمة الخاصة بنجاح" });
       resetForm();
     }
@@ -82,6 +167,7 @@ const SpecialServicesManagement = () => {
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
       const serviceData = { ...data, project_id: PROJECT_ID };
+      console.log('Updating special service:', id, serviceData);
       const { error } = await supabase
         .from('special_services')
         .update(serviceData)
@@ -90,7 +176,7 @@ const SpecialServicesManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-special-services'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-special-services', PROJECT_ID] });
       queryClient.invalidateQueries({ queryKey: ['special-services-public'] });
       toast({ title: "تم تحديث الخدمة الخاصة بنجاح" });
       resetForm();
@@ -99,6 +185,7 @@ const SpecialServicesManagement = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log('Deleting special service:', id);
       const { error } = await supabase
         .from('special_services')
         .delete()
@@ -107,7 +194,7 @@ const SpecialServicesManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-special-services'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-special-services', PROJECT_ID] });
       queryClient.invalidateQueries({ queryKey: ['special-services-public'] });
       toast({ title: "تم حذف الخدمة الخاصة بنجاح" });
     }
@@ -164,15 +251,24 @@ const SpecialServicesManagement = () => {
         <div className="flex justify-between items-center">
           <CardTitle className="text-yellow-500 flex items-center gap-2">
             <Star className="h-5 w-5" />
-            إدارة الخدمات الخاصة
+            إدارة الخدمات الخاصة - المشروع العسكري التقني
           </CardTitle>
-          <Button
-            onClick={() => setShowForm(true)}
-            className="bg-yellow-500 text-black hover:bg-yellow-400"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            إضافة خدمة خاصة
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => initializeMutation.mutate()}
+              variant="outline"
+              className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+            >
+              إعادة تهيئة الخدمات الخاصة
+            </Button>
+            <Button
+              onClick={() => setShowForm(true)}
+              className="bg-yellow-500 text-black hover:bg-yellow-400"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              إضافة خدمة خاصة
+            </Button>
+          </div>
         </div>
       </CardHeader>
       
@@ -230,7 +326,7 @@ const SpecialServicesManagement = () => {
                       value={formData.icon}
                       onChange={(e) => setFormData({...formData, icon: e.target.value})}
                       className="bg-gray-600 border-gray-500 text-white"
-                      placeholder="مثال: ⭐ أو 🚀"
+                      placeholder="مثال: 🛡️ أو 🚀"
                     />
                   </div>
                   <div>
@@ -294,16 +390,16 @@ const SpecialServicesManagement = () => {
             <div className="text-center py-8">
               <div className="text-gray-400">جاري التحميل...</div>
             </div>
-          ) : specialServices?.length === 0 ? (
+          ) : !specialServices || specialServices.length === 0 ? (
             <div className="text-center py-8">
               <Star className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-              <div className="text-gray-400 mb-4">لا توجد خدمات خاصة حالياً</div>
+              <div className="text-gray-400 mb-4">لا توجد خدمات خاصة لهذا المشروع حالياً</div>
               <Button
-                onClick={() => setShowForm(true)}
+                onClick={() => initializeMutation.mutate()}
                 className="bg-yellow-500 text-black hover:bg-yellow-400"
               >
                 <Plus className="mr-2 h-4 w-4" />
-                إضافة أول خدمة خاصة
+                إضافة الخدمات الخاصة الافتراضية
               </Button>
             </div>
           ) : (
@@ -324,6 +420,9 @@ const SpecialServicesManagement = () => {
                         <Badge className={`text-xs ${service.is_active ? 'bg-green-500 text-black' : 'bg-gray-500 text-white'}`}>
                           {service.is_active ? <Eye className="h-3 w-3 mr-1" /> : <EyeOff className="h-3 w-3 mr-1" />}
                           {service.is_active ? 'نشطة' : 'غير نشطة'}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs bg-yellow-900 text-yellow-200">
+                          {PROJECT_ID}
                         </Badge>
                       </div>
                       {service.description && (

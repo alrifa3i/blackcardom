@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,135 +30,120 @@ const ServicesManagement = () => {
   const queryClient = useQueryClient();
 
   const { data: services, isLoading } = useQuery({
-    queryKey: ['admin-services'],
+    queryKey: ['admin-services', PROJECT_ID],
     queryFn: async () => {
+      console.log('Fetching services for project:', PROJECT_ID);
       const { data, error } = await supabase
         .from('services')
         .select('*')
         .eq('project_id', PROJECT_ID)
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Error fetching services:', error);
+        throw error;
+      }
+      
+      console.log('Fetched services:', data);
+      return data || [];
     }
   });
 
-  // Default services to populate the database
-  const defaultServices = [
-    {
-      name: "تطوير أنظمة إدارة المخزون",
-      description: "أنظمة ذكية ومتطورة لإدارة المخزون والمستودعات مع تتبع دقيق للمنتجات",
-      type: "development",
-      price: 1000,
-      unit: "نظام",
-      is_active: true,
-      project_id: PROJECT_ID
-    },
-    {
-      name: "تطوير تطبيقات الويب",
-      description: "تصميم وتطوير تطبيقات ويب احترافية باستخدام أحدث التقنيات",
-      type: "development",
-      price: 800,
-      unit: "مشروع",
-      is_active: true,
-      project_id: PROJECT_ID
-    },
-    {
-      name: "استشارات الأعمال التقنية",
-      description: "استشارات متخصصة لتحسين العمليات وزيادة الكفاءة باستخدام التقنيات الحديثة",
-      type: "consulting",
-      price: 25,
-      unit: "ساعة",
-      is_active: true,
-      project_id: PROJECT_ID
-    },
-    {
-      name: "أنظمة الحماية السيبرانية",
-      description: "حلول أمنية متطورة لحماية البيانات والأنظمة من التهديدات السيبرانية",
-      type: "security",
-      price: 1200,
-      unit: "نظام",
-      is_active: true,
-      project_id: PROJECT_ID
-    },
-    {
-      name: "أنظمة الذكاء الاصطناعي",
-      description: "تطوير حلول الذكاء الاصطناعي وتعلم الآلة المتقدمة للأعمال",
-      type: "ai",
-      price: 1800,
-      unit: "نظام",
-      is_active: true,
-      project_id: PROJECT_ID
-    },
-    {
-      name: "تطوير التطبيقات المحمولة",
-      description: "تطبيقات أصلية ومتطورة للهواتف الذكية والأجهزة اللوحية",
-      type: "mobile",
-      price: 1500,
-      unit: "تطبيق",
-      is_active: true,
-      project_id: PROJECT_ID
-    },
-    {
-      name: "استشارات التحول الرقمي",
-      description: "إرشاد الشركات خلال رحلة التحول الرقمي الشامل والمتطور",
-      type: "consulting",
-      price: 50,
-      unit: "ساعة",
-      is_active: true,
-      project_id: PROJECT_ID
-    },
-    {
-      name: "التسويق الرقمي الذكي",
-      description: "حلول التسويق الرقمي المدعومة بالذكاء الاصطناعي والتحليلات المتقدمة",
-      type: "marketing",
-      price: 400,
-      unit: "شهر",
-      is_active: true,
-      project_id: PROJECT_ID
-    },
-    {
-      name: "أنظمة إدارة المحتوى",
-      description: "منصات متطورة لإدارة المحتوى الرقمي والنشر الذكي",
-      type: "cms",
-      price: 900,
-      unit: "نظام",
-      is_active: true,
-      project_id: PROJECT_ID
-    }
-  ];
-
-  // Initialize services if none exist
+  // Clear existing data and add default services for this project
   const initializeMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
+      console.log('Initializing services for project:', PROJECT_ID);
+      
+      // First, delete any existing services for this project
+      const { error: deleteError } = await supabase
+        .from('services')
+        .delete()
+        .eq('project_id', PROJECT_ID);
+      
+      if (deleteError) {
+        console.error('Error deleting existing services:', deleteError);
+        throw deleteError;
+      }
+
+      // Default services for military tech project
+      const defaultServices = [
+        {
+          name: "تطوير أنظمة إدارة المخزون العسكري",
+          description: "أنظمة ذكية ومتطورة لإدارة المخزون والمستودعات العسكرية مع تتبع دقيق للمعدات",
+          type: "development",
+          price: 2500,
+          unit: "نظام",
+          is_active: true,
+          project_id: PROJECT_ID
+        },
+        {
+          name: "تطوير أنظمة القيادة والسيطرة",
+          description: "تصميم وتطوير أنظمة قيادة وسيطرة متطورة للعمليات العسكرية",
+          type: "development",
+          price: 5000,
+          unit: "نظام",
+          is_active: true,
+          project_id: PROJECT_ID
+        },
+        {
+          name: "استشارات الأمن السيبراني العسكري",
+          description: "استشارات متخصصة لحماية الأنظمة العسكرية من التهديدات السيبرانية",
+          type: "consulting",
+          price: 150,
+          unit: "ساعة",
+          is_active: true,
+          project_id: PROJECT_ID
+        },
+        {
+          name: "أنظمة الاستطلاع والمراقبة",
+          description: "حلول تقنية متطورة لأنظمة الاستطلاع والمراقبة العسكرية",
+          type: "security",
+          price: 3000,
+          unit: "نظام",
+          is_active: true,
+          project_id: PROJECT_ID
+        },
+        {
+          name: "أنظمة الذكاء الاصطناعي العسكري",
+          description: "تطوير حلول الذكاء الاصطناعي المتخصصة للتطبيقات العسكرية",
+          type: "ai",
+          price: 4000,
+          unit: "نظام",
+          is_active: true,
+          project_id: PROJECT_ID
+        }
+      ];
+
+      const { error: insertError } = await supabase
         .from('services')
         .insert(defaultServices);
-      if (error) throw error;
+        
+      if (insertError) {
+        console.error('Error inserting default services:', insertError);
+        throw insertError;
+      }
+      
+      console.log('Successfully initialized services for project:', PROJECT_ID);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-services'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-services', PROJECT_ID] });
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: "تم إضافة الخدمات الافتراضية بنجاح" });
     }
   });
 
-  // Auto-initialize if no services exist
-  useEffect(() => {
-    if (services && services.length === 0) {
-      initializeMutation.mutate();
-    }
-  }, [services]);
-
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
       const serviceData = { ...data, project_id: PROJECT_ID };
+      console.log('Creating service:', serviceData);
       const { error } = await supabase
         .from('services')
         .insert([serviceData]);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-services'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-services', PROJECT_ID] });
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: "تم إضافة الخدمة بنجاح" });
       resetForm();
     }
@@ -166,6 +152,7 @@ const ServicesManagement = () => {
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
       const serviceData = { ...data, project_id: PROJECT_ID };
+      console.log('Updating service:', id, serviceData);
       const { error } = await supabase
         .from('services')
         .update(serviceData)
@@ -174,7 +161,8 @@ const ServicesManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-services'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-services', PROJECT_ID] });
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: "تم تحديث الخدمة بنجاح" });
       resetForm();
     }
@@ -182,6 +170,7 @@ const ServicesManagement = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log('Deleting service:', id);
       const { error } = await supabase
         .from('services')
         .delete()
@@ -190,7 +179,8 @@ const ServicesManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-services'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-services', PROJECT_ID] });
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: "تم حذف الخدمة بنجاح" });
     }
   });
@@ -230,18 +220,16 @@ const ServicesManagement = () => {
         <div className="flex justify-between items-center">
           <CardTitle className="text-yellow-500 flex items-center gap-2">
             <Zap className="h-5 w-5" />
-            إدارة الخدمات
+            إدارة الخدمات - المشروع العسكري التقني
           </CardTitle>
           <div className="flex gap-2">
-            {services && services.length === 0 && (
-              <Button
-                onClick={() => initializeMutation.mutate()}
-                variant="outline"
-                className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
-              >
-                إضافة الخدمات الافتراضية
-              </Button>
-            )}
+            <Button
+              onClick={() => initializeMutation.mutate()}
+              variant="outline"
+              className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+            >
+              إعادة تهيئة الخدمات
+            </Button>
             <Button
               onClick={() => setShowForm(true)}
               className="bg-yellow-500 text-black hover:bg-yellow-400"
@@ -284,14 +272,11 @@ const ServicesManagement = () => {
                       required
                     >
                       <option value="development">تطوير</option>
-                      <option value="design">تصميم</option>
                       <option value="consulting">استشارات</option>
-                      <option value="maintenance">صيانة</option>
                       <option value="security">أمان</option>
                       <option value="ai">ذكاء اصطناعي</option>
-                      <option value="mobile">تطبيقات محمولة</option>
-                      <option value="marketing">تسويق</option>
-                      <option value="cms">إدارة محتوى</option>
+                      <option value="surveillance">مراقبة</option>
+                      <option value="maintenance">صيانة</option>
                     </select>
                   </div>
                 </div>
@@ -327,12 +312,11 @@ const ServicesManagement = () => {
                       onChange={(e) => setFormData({...formData, unit: e.target.value})}
                       className="w-full px-3 py-2 bg-gray-600 border border-gray-500 text-white rounded-md"
                     >
-                      <option value="مشروع">مشروع</option>
+                      <option value="نظام">نظام</option>
                       <option value="ساعة">ساعة</option>
+                      <option value="مشروع">مشروع</option>
                       <option value="شهر">شهر</option>
                       <option value="سنة">سنة</option>
-                      <option value="نظام">نظام</option>
-                      <option value="تطبيق">تطبيق</option>
                     </select>
                   </div>
                 </div>
@@ -364,14 +348,14 @@ const ServicesManagement = () => {
             <div className="text-center py-8">
               <div className="text-gray-400">جاري التحميل...</div>
             </div>
-          ) : services?.length === 0 ? (
+          ) : !services || services.length === 0 ? (
             <div className="text-center py-8">
-              <div className="text-gray-400 mb-4">لا توجد خدمات حالياً</div>
+              <div className="text-gray-400 mb-4">لا توجد خدمات لهذا المشروع حالياً</div>
               <Button
                 onClick={() => initializeMutation.mutate()}
                 className="bg-yellow-500 text-black hover:bg-yellow-400"
               >
-                إضافة الخدمات الافتراضية
+                إضافة الخدمات الافتراضية للمشروع العسكري
               </Button>
             </div>
           ) : (
@@ -387,6 +371,9 @@ const ServicesManagement = () => {
                         </Badge>
                         <Badge variant="outline" className="text-xs">
                           {service.type}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs bg-yellow-900 text-yellow-200">
+                          {PROJECT_ID}
                         </Badge>
                       </div>
                       {service.description && (
