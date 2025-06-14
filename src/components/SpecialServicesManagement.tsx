@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -88,6 +89,73 @@ const SpecialServicesManagement = () => {
     }
   });
 
+  // Default services from main page that can be linked
+  const mainPageServices = [
+    {
+      name: "تطوير أنظمة إدارة المخزون",
+      description: "أنظمة ذكية ومتطورة لإدارة المخزون والمستودعات مع تتبع دقيق للمنتجات",
+      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"],
+      icon: "Package",
+      color: "#3B82F6"
+    },
+    {
+      name: "تطوير تطبيقات الويب",
+      description: "تصميم وتطوير تطبيقات ويب احترافية باستخدام أحدث التقنيات",
+      features: ["تصميم متجاوب", "أداء عالي", "أمان متقدم", "سهولة الاستخدام"],
+      icon: "Globe",
+      color: "#10B981"
+    },
+    {
+      name: "استشارات الأعمال التقنية",
+      description: "استشارات متخصصة لتحسين العمليات وزيادة الكفاءة باستخدام التقنيات الحديثة",
+      features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"],
+      icon: "Users",
+      color: "#F59E0B"
+    },
+    {
+      name: "أنظمة الحماية السيبرانية",
+      description: "حلول أمنية متطورة لحماية البيانات والأنظمة من التهديدات السيبرانية",
+      features: ["مراقبة الأمان", "كشف التهديدات", "حماية البيانات", "تقارير أمنية"],
+      icon: "Shield",
+      color: "#EF4444"
+    },
+    {
+      name: "أنظمة الذكاء الاصطناعي",
+      description: "تطوير حلول الذكاء الاصطناعي وتعلم الآلة المتقدمة للأعمال",
+      features: ["تعلم الآلة", "تحليل البيانات", "أتمتة العمليات", "توقعات ذكية"],
+      icon: "Brain",
+      color: "#8B5CF6"
+    },
+    {
+      name: "تطوير التطبيقات المحمولة",
+      description: "تطبيقات أصلية ومتطورة للهواتف الذكية والأجهزة اللوحية",
+      features: ["تطبيقات أصلية", "تصميم حديث", "أداء سريع", "متجر التطبيقات"],
+      icon: "Smartphone",
+      color: "#06B6D4"
+    },
+    {
+      name: "استشارات التحول الرقمي",
+      description: "إرشاد الشركات خلال رحلة التحول الرقمي الشامل والمتطور",
+      features: ["تقييم الوضع الحالي", "خطة التحول", "تدريب الفرق", "دعم مستمر"],
+      icon: "Zap",
+      color: "#F97316"
+    },
+    {
+      name: "التسويق الرقمي الذكي",
+      description: "حلول التسويق الرقمي المدعومة بالذكاء الاصطناعي والتحليلات المتقدمة",
+      features: ["حملات ذكية", "تحليل الجمهور", "تحسين الإعلانات", "تقارير شاملة"],
+      icon: "TrendingUp",
+      color: "#EC4899"
+    },
+    {
+      name: "أنظمة إدارة المحتوى",
+      description: "منصات متطورة لإدارة المحتوى الرقمي والنشر الذكي",
+      features: ["إدارة المحتوى", "نشر تلقائي", "تحسين SEO", "تحليلات المحتوى"],
+      icon: "FileText",
+      color: "#84CC16"
+    }
+  ];
+
   const predefinedProjects = [
     'أنظمة إدارة المحتوى',
     'أنظمة الحماية السيبرانية', 
@@ -103,44 +171,18 @@ const SpecialServicesManagement = () => {
   // Initialize special services if none exist
   const initializeMutation = useMutation({
     mutationFn: async () => {
-      const defaultSpecialServices = [
-        {
-          name: 'حلول الذكاء الاصطناعي المتقدمة',
-          description: 'أنظمة ذكية تدعم اتخاذ القرارات وتحليل البيانات',
-          detailed_description: 'نقدم حلول الذكاء الاصطناعي المتطورة التي تشمل تعلم الآلة والتحليل التنبؤي لتعزيز كفاءة أعمالك',
-          project_types: ['أنظمة الذكاء الاصطناعي', 'تطوير تطبيقات الويب'],
-          features: ['تعلم الآلة', 'تحليل البيانات', 'أتمتة العمليات', 'توقعات ذكية'],
-          icon: 'Brain',
-          color: '#8B5CF6',
-          is_featured: true,
-          is_active: true,
-          display_order: 1
-        },
-        {
-          name: 'أنظمة الأمان السيبراني الشاملة',
-          description: 'حماية متطورة للبيانات والأنظمة من التهديدات',
-          detailed_description: 'خدمات الحماية السيبرانية المتكاملة لضمان أمان أعمالك وحماية بياناتك الحساسة',
-          project_types: ['أنظمة الحماية السيبرانية', 'استشارات الأعمال التقنية'],
-          features: ['مراقبة الأمان', 'كشف التهديدات', 'حماية البيانات', 'تقارير أمنية'],
-          icon: 'Shield',
-          color: '#EF4444',
-          is_featured: true,
-          is_active: true,
-          display_order: 2
-        },
-        {
-          name: 'التحول الرقمي الكامل',
-          description: 'استراتيجية شاملة لتحديث أعمالك رقمياً',
-          detailed_description: 'نرافقك في رحلة التحول الرقمي الكامل مع استراتيجيات مخصصة وتطبيق أحدث التقنيات',
-          project_types: ['استشارات التحول الرقمي', 'تطوير تطبيقات الويب', 'أنظمة إدارة المحتوى'],
-          features: ['تقييم الوضع الحالي', 'خطة التحول', 'تدريب الفرق', 'دعم مستمر'],
-          icon: 'Zap',
-          color: '#F59E0B',
-          is_featured: false,
-          is_active: true,
-          display_order: 3
-        }
-      ];
+      const defaultSpecialServices = mainPageServices.map((service, index) => ({
+        name: service.name,
+        description: service.description,
+        detailed_description: `خدمة متخصصة في ${service.name} تقدم حلولاً شاملة ومتطورة لتلبية احتياجات عملك`,
+        project_types: [service.name],
+        features: service.features,
+        icon: service.icon,
+        color: service.color,
+        is_featured: index < 3, // أول 3 خدمات مميزة
+        is_active: true,
+        display_order: index + 1
+      }));
 
       const { error } = await supabase
         .from('special_services')
@@ -149,7 +191,7 @@ const SpecialServicesManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['special-services'] });
-      toast({ title: "تم إضافة الخدمات الخاصة الافتراضية بنجاح" });
+      toast({ title: "تم إضافة الخدمات الخاصة من الصفحة الرئيسية بنجاح" });
     }
   });
 
@@ -274,6 +316,23 @@ const SpecialServicesManagement = () => {
     }));
   };
 
+  const linkFromMainPageService = (mainService: any) => {
+    setFormData({
+      name: mainService.name,
+      description: mainService.description,
+      detailed_description: `خدمة متخصصة في ${mainService.name} تقدم حلولاً شاملة ومتطورة لتلبية احتياجات عملك`,
+      base_service_id: '',
+      project_types: [mainService.name],
+      features: mainService.features,
+      icon: mainService.icon,
+      color: mainService.color,
+      is_featured: false,
+      is_active: true,
+      display_order: (specialServices?.length || 0) + 1
+    });
+    setShowForm(true);
+  };
+
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
@@ -289,7 +348,8 @@ const SpecialServicesManagement = () => {
                 variant="outline"
                 className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
               >
-                إضافة الخدمات الافتراضية
+                <Link className="mr-2 h-4 w-4" />
+                ربط خدمات الصفحة الرئيسية
               </Button>
             )}
             <Button
@@ -304,6 +364,40 @@ const SpecialServicesManagement = () => {
       </CardHeader>
       
       <CardContent className="space-y-6">
+        {/* Quick Link Section */}
+        <Card className="bg-gray-700 border-gray-600">
+          <CardHeader>
+            <CardTitle className="text-white text-lg flex items-center gap-2">
+              <Link className="h-5 w-5" />
+              ربط سريع من خدمات الصفحة الرئيسية
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {mainPageServices.map((service, index) => (
+                <div key={index} className="p-3 bg-gray-600 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-white text-sm font-medium">{service.name}</h4>
+                    <div 
+                      className="w-4 h-4 rounded-full" 
+                      style={{ backgroundColor: service.color }}
+                    ></div>
+                  </div>
+                  <p className="text-gray-300 text-xs mb-3">{service.description.substring(0, 60)}...</p>
+                  <Button
+                    size="sm"
+                    onClick={() => linkFromMainPageService(service)}
+                    className="w-full bg-yellow-500 text-black hover:bg-yellow-400 text-xs"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    إضافة كخدمة خاصة
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
         {showForm && (
           <Card className="bg-gray-700 border-gray-600">
             <CardHeader>
