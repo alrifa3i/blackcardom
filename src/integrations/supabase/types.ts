@@ -9,6 +9,50 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          ip_address: unknown | null
+          resource_id: string | null
+          resource_type: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       advertisements: {
         Row: {
           adults: number | null
@@ -671,32 +715,44 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
+          department: string | null
           email: string
           id: string
           is_active: boolean
           last_login: string | null
-          role: string
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          status: string | null
           updated_at: string
           username: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
+          department?: string | null
           email: string
           id: string
           is_active?: boolean
           last_login?: string | null
-          role?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: string | null
           updated_at?: string
           username: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
+          department?: string | null
           email?: string
           id?: string
           is_active?: boolean
           last_login?: string | null
-          role?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: string | null
           updated_at?: string
           username?: string
         }
@@ -873,6 +929,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      system_settings: {
+        Row: {
+          category: string
+          created_at: string | null
+          data_type: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          key: string
+          updated_at: string | null
+          value: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          data_type?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          key: string
+          updated_at?: string | null
+          value: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          data_type?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          key?: string
+          updated_at?: string | null
+          value?: string
+        }
+        Relationships: []
       }
       transport: {
         Row: {
@@ -1057,13 +1149,22 @@ export type Database = {
         Args: { user_id: string }
         Returns: string
       }
+      log_activity: {
+        Args: {
+          p_action: string
+          p_resource_type?: string
+          p_resource_id?: string
+          p_details?: Json
+        }
+        Returns: undefined
+      }
       update_user_last_login: {
         Args: { user_id: string }
         Returns: undefined
       }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "admin" | "moderator" | "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1178,6 +1279,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["admin", "moderator", "editor", "viewer"],
+    },
   },
 } as const

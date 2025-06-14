@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,9 @@ import {
   FileEdit,
   Home,
   ChevronRight,
-  Star
+  Star,
+  Activity,
+  Database
 } from 'lucide-react';
 import AdminAuth from '@/components/AdminAuth';
 import SocialMediaSettings from '@/components/SocialMediaSettings';
@@ -38,6 +41,9 @@ import GoogleAdsAnalytics from '@/components/GoogleAdsAnalytics';
 import ServicesManagement from '@/components/ServicesManagement';
 import ProductsManagement from '@/components/ProductsManagement';
 import SpecialServicesManagement from '@/components/SpecialServicesManagement';
+import UserManagement from '@/components/UserManagement';
+import SystemSettings from '@/components/SystemSettings';
+import ActivityLogs from '@/components/ActivityLogs';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -110,11 +116,12 @@ const AdminDashboard = () => {
       ]
     },
     {
-      title: "الإعدادات",
+      title: "إدارة النظام",
       items: [
-        { id: 'whatsapp-settings', name: 'إعدادات واتساب', icon: Settings, description: 'تكوين أرقام واتساب' },
-        { id: 'users', name: 'إدارة المستخدمين', icon: Users, description: 'إدارة حسابات المستخدمين' },
-        { id: 'settings', name: 'إعدادات النظام', icon: Settings, description: 'الإعدادات العامة' }
+        { id: 'users', name: 'إدارة المستخدمين', icon: Users, description: 'إدارة حسابات المستخدمين والأدوار' },
+        { id: 'system-settings', name: 'إعدادات النظام', icon: Database, description: 'إعدادات وتكوين النظام' },
+        { id: 'activity-logs', name: 'سجل النشاطات', icon: Activity, description: 'مراقبة أنشطة النظام' },
+        { id: 'whatsapp-settings', name: 'إعدادات واتساب', icon: Settings, description: 'تكوين أرقام واتساب' }
       ]
     }
   ];
@@ -206,41 +213,11 @@ const AdminDashboard = () => {
       case 'faq':
         return <FAQManagement />;
       case 'users':
-        return (
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-yellow-500">إدارة المستخدمين</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <Users className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400 mb-4">قريباً - إدارة شاملة للمستخدمين</p>
-                <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
-                  <Plus className="mr-2 h-4 w-4" />
-                  إضافة مستخدم جديد
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      case 'settings':
-        return (
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-yellow-500">إعدادات النظام</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <Settings className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400 mb-4">قريباً - إعدادات شاملة للنظام</p>
-                <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
-                  <Settings className="mr-2 h-4 w-4" />
-                  إدارة الإعدادات
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
+        return <UserManagement />;
+      case 'system-settings':
+        return <SystemSettings />;
+      case 'activity-logs':
+        return <ActivityLogs />;
       default:
         return null;
     }
