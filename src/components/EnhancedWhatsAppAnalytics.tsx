@@ -48,7 +48,7 @@ const EnhancedWhatsAppAnalytics = () => {
     return new Date(contact.created_at) >= weekAgo;
   }).length || 0;
 
-  const employeeStats = contacts?.reduce((acc: any, contact) => {
+  const employeeStats = contacts?.reduce((acc: Record<string, number>, contact) => {
     acc[contact.employee_name] = (acc[contact.employee_name] || 0) + 1;
     return acc;
   }, {}) || {};
@@ -56,7 +56,7 @@ const EnhancedWhatsAppAnalytics = () => {
   // إحصائيات بالساعة لليوم الحالي
   const hourlyStats = contacts?.filter(contact => 
     new Date(contact.created_at).toDateString() === new Date().toDateString()
-  ).reduce((acc: any, contact) => {
+  ).reduce((acc: Record<number, number>, contact) => {
     const hour = new Date(contact.created_at).getHours();
     acc[hour] = (acc[hour] || 0) + 1;
     return acc;
@@ -124,21 +124,27 @@ const EnhancedWhatsAppAnalytics = () => {
         
         <CardContent>
           <div className="grid grid-cols-8 md:grid-cols-12 gap-2">
-            {Array.from({ length: 24 }, (_, hour) => (
-              <div key={hour} className="text-center">
-                <div className="text-xs text-gray-400 mb-1">{hour}:00</div>
-                <div className="h-8 bg-gray-700 rounded flex items-end justify-center">
-                  <div 
-                    className="bg-yellow-500 rounded-b w-full transition-all duration-300"
-                    style={{ 
-                      height: `${hourlyStats[hour] ? (hourlyStats[hour] / Math.max(...Object.values(hourlyStats))) * 100 : 0}%`,
-                      minHeight: hourlyStats[hour] ? '8px' : '0px'
-                    }}
-                  ></div>
+            {Array.from({ length: 24 }, (_, hour) => {
+              const hourlyCount = hourlyStats[hour] || 0;
+              const maxCount = Math.max(...Object.values(hourlyStats), 1);
+              const heightPercentage = hourlyCount > 0 ? (hourlyCount / maxCount) * 100 : 0;
+              
+              return (
+                <div key={hour} className="text-center">
+                  <div className="text-xs text-gray-400 mb-1">{hour}:00</div>
+                  <div className="h-8 bg-gray-700 rounded flex items-end justify-center">
+                    <div 
+                      className="bg-yellow-500 rounded-b w-full transition-all duration-300"
+                      style={{ 
+                        height: `${heightPercentage}%`,
+                        minHeight: hourlyCount > 0 ? '8px' : '0px'
+                      }}
+                    ></div>
+                  </div>
+                  <div className="text-xs text-gray-300 mt-1">{hourlyCount}</div>
                 </div>
-                <div className="text-xs text-gray-300 mt-1">{hourlyStats[hour] || 0}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -155,9 +161,9 @@ const EnhancedWhatsAppAnalytics = () => {
         <CardContent>
           <div className="grid gap-3">
             {Object.entries(employeeStats)
-              .sort(([,a], [,b]) => (b as number) - (a as number))
+              .sort(([,a], [,b]) => b - a)
               .map(([employee, count], index) => {
-                const percentage = totalContacts > 0 ? ((count as number / totalContacts) * 100).toFixed(1) : '0';
+                const percentage = totalContacts > 0 ? ((count / totalContacts) * 100).toFixed(1) : '0';
                 return (
                   <div key={employee} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                     <div className="flex items-center gap-3">
@@ -173,7 +179,7 @@ const EnhancedWhatsAppAnalytics = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="text-right">
-                        <div className="text-white font-bold">{count as number} مراسلة</div>
+                        <div className="text-white font-bold">{count} مراسلة</div>
                         <div className="text-gray-400 text-xs">{percentage}% من الإجمالي</div>
                       </div>
                       <Badge className="bg-green-500 text-black">
