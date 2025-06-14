@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import ImageUpload from './ImageUpload';
 
-const PROJECT_ID = 'military-tech-project';
+const PROJECT_ID = 'tech-services-project';
 
 const ServicesManagement = () => {
   const [showForm, setShowForm] = useState(false);
@@ -67,52 +67,97 @@ const ServicesManagement = () => {
         throw deleteError;
       }
 
-      // Default services for military tech project
+      // Default services for tech services project
       const defaultServices = [
         {
-          name: "تطوير أنظمة إدارة المخزون العسكري",
-          description: "أنظمة ذكية ومتطورة لإدارة المخزون والمستودعات العسكرية مع تتبع دقيق للمعدات",
-          type: "development",
-          price: 2500,
-          unit: "نظام",
-          is_active: true,
-          project_id: PROJECT_ID
-        },
-        {
-          name: "تطوير أنظمة القيادة والسيطرة",
-          description: "تصميم وتطوير أنظمة قيادة وسيطرة متطورة للعمليات العسكرية",
-          type: "development",
-          price: 5000,
-          unit: "نظام",
-          is_active: true,
-          project_id: PROJECT_ID
-        },
-        {
-          name: "استشارات الأمن السيبراني العسكري",
-          description: "استشارات متخصصة لحماية الأنظمة العسكرية من التهديدات السيبرانية",
+          name: "استشارات الأعمال التقنية",
+          description: "استشارات متخصصة لتحسين العمليات وزيادة الكفاءة باستخدام التقنيات الحديثة",
           type: "consulting",
           price: 150,
           unit: "ساعة",
           is_active: true,
-          project_id: PROJECT_ID
+          project_id: PROJECT_ID,
+          image_url: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80"
         },
         {
-          name: "أنظمة الاستطلاع والمراقبة",
-          description: "حلول تقنية متطورة لأنظمة الاستطلاع والمراقبة العسكرية",
-          type: "security",
-          price: 3000,
+          name: "تطوير تطبيقات الويب",
+          description: "تصميم وتطوير تطبيقات ويب احترافية باستخدام أحدث التقنيات",
+          type: "development",
+          price: 2000,
+          unit: "مشروع",
+          is_active: true,
+          project_id: PROJECT_ID,
+          image_url: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80"
+        },
+        {
+          name: "تطوير أنظمة إدارة المخزون",
+          description: "أنظمة ذكية ومتطورة لإدارة المخزون والمستودعات مع تتبع دقيق للمنتجات",
+          type: "development",
+          price: 2500,
           unit: "نظام",
           is_active: true,
-          project_id: PROJECT_ID
+          project_id: PROJECT_ID,
+          image_url: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80"
         },
         {
-          name: "أنظمة الذكاء الاصطناعي العسكري",
-          description: "تطوير حلول الذكاء الاصطناعي المتخصصة للتطبيقات العسكرية",
+          name: "تطوير التطبيقات المحمولة",
+          description: "تطبيقات أصلية ومتطورة للهواتف الذكية والأجهزة اللوحية",
+          type: "mobile",
+          price: 3000,
+          unit: "تطبيق",
+          is_active: true,
+          project_id: PROJECT_ID,
+          image_url: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80"
+        },
+        {
+          name: "أنظمة الذكاء الاصطناعي",
+          description: "تطوير حلول الذكاء الاصطناعي وتعلم الآلة المتقدمة للأعمال",
           type: "ai",
           price: 4000,
           unit: "نظام",
           is_active: true,
-          project_id: PROJECT_ID
+          project_id: PROJECT_ID,
+          image_url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80"
+        },
+        {
+          name: "أنظمة الحماية السيبرانية",
+          description: "حلول أمنية متطورة لحماية البيانات والأنظمة من التهديدات السيبرانية",
+          type: "security",
+          price: 3500,
+          unit: "نظام",
+          is_active: true,
+          project_id: PROJECT_ID,
+          image_url: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=500&q=80"
+        },
+        {
+          name: "التسويق الرقمي الذكي",
+          description: "حلول التسويق الرقمي المدعومة بالذكاء الاصطناعي والتحليلات المتقدمة",
+          type: "marketing",
+          price: 800,
+          unit: "شهر",
+          is_active: true,
+          project_id: PROJECT_ID,
+          image_url: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=500&q=80"
+        },
+        {
+          name: "أنظمة إدارة المحتوى",
+          description: "منصات متطورة لإدارة المحتوى الرقمي والنشر الذكي",
+          type: "cms",
+          price: 1800,
+          unit: "نظام",
+          is_active: true,
+          project_id: PROJECT_ID,
+          image_url: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=500&q=80"
+        },
+        {
+          name: "استشارات التحول الرقمي",
+          description: "إرشاد الشركات خلال رحلة التحول الرقمي الشامل والمتطور",
+          type: "consulting",
+          price: 200,
+          unit: "ساعة",
+          is_active: true,
+          project_id: PROJECT_ID,
+          image_url: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=500&q=80"
         }
       ];
 
@@ -223,7 +268,7 @@ const ServicesManagement = () => {
         <div className="flex justify-between items-center">
           <CardTitle className="text-yellow-500 flex items-center gap-2">
             <Zap className="h-5 w-5" />
-            إدارة الخدمات - المشروع العسكري التقني
+            إدارة الخدمات التقنية
           </CardTitle>
           <div className="flex gap-2">
             <Button
@@ -278,8 +323,9 @@ const ServicesManagement = () => {
                       <option value="consulting">استشارات</option>
                       <option value="security">أمان</option>
                       <option value="ai">ذكاء اصطناعي</option>
-                      <option value="surveillance">مراقبة</option>
-                      <option value="maintenance">صيانة</option>
+                      <option value="mobile">تطبيقات محمولة</option>
+                      <option value="marketing">تسويق رقمي</option>
+                      <option value="cms">إدارة المحتوى</option>
                     </select>
                   </div>
                 </div>
@@ -326,6 +372,7 @@ const ServicesManagement = () => {
                       <option value="مشروع">مشروع</option>
                       <option value="شهر">شهر</option>
                       <option value="سنة">سنة</option>
+                      <option value="تطبيق">تطبيق</option>
                     </select>
                   </div>
                 </div>
@@ -364,7 +411,7 @@ const ServicesManagement = () => {
                 onClick={() => initializeMutation.mutate()}
                 className="bg-yellow-500 text-black hover:bg-yellow-400"
               >
-                إضافة الخدمات الافتراضية للمشروع العسكري
+                إضافة الخدمات الافتراضية التقنية
               </Button>
             </div>
           ) : (

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import ServiceRequestForm from './ServiceRequestForm';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-const PROJECT_ID = 'military-tech-project';
+const PROJECT_ID = 'tech-services-project';
 
 // Define types for special services
 interface SpecialService {
@@ -67,13 +68,13 @@ const ServicesSection = () => {
   const defaultServices = [
     {
       id: 1,
-      name: "تطوير أنظمة إدارة المخزون",
-      description: "أنظمة ذكية ومتطورة لإدارة المخزون والمستودعات مع تتبع دقيق للمنتجات",
-      price: 1000,
-      unit: "نظام",
-      type: "development",
-      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80",
-      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"],
+      name: "استشارات الأعمال التقنية",
+      description: "استشارات متخصصة لتحسين العمليات وزيادة الكفاءة باستخدام التقنيات الحديثة",
+      price: 150,
+      unit: "ساعة",
+      type: "consulting",
+      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80",
+      features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"],
       is_active: true,
       project_id: PROJECT_ID
     },
@@ -81,7 +82,7 @@ const ServicesSection = () => {
       id: 2,
       name: "تطوير تطبيقات الويب",
       description: "تصميم وتطوير تطبيقات ويب احترافية باستخدام أحدث التقنيات",
-      price: 800,
+      price: 2000,
       unit: "مشروع",
       type: "development",
       image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
@@ -91,13 +92,13 @@ const ServicesSection = () => {
     },
     {
       id: 3,
-      name: "استشارات الأعمال التقنية",
-      description: "استشارات متخصصة لتحسين العمليات وزيادة الكفاءة باستخدام التقنيات الحديثة",
-      price: 25,
-      unit: "ساعة",
-      type: "consulting",
-      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80",
-      features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"],
+      name: "تطوير أنظمة إدارة المخزون",
+      description: "أنظمة ذكية ومتطورة لإدارة المخزون والمستودعات مع تتبع دقيق للمنتجات",
+      price: 2500,
+      unit: "نظام",
+      type: "development",
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80",
+      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"],
       is_active: true,
       project_id: PROJECT_ID
     },
@@ -105,7 +106,7 @@ const ServicesSection = () => {
       id: 4,
       name: "أنظمة الحماية السيبرانية",
       description: "حلول أمنية متطورة لحماية البيانات والأنظمة من التهديدات السيبرانية",
-      price: 1200,
+      price: 3500,
       unit: "نظام",
       type: "security",
       image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=500&q=80",
@@ -117,7 +118,7 @@ const ServicesSection = () => {
       id: 5,
       name: "أنظمة الذكاء الاصطناعي",
       description: "تطوير حلول الذكاء الاصطناعي وتعلم الآلة المتقدمة للأعمال",
-      price: 1800,
+      price: 4000,
       unit: "نظام",
       type: "ai",
       image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80",
@@ -129,7 +130,7 @@ const ServicesSection = () => {
       id: 6,
       name: "تطوير التطبيقات المحمولة",
       description: "تطبيقات أصلية ومتطورة للهواتف الذكية والأجهزة اللوحية",
-      price: 1500,
+      price: 3000,
       unit: "تطبيق",
       type: "mobile",
       image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
@@ -139,21 +140,9 @@ const ServicesSection = () => {
     },
     {
       id: 7,
-      name: "استشارات التحول الرقمي",
-      description: "إرشاد الشركات خلال رحلة التحول الرقمي الشامل والمتطور",
-      price: 50,
-      unit: "ساعة",
-      type: "consulting",
-      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=500&q=80",
-      features: ["تقييم الوضع الحالي", "خطة التحول", "تدريب الفرق", "دعم مستمر"],
-      is_active: true,
-      project_id: PROJECT_ID
-    },
-    {
-      id: 8,
       name: "التسويق الرقمي الذكي",
       description: "حلول التسويق الرقمي المدعومة بالذكاء الاصطناعي والتحليلات المتقدمة",
-      price: 400,
+      price: 800,
       unit: "شهر",
       type: "marketing",
       image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=500&q=80",
@@ -162,14 +151,26 @@ const ServicesSection = () => {
       project_id: PROJECT_ID
     },
     {
-      id: 9,
+      id: 8,
       name: "أنظمة إدارة المحتوى",
       description: "منصات متطورة لإدارة المحتوى الرقمي والنشر الذكي",
-      price: 900,
+      price: 1800,
       unit: "نظام",
       type: "cms",
       image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=500&q=80",
       features: ["إدارة المحتوى", "نشر تلقائي", "تحسين SEO", "تحليلات المحتوى"],
+      is_active: true,
+      project_id: PROJECT_ID
+    },
+    {
+      id: 9,
+      name: "استشارات التحول الرقمي",
+      description: "إرشاد الشركات خلال رحلة التحول الرقمي الشامل والمتطور",
+      price: 200,
+      unit: "ساعة",
+      type: "consulting",
+      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=500&q=80",
+      features: ["تقييم الوضع الحالي", "خطة التحول", "تدريب الفرق", "دعم مستمر"],
       is_active: true,
       project_id: PROJECT_ID
     }
@@ -178,7 +179,7 @@ const ServicesSection = () => {
   // Use database services if available, otherwise use default services
   const displayServices = services.length > 0 ? services.map(service => ({
     ...service,
-    image: `https://images.unsplash.com/photo-${Math.random() > 0.5 ? '1518770660439-4636190af475' : '1487058792275-0ad4aaf24ca7'}?auto=format&fit=crop&w=500&q=80`,
+    image: service.image_url || `https://images.unsplash.com/photo-${Math.random() > 0.5 ? '1518770660439-4636190af475' : '1487058792275-0ad4aaf24ca7'}?auto=format&fit=crop&w=500&q=80`,
     features: ["ميزة أساسية", "دعم فني", "تدريب شامل", "ضمان الجودة"]
   })) : defaultServices.filter(service => service.project_id === PROJECT_ID);
 
@@ -303,7 +304,7 @@ const ServicesSection = () => {
                     <CardHeader className="pb-4">
                       <div className="w-full h-48 bg-gray-600 rounded-lg mb-4 overflow-hidden">
                         <img 
-                          src={service.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80"} 
+                          src={service.image || service.image_url || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80"} 
                           alt={service.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
