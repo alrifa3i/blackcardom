@@ -12,6 +12,12 @@ const AdminDashboardSidebar: React.FC<AdminDashboardSidebarProps> = ({
   activeSection,
   onSectionChange
 }) => {
+  const handleSectionClick = (sectionId: string) => {
+    onSectionChange(sectionId);
+    // Scroll to top of the page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="w-80 bg-gray-900 border-r border-gray-700 min-h-screen">
       <div className="p-4">
@@ -23,7 +29,7 @@ const AdminDashboardSidebar: React.FC<AdminDashboardSidebarProps> = ({
                 {section.items.map((item) => (
                   <button
                     key={item.id}
-                    onClick={() => onSectionChange(item.id)}
+                    onClick={() => handleSectionClick(item.id)}
                     className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-right transition-colors ${
                       activeSection === item.id
                         ? 'bg-yellow-500 text-black'
