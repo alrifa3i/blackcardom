@@ -1,4 +1,3 @@
-
 import React from 'react';
 import AdminDashboardOverview from './AdminDashboardOverview';
 import SocialMediaSettings from './SocialMediaSettings';
@@ -14,6 +13,8 @@ import SpecialServicesManagement from './SpecialServicesManagement';
 import UserManagement from './UserManagement';
 import SystemSettings from './SystemSettings';
 import ActivityLogs from './ActivityLogs';
+import GoogleAnalyticsSettings from './GoogleAnalyticsSettings';
+import EnhancedWhatsAppAnalytics from './EnhancedWhatsAppAnalytics';
 
 interface AdminDashboardContentRendererProps {
   activeSection: string;
@@ -38,9 +39,11 @@ const AdminDashboardContentRenderer: React.FC<AdminDashboardContentRendererProps
     case 'web-applications':
       return <WebApplicationsManagement />;
     case 'whatsapp':
-      return <WhatsAppAnalytics />;
+      return <EnhancedWhatsAppAnalytics />;
     case 'google-ads':
       return <GoogleAdsAnalytics />;
+    case 'google-analytics-settings':
+      return <GoogleAnalyticsSettings />;
     case 'whatsapp-settings':
       return <WhatsAppSettings />;
     case 'social':
