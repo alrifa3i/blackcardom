@@ -19,117 +19,126 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // التحقق من وجود جلسة مصادقة
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        // التحقق من أن المستخدم مدير
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (profile?.role === 'admin') {
+    checkExistingSession();
+  }, [onAuthenticated]);
+
+  const checkExistingSession = async () => {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('Session check error:', error);
+        return;
+      }
+
+      if (session?.user) {
+        // التحقق من صلاحيات المدير
+        const isAdmin = await verifyAdminRole(session.user.id);
+        if (isAdmin) {
           onAuthenticated();
         }
       }
-    };
+    } catch (error) {
+      console.error('Error checking session:', error);
+    }
+  };
 
-    checkSession();
-  }, [onAuthenticated]);
+  const verifyAdminRole = async (userId: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Error verifying admin role:', error);
+        return false;
+      }
+      
+      return data?.role === 'admin';
+    } catch (error) {
+      console.error('Admin verification error:', error);
+      return false;
+    }
+  };
 
   const handleLogin = async () => {
+    if (!username || !password) {
+      toast({
+        title: "خطأ في البيانات",
+        description: "يرجى إدخال اسم المستخدم وكلمة المرور",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      // التحقق من بيانات الدخول المحددة مسبقاً
-      if (username === 'admin12' && password === 'AhmedOman2025$') {
-        const adminEmail = 'admin@techservices.com';
+      // تنظيف الجلسة السابقة
+      await supabase.auth.signOut();
+      
+      // التحقق من بيانات الدخول
+      if (username !== 'admin12' || password !== 'AhmedOman2025$') {
+        throw new Error('بيانات الدخول غير صحيحة');
+      }
+
+      const adminEmail = 'admin@techservices.com';
+      
+      // محاولة تسجيل الدخول
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: adminEmail,
+        password: password,
+      });
+      
+      if (signInError) {
+        // إذا كان الحساب غير موجود، قم بإنشائه
+        if (signInError.message.includes('Invalid login credentials')) {
+          await createAdminAccount(adminEmail, password, username);
+          return;
+        }
         
-        // محاولة تسجيل الدخول
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: adminEmail,
-          password: password,
+        // إذا كان البريد غير مؤكد، تجاهل المشكلة وتابع
+        if (signInError.message.includes('Email not confirmed')) {
+          console.log('Email not confirmed, but proceeding with login');
+          
+          // الحصول على الجلسة الحالية
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) {
+            await ensureAdminProfile(session.user.id, username);
+            await logLoginActivity(username);
+            
+            toast({
+              title: "تم تسجيل الدخول بنجاح",
+              description: "مرحباً بك في لوحة التحكم"
+            });
+            
+            onAuthenticated();
+            return;
+          }
+        }
+        
+        throw signInError;
+      }
+      
+      if (signInData.user) {
+        await ensureAdminProfile(signInData.user.id, username);
+        await logLoginActivity(username);
+        
+        toast({
+          title: "تم تسجيل الدخول بنجاح",
+          description: "مرحباً بك في لوحة التحكم"
         });
         
-        if (error) {
-          // إذا كان الحساب غير موجود، قم بإنشائه
-          if (error.message === 'Invalid login credentials') {
-            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-              email: adminEmail,
-              password: password,
-              options: {
-                data: {
-                  username: username
-                },
-                emailRedirectTo: `${window.location.origin}/admin`
-              }
-            });
-            
-            if (signUpError) {
-              throw signUpError;
-            }
-            
-            if (signUpData.user) {
-              await setupAdminProfile(signUpData.user.id);
-              
-              // تسجيل دخول فوري بعد إنشاء الحساب
-              const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-                email: adminEmail,
-                password: password,
-              });
-              
-              if (!loginError && loginData.user) {
-                await supabase.rpc('log_activity', {
-                  p_action: 'user_login',
-                  p_details: { username, login_type: 'admin_panel' }
-                });
-                
-                toast({ title: "تم تسجيل الدخول بنجاح" });
-                onAuthenticated();
-                return;
-              }
-            }
-          } else if (error.message === 'Email not confirmed') {
-            // معالجة حالة عدم تأكيد البريد الإلكتروني
-            toast({ 
-              title: "تم تسجيل الدخول", 
-              description: "مرحباً بك في لوحة التحكم" 
-            });
-            
-            // تجاهل مشكلة تأكيد البريد والمتابعة
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user) {
-              await setupAdminProfile(session.user.id);
-              onAuthenticated();
-              return;
-            }
-          }
-          
-          throw error;
-        }
-        
-        if (data.user) {
-          await setupAdminProfile(data.user.id);
-          
-          // تسجيل نشاط تسجيل الدخول
-          await supabase.rpc('log_activity', {
-            p_action: 'user_login',
-            p_details: { username, login_type: 'admin_panel' }
-          });
-          
-          toast({ title: "تم تسجيل الدخول بنجاح" });
-          onAuthenticated();
-        }
-      } else {
-        throw new Error('اسم المستخدم أو كلمة المرور غير صحيحة');
+        onAuthenticated();
       }
+      
     } catch (error: any) {
       console.error('Login error:', error);
-      toast({ 
-        title: "خطأ في تسجيل الدخول", 
-        description: "يرجى التأكد من اسم المستخدم وكلمة المرور",
+      toast({
+        title: "خطأ في تسجيل الدخول",
+        description: error.message || "يرجى المحاولة مرة أخرى",
         variant: "destructive"
       });
     } finally {
@@ -137,18 +146,62 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
     }
   };
 
-  const setupAdminProfile = async (userId: string) => {
+  const createAdminAccount = async (email: string, password: string, username: string) => {
+    try {
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: { username: username },
+          emailRedirectTo: `${window.location.origin}/admin`
+        }
+      });
+      
+      if (signUpError) {
+        throw signUpError;
+      }
+      
+      if (signUpData.user) {
+        await ensureAdminProfile(signUpData.user.id, username);
+        
+        // محاولة تسجيل دخول فوري
+        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password,
+        });
+        
+        if (!loginError && loginData.user) {
+          await logLoginActivity(username);
+          
+          toast({
+            title: "تم إنشاء الحساب وتسجيل الدخول",
+            description: "مرحباً بك في لوحة التحكم"
+          });
+          
+          onAuthenticated();
+        }
+      }
+    } catch (error: any) {
+      throw new Error('فشل في إنشاء حساب المدير: ' + error.message);
+    }
+  };
+
+  const ensureAdminProfile = async (userId: string, username: string) => {
     try {
       // التحقق من وجود البروفايل
-      const { data: existingProfile } = await supabase
+      const { data: existingProfile, error: fetchError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
+      
+      if (fetchError) {
+        console.error('Error fetching profile:', fetchError);
+      }
       
       if (!existingProfile) {
         // إنشاء بروفايل جديد
-        await supabase
+        const { error: insertError } = await supabase
           .from('profiles')
           .insert({
             id: userId,
@@ -157,9 +210,13 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
             role: 'admin',
             status: 'active'
           });
+        
+        if (insertError) {
+          console.error('Error creating admin profile:', insertError);
+        }
       } else if (existingProfile.role !== 'admin') {
         // تحديث الدور إلى مدير
-        await supabase
+        const { error: updateError } = await supabase
           .from('profiles')
           .update({ 
             role: 'admin',
@@ -167,9 +224,24 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
             status: 'active'
           })
           .eq('id', userId);
+        
+        if (updateError) {
+          console.error('Error updating admin profile:', updateError);
+        }
       }
     } catch (error) {
-      console.error('Error setting up admin profile:', error);
+      console.error('Error in ensureAdminProfile:', error);
+    }
+  };
+
+  const logLoginActivity = async (username: string) => {
+    try {
+      await supabase.rpc('log_activity', {
+        p_action: 'user_login',
+        p_details: { username, login_type: 'admin_panel' }
+      });
+    } catch (error) {
+      console.error('Error logging activity:', error);
     }
   };
 
@@ -187,7 +259,6 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
       <div className="container mx-auto px-6 max-w-md">
-        {/* زر العودة إلى الرئيسية */}
         <div className="mb-6">
           <Link to="/">
             <Button 
