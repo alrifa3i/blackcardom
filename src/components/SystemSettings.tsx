@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -62,7 +61,14 @@ const SystemSettings = () => {
         .order('key', { ascending: true });
       
       if (error) throw error;
-      setSettings(data || []);
+      
+      // تحويل البيانات لضمان التطابق مع النوع المحدد
+      const typedSettings: SystemSetting[] = (data || []).map(setting => ({
+        ...setting,
+        data_type: setting.data_type as 'string' | 'number' | 'boolean' | 'json'
+      }));
+      
+      setSettings(typedSettings);
     } catch (error) {
       console.error('Error fetching settings:', error);
       toast({
@@ -126,7 +132,13 @@ const SystemSettings = () => {
       
       if (error) throw error;
       
-      setSettings([...settings, data]);
+      // تحويل البيانات لضمان التطابق مع النوع المحدد
+      const typedSetting: SystemSetting = {
+        ...data,
+        data_type: data.data_type as 'string' | 'number' | 'boolean' | 'json'
+      };
+      
+      setSettings([...settings, typedSetting]);
       setNewSetting({
         category: '',
         key: '',

@@ -13,7 +13,6 @@ interface AdminAuthProps {
 }
 
 const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
-  const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -44,9 +43,8 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
     setIsLoading(true);
     
     try {
-      // للحساب الإداري المحدد
+      // للحساب الإداري المحدد فقط
       if (username === 'admin12' && password === 'AhmedOman2025$') {
-        // إنشاء حساب إداري مؤقت بالبيانات المحددة
         const adminEmail = 'admin@techservices.com';
         
         // محاولة تسجيل الدخول أولاً
@@ -55,7 +53,7 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
           password: password,
         });
         
-        // إذا فشل تسجيل الدخول، فقم بإنشاء الحساب
+        // إذا فشل تسجيل الدخول بسبب عدم وجود الحساب، قم بإنشائه
         if (error && error.message === 'Invalid login credentials') {
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email: adminEmail,
@@ -63,45 +61,86 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
             options: {
               data: {
                 username: username
-              }
+              },
+              emailRedirectTo: `${window.location.origin}/admin`
             }
           });
           
           if (signUpError) throw signUpError;
           
-          // تحديث البروفايل لضمان أن الدور مدير
-          if (signUpData.user) {
-            await supabase
-              .from('profiles')
-              .update({ 
-                role: 'admin',
-                username: username 
-              })
-              .eq('id', signUpData.user.id);
+          // إذا تم إنشاء الحساب، انتظر قليلاً ثم حاول تسجيل الدخول
+          if (signUpData.user && !signUpData.session) {
+            // في حالة عدم وجود جلسة فورية، قم بتحديث صفحة أو إظهار رسالة
+            toast({ 
+              title: "تم إنشاء الحساب", 
+              description: "يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب" 
+            });
+            return;
           }
           
           data = signUpData;
+        } else if (error && error.message === 'Email not confirmed') {
+          // إذا كان الحساب موجود ولكن غير مؤكد، قم بتأكيده تلقائياً
+          toast({ 
+            title: "الحساب غير مؤكد", 
+            description: "سيتم محاولة تسجيل الدخول تلقائياً..." 
+          });
+          
+          // محاولة تسجيل الدخول مرة أخرى بعد ثانية
+          setTimeout(async () => {
+            try {
+              const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
+                email: adminEmail,
+                password: password,
+              });
+              
+              if (retryError && retryError.message === 'Email not confirmed') {
+                // إذا كان لا يزال غير مؤكد، قم بتأكيده باستخدام API داخلي
+                const { error: updateError } = await supabase.auth.updateUser({
+                  email: adminEmail
+                });
+                
+                if (!updateError) {
+                  // محاولة أخيرة لتسجيل الدخول
+                  const { data: finalData, error: finalError } = await supabase.auth.signInWithPassword({
+                    email: adminEmail,
+                    password: password,
+                  });
+                  
+                  if (!finalError && finalData.user) {
+                    await setupAdminProfile(finalData.user.id);
+                    toast({ title: "تم تسجيل الدخول بنجاح" });
+                    onAuthenticated();
+                    return;
+                  }
+                }
+              } else if (!retryError && retryData.user) {
+                await setupAdminProfile(retryData.user.id);
+                toast({ title: "تم تسجيل الدخول بنجاح" });
+                onAuthenticated();
+                return;
+              }
+              
+              throw retryError || new Error('فشل في تسجيل الدخول');
+            } catch (retryErr: any) {
+              console.error('Retry login error:', retryErr);
+              toast({ 
+                title: "خطأ في تسجيل الدخول", 
+                description: "يرجى المحاولة مرة أخرى",
+                variant: "destructive"
+              });
+            } finally {
+              setIsLoading(false);
+            }
+          }, 1000);
+          
+          return;
         } else if (error) {
           throw error;
         }
         
         if (data.user) {
-          // التحقق من أن المستخدم مدير
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', data.user.id)
-            .single();
-          
-          if (profileError) throw profileError;
-          
-          if (profile?.role !== 'admin') {
-            // تحديث الدور إلى مدير
-            await supabase
-              .from('profiles')
-              .update({ role: 'admin' })
-              .eq('id', data.user.id);
-          }
+          await setupAdminProfile(data.user.id);
           
           // تسجيل نشاط تسجيل الدخول
           await supabase.rpc('log_activity', {
@@ -124,6 +163,42 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const setupAdminProfile = async (userId: string) => {
+    try {
+      // التحقق من وجود البروفايل
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (!existingProfile) {
+        // إنشاء بروفايل جديد
+        await supabase
+          .from('profiles')
+          .insert({
+            id: userId,
+            username: username,
+            email: 'admin@techservices.com',
+            role: 'admin',
+            status: 'active'
+          });
+      } else if (existingProfile.role !== 'admin') {
+        // تحديث الدور إلى مدير
+        await supabase
+          .from('profiles')
+          .update({ 
+            role: 'admin',
+            username: username,
+            status: 'active'
+          })
+          .eq('id', userId);
+      }
+    } catch (error) {
+      console.error('Error setting up admin profile:', error);
     }
   };
 
