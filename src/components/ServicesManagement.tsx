@@ -11,6 +11,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
+const PROJECT_ID = 'military-tech-project';
+
 const ServicesManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
@@ -20,7 +22,8 @@ const ServicesManagement = () => {
     type: 'development',
     price: 0,
     unit: 'project',
-    is_active: true
+    is_active: true,
+    project_id: PROJECT_ID
   });
 
   const queryClient = useQueryClient();
@@ -31,6 +34,7 @@ const ServicesManagement = () => {
       const { data, error } = await supabase
         .from('services')
         .select('*')
+        .eq('project_id', PROJECT_ID)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -46,7 +50,8 @@ const ServicesManagement = () => {
       type: "development",
       price: 1000,
       unit: "نظام",
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       name: "تطوير تطبيقات الويب",
@@ -54,7 +59,8 @@ const ServicesManagement = () => {
       type: "development",
       price: 800,
       unit: "مشروع",
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       name: "استشارات الأعمال التقنية",
@@ -62,7 +68,8 @@ const ServicesManagement = () => {
       type: "consulting",
       price: 25,
       unit: "ساعة",
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       name: "أنظمة الحماية السيبرانية",
@@ -70,7 +77,8 @@ const ServicesManagement = () => {
       type: "security",
       price: 1200,
       unit: "نظام",
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       name: "أنظمة الذكاء الاصطناعي",
@@ -78,7 +86,8 @@ const ServicesManagement = () => {
       type: "ai",
       price: 1800,
       unit: "نظام",
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       name: "تطوير التطبيقات المحمولة",
@@ -86,7 +95,8 @@ const ServicesManagement = () => {
       type: "mobile",
       price: 1500,
       unit: "تطبيق",
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       name: "استشارات التحول الرقمي",
@@ -94,7 +104,8 @@ const ServicesManagement = () => {
       type: "consulting",
       price: 50,
       unit: "ساعة",
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       name: "التسويق الرقمي الذكي",
@@ -102,7 +113,8 @@ const ServicesManagement = () => {
       type: "marketing",
       price: 400,
       unit: "شهر",
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       name: "أنظمة إدارة المحتوى",
@@ -110,7 +122,8 @@ const ServicesManagement = () => {
       type: "cms",
       price: 900,
       unit: "نظام",
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     }
   ];
 
@@ -137,9 +150,10 @@ const ServicesManagement = () => {
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
+      const serviceData = { ...data, project_id: PROJECT_ID };
       const { error } = await supabase
         .from('services')
-        .insert([data]);
+        .insert([serviceData]);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -151,10 +165,12 @@ const ServicesManagement = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      const serviceData = { ...data, project_id: PROJECT_ID };
       const { error } = await supabase
         .from('services')
-        .update(data)
-        .eq('id', id);
+        .update(serviceData)
+        .eq('id', id)
+        .eq('project_id', PROJECT_ID);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -169,7 +185,8 @@ const ServicesManagement = () => {
       const { error } = await supabase
         .from('services')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('project_id', PROJECT_ID);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -185,7 +202,8 @@ const ServicesManagement = () => {
       type: 'development',
       price: 0,
       unit: 'project',
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     });
     setEditingService(null);
     setShowForm(false);
@@ -193,7 +211,7 @@ const ServicesManagement = () => {
 
   const handleEdit = (service: any) => {
     setEditingService(service);
-    setFormData(service);
+    setFormData({ ...service, project_id: PROJECT_ID });
     setShowForm(true);
   };
 

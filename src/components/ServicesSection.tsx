@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,13 +7,14 @@ import ServiceRequestForm from './ServiceRequestForm';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+const PROJECT_ID = 'military-tech-project';
+
 // Define types for special services
 interface SpecialService {
   id: string;
   name: string;
   description?: string;
   detailed_description?: string;
-  base_service_id?: string;
   project_types?: string[];
   features?: string[];
   icon?: string;
@@ -31,7 +31,7 @@ const ServicesSection = () => {
   const [showMore, setShowMore] = useState(false);
   const [showSpecialServices, setShowSpecialServices] = useState(true);
 
-  // Fetch regular services from database
+  // Fetch regular services from database with project_id filter
   const { data: services = [], isLoading: servicesLoading } = useQuery({
     queryKey: ['services'],
     queryFn: async () => {
@@ -39,6 +39,7 @@ const ServicesSection = () => {
         .from('services')
         .select('*')
         .eq('is_active', true)
+        .eq('project_id', PROJECT_ID)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -46,7 +47,7 @@ const ServicesSection = () => {
     }
   });
 
-  // Fetch special services from database with proper typing
+  // Fetch special services from database with proper typing and project_id filter
   const { data: specialServices = [], isLoading: specialServicesLoading } = useQuery({
     queryKey: ['special-services-public'],
     queryFn: async (): Promise<SpecialService[]> => {
@@ -54,6 +55,7 @@ const ServicesSection = () => {
         .from('special_services')
         .select('*')
         .eq('is_active', true)
+        .eq('project_id', PROJECT_ID)
         .order('display_order', { ascending: true });
       
       if (error) throw error;
@@ -72,7 +74,8 @@ const ServicesSection = () => {
       type: "development",
       image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80",
       features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"],
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       id: 2,
@@ -83,7 +86,8 @@ const ServicesSection = () => {
       type: "development",
       image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
       features: ["تصميم متجاوب", "أداء عالي", "أمان متقدم", "سهولة الاستخدام"],
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       id: 3,
@@ -94,7 +98,8 @@ const ServicesSection = () => {
       type: "consulting",
       image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80",
       features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"],
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       id: 4,
@@ -105,7 +110,8 @@ const ServicesSection = () => {
       type: "security",
       image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=500&q=80",
       features: ["مراقبة الأمان", "كشف التهديدات", "حماية البيانات", "تقارير أمنية"],
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       id: 5,
@@ -116,7 +122,8 @@ const ServicesSection = () => {
       type: "ai",
       image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80",
       features: ["تعلم الآلة", "تحليل البيانات", "أتمتة العمليات", "توقعات ذكية"],
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       id: 6,
@@ -127,7 +134,8 @@ const ServicesSection = () => {
       type: "mobile",
       image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
       features: ["تطبيقات أصلية", "تصميم حديث", "أداء سريع", "متجر التطبيقات"],
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       id: 7,
@@ -138,7 +146,8 @@ const ServicesSection = () => {
       type: "consulting",
       image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=500&q=80",
       features: ["تقييم الوضع الحالي", "خطة التحول", "تدريب الفرق", "دعم مستمر"],
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       id: 8,
@@ -149,7 +158,8 @@ const ServicesSection = () => {
       type: "marketing",
       image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=500&q=80",
       features: ["حملات ذكية", "تحليل الجمهور", "تحسين الإعلانات", "تقارير شاملة"],
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     },
     {
       id: 9,
@@ -160,7 +170,8 @@ const ServicesSection = () => {
       type: "cms",
       image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=500&q=80",
       features: ["إدارة المحتوى", "نشر تلقائي", "تحسين SEO", "تحليلات المحتوى"],
-      is_active: true
+      is_active: true,
+      project_id: PROJECT_ID
     }
   ];
 
@@ -169,7 +180,7 @@ const ServicesSection = () => {
     ...service,
     image: `https://images.unsplash.com/photo-${Math.random() > 0.5 ? '1518770660439-4636190af475' : '1487058792275-0ad4aaf24ca7'}?auto=format&fit=crop&w=500&q=80`,
     features: ["ميزة أساسية", "دعم فني", "تدريب شامل", "ضمان الجودة"]
-  })) : defaultServices;
+  })) : defaultServices.filter(service => service.project_id === PROJECT_ID);
 
   const visibleServices = displayServices.filter(service => service.is_active !== false);
   const displayedServices = showMore ? visibleServices : visibleServices.slice(0, 3);
@@ -221,7 +232,7 @@ const ServicesSection = () => {
                       <CardHeader className="pb-4">
                         <div className="w-full h-48 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg mb-4 overflow-hidden flex items-center justify-center">
                           <div className="text-6xl opacity-20" style={{ color: service.color || '#3B82F6' }}>
-                            ⭐
+                            {service.icon || '⭐'}
                           </div>
                         </div>
                         <CardTitle className="text-xl font-bold text-white mb-2">{service.name}</CardTitle>

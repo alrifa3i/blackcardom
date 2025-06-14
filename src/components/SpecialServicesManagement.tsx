@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,18 +6,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Plus, Edit, Trash2, Star, Link, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Star, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
-// Define types for special services
+const PROJECT_ID = 'military-tech-project';
+
 interface SpecialService {
   id: string;
   name: string;
   description?: string;
   detailed_description?: string;
-  base_service_id?: string;
   project_types?: string[];
   features?: string[];
   icon?: string;
@@ -28,6 +27,7 @@ interface SpecialService {
   display_order?: number;
   created_at: string;
   updated_at: string;
+  project_id?: string;
 }
 
 const SpecialServicesManagement = () => {
@@ -43,18 +43,20 @@ const SpecialServicesManagement = () => {
     color: '#3B82F6',
     is_featured: false,
     is_active: true,
-    display_order: 0
+    display_order: 0,
+    project_id: PROJECT_ID
   });
 
   const queryClient = useQueryClient();
 
   // Get special services
   const { data: specialServices, isLoading } = useQuery({
-    queryKey: ['special-services'],
+    queryKey: ['admin-special-services'],
     queryFn: async (): Promise<SpecialService[]> => {
       const { data, error } = await supabase
         .from('special_services')
         .select('*')
+        .eq('project_id', PROJECT_ID)
         .order('display_order', { ascending: true });
       
       if (error) throw error;
@@ -62,128 +64,16 @@ const SpecialServicesManagement = () => {
     }
   });
 
-  // Default services from main page that can be linked
-  const mainPageServices = [
-    {
-      name: "تطوير أنظمة إدارة المخزون",
-      description: "أنظمة ذكية ومتطورة لإدارة المخزون والمستودعات مع تتبع دقيق للمنتجات",
-      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"],
-      icon: "Package",
-      color: "#3B82F6"
-    },
-    {
-      name: "تطوير تطبيقات الويب",
-      description: "تصميم وتطوير تطبيقات ويب احترافية باستخدام أحدث التقنيات",
-      features: ["تصميم متجاوب", "أداء عالي", "أمان متقدم", "سهولة الاستخدام"],
-      icon: "Globe",
-      color: "#10B981"
-    },
-    {
-      name: "استشارات الأعمال التقنية",
-      description: "استشارات متخصصة لتحسين العمليات وزيادة الكفاءة باستخدام التقنيات الحديثة",
-      features: ["تحليل العمليات", "اقتراح الحلول", "خطط التطوير", "التدريب والدعم"],
-      icon: "Users",
-      color: "#F59E0B"
-    },
-    {
-      name: "أنظمة الحماية السيبرانية",
-      description: "حلول أمنية متطورة لحماية البيانات والأنظمة من التهديدات السيبرانية",
-      features: ["مراقبة الأمان", "كشف التهديدات", "حماية البيانات", "تقارير أمنية"],
-      icon: "Shield",
-      color: "#EF4444"
-    },
-    {
-      name: "أنظمة الذكاء الاصطناعي",
-      description: "تطوير حلول الذكاء الاصطناعي وتعلم الآلة المتقدمة للأعمال",
-      features: ["تعلم الآلة", "تحليل البيانات", "أتمتة العمليات", "توقعات ذكية"],
-      icon: "Brain",
-      color: "#8B5CF6"
-    },
-    {
-      name: "تطوير التطبيقات المحمولة",
-      description: "تطبيقات أصلية ومتطورة للهواتف الذكية والأجهزة اللوحية",
-      features: ["تطبيقات أصلية", "تصميم حديث", "أداء سريع", "متجر التطبيقات"],
-      icon: "Smartphone",
-      color: "#06B6D4"
-    },
-    {
-      name: "استشارات التحول الرقمي",
-      description: "إرشاد الشركات خلال رحلة التحول الرقمي الشامل والمتطور",
-      features: ["تقييم الوضع الحالي", "خطة التحول", "تدريب الفرق", "دعم مستمر"],
-      icon: "Zap",
-      color: "#F97316"
-    },
-    {
-      name: "التسويق الرقمي الذكي",
-      description: "حلول التسويق الرقمي المدعومة بالذكاء الاصطناعي والتحليلات المتقدمة",
-      features: ["حملات ذكية", "تحليل الجمهور", "تحسين الإعلانات", "تقارير شاملة"],
-      icon: "TrendingUp",
-      color: "#EC4899"
-    },
-    {
-      name: "أنظمة إدارة المحتوى",
-      description: "منصات متطورة لإدارة المحتوى الرقمي والنشر الذكي",
-      features: ["إدارة المحتوى", "نشر تلقائي", "تحسين SEO", "تحليلات المحتوى"],
-      icon: "FileText",
-      color: "#84CC16"
-    }
-  ];
-
-  const predefinedProjects = [
-    'أنظمة إدارة المحتوى',
-    'أنظمة الحماية السيبرانية', 
-    'أنظمة الذكاء الاصطناعي',
-    'تطوير التطبيقات المحمولة',
-    'تطوير أنظمة إدارة المخزون',
-    'تطوير تطبيقات الويب',
-    'استشارات الأعمال التقنية',
-    'استشارات التحول الرقمي',
-    'التسويق الرقمي الذكي'
-  ];
-
-  // Initialize special services if none exist
-  const initializeMutation = useMutation({
-    mutationFn: async () => {
-      const defaultSpecialServices = mainPageServices.map((service, index) => ({
-        name: service.name,
-        description: service.description,
-        detailed_description: `خدمة متخصصة في ${service.name} تقدم حلولاً شاملة ومتطورة لتلبية احتياجات عملك`,
-        project_types: [service.name],
-        features: service.features,
-        icon: service.icon,
-        color: service.color,
-        is_featured: index < 3, // أول 3 خدمات مميزة
-        is_active: true,
-        display_order: index + 1
-      }));
-
-      const { error } = await supabase
-        .from('special_services')
-        .insert(defaultSpecialServices);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['special-services'] });
-      toast({ title: "تم إضافة الخدمات الخاصة من الصفحة الرئيسية بنجاح" });
-    }
-  });
-
-  // Auto-initialize if no services exist
-  useEffect(() => {
-    if (specialServices && specialServices.length === 0) {
-      initializeMutation.mutate();
-    }
-  }, [specialServices]);
-
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
+      const serviceData = { ...data, project_id: PROJECT_ID };
       const { error } = await supabase
         .from('special_services')
-        .insert([data]);
+        .insert([serviceData]);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['special-services'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-special-services'] });
       toast({ title: "تم إضافة الخدمة الخاصة بنجاح" });
       resetForm();
     }
@@ -191,14 +81,17 @@ const SpecialServicesManagement = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      const serviceData = { ...data, project_id: PROJECT_ID };
       const { error } = await supabase
         .from('special_services')
-        .update(data)
-        .eq('id', id);
+        .update(serviceData)
+        .eq('id', id)
+        .eq('project_id', PROJECT_ID);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['special-services'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-special-services'] });
+      queryClient.invalidateQueries({ queryKey: ['special-services-public'] });
       toast({ title: "تم تحديث الخدمة الخاصة بنجاح" });
       resetForm();
     }
@@ -209,11 +102,13 @@ const SpecialServicesManagement = () => {
       const { error } = await supabase
         .from('special_services')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('project_id', PROJECT_ID);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['special-services'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-special-services'] });
+      queryClient.invalidateQueries({ queryKey: ['special-services-public'] });
       toast({ title: "تم حذف الخدمة الخاصة بنجاح" });
     }
   });
@@ -229,7 +124,8 @@ const SpecialServicesManagement = () => {
       color: '#3B82F6',
       is_featured: false,
       is_active: true,
-      display_order: 0
+      display_order: 0,
+      project_id: PROJECT_ID
     });
     setEditingService(null);
     setShowForm(false);
@@ -247,7 +143,8 @@ const SpecialServicesManagement = () => {
       color: service.color || '#3B82F6',
       is_featured: service.is_featured || false,
       is_active: service.is_active,
-      display_order: service.display_order || 0
+      display_order: service.display_order || 0,
+      project_id: PROJECT_ID
     });
     setShowForm(true);
   };
@@ -261,48 +158,6 @@ const SpecialServicesManagement = () => {
     }
   };
 
-  const toggleProjectType = (project: string) => {
-    setFormData(prev => ({
-      ...prev,
-      project_types: prev.project_types.includes(project)
-        ? prev.project_types.filter(p => p !== project)
-        : [...prev.project_types, project]
-    }));
-  };
-
-  const addFeature = () => {
-    const feature = prompt('أدخل ميزة جديدة:');
-    if (feature) {
-      setFormData(prev => ({
-        ...prev,
-        features: [...prev.features, feature]
-      }));
-    }
-  };
-
-  const removeFeature = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      features: prev.features.filter((_, i) => i !== index)
-    }));
-  };
-
-  const linkFromMainPageService = (mainService: any) => {
-    setFormData({
-      name: mainService.name,
-      description: mainService.description,
-      detailed_description: `خدمة متخصصة في ${mainService.name} تقدم حلولاً شاملة ومتطورة لتلبية احتياجات عملك`,
-      project_types: [mainService.name],
-      features: mainService.features,
-      icon: mainService.icon,
-      color: mainService.color,
-      is_featured: false,
-      is_active: true,
-      display_order: (specialServices?.length || 0) + 1
-    });
-    setShowForm(true);
-  };
-
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
@@ -311,67 +166,22 @@ const SpecialServicesManagement = () => {
             <Star className="h-5 w-5" />
             إدارة الخدمات الخاصة
           </CardTitle>
-          <div className="flex gap-2">
-            {specialServices && specialServices.length === 0 && (
-              <Button
-                onClick={() => initializeMutation.mutate()}
-                variant="outline"
-                className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
-              >
-                <Link className="mr-2 h-4 w-4" />
-                ربط خدمات الصفحة الرئيسية
-              </Button>
-            )}
-            <Button
-              onClick={() => setShowForm(true)}
-              className="bg-yellow-500 text-black hover:bg-yellow-400"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              إضافة خدمة خاصة جديدة
-            </Button>
-          </div>
+          <Button
+            onClick={() => setShowForm(true)}
+            className="bg-yellow-500 text-black hover:bg-yellow-400"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            إضافة خدمة خاصة
+          </Button>
         </div>
       </CardHeader>
       
       <CardContent className="space-y-6">
-        {/* Quick Link Section */}
-        <Card className="bg-gray-700 border-gray-600">
-          <CardHeader>
-            <CardTitle className="text-white text-lg flex items-center gap-2">
-              <Link className="h-5 w-5" />
-              ربط سريع من خدمات الصفحة الرئيسية
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {mainPageServices.map((service, index) => (
-                <div key={index} className="p-3 bg-gray-600 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-white text-sm font-medium">{service.name}</h4>
-                    <div 
-                      className="w-4 h-4 rounded-full" 
-                      style={{ backgroundColor: service.color }}
-                    ></div>
-                  </div>
-                  <p className="text-gray-300 text-xs mb-3">{service.description.substring(0, 60)}...</p>
-                  <Button
-                    size="sm"
-                    onClick={() => linkFromMainPageService(service)}
-                    className="w-full bg-yellow-500 text-black hover:bg-yellow-400 text-xs"
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    إضافة كخدمة خاصة
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
         {showForm && (
           <Card className="bg-gray-700 border-gray-600">
             <CardHeader>
-              <CardTitle className="text-white">
+              <CardTitle className="text-white flex items-center gap-2">
+                <Sparkles className="h-5 w-5" />
                 {editingService ? 'تعديل الخدمة الخاصة' : 'إضافة خدمة خاصة جديدة'}
               </CardTitle>
             </CardHeader>
@@ -396,6 +206,7 @@ const SpecialServicesManagement = () => {
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                     className="bg-gray-600 border-gray-500 text-white"
                     rows={2}
+                    placeholder="وصف مختصر للخدمة الخاصة"
                   />
                 </div>
 
@@ -407,63 +218,19 @@ const SpecialServicesManagement = () => {
                     onChange={(e) => setFormData({...formData, detailed_description: e.target.value})}
                     className="bg-gray-600 border-gray-500 text-white"
                     rows={3}
+                    placeholder="وصف تفصيلي أكثر للخدمة الخاصة"
                   />
                 </div>
 
-                <div>
-                  <Label className="text-white mb-2 block">المشاريع المرتبطة</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {predefinedProjects.map((project) => (
-                      <label key={project} className="flex items-center gap-2 text-sm">
-                        <input
-                          type="checkbox"
-                          checked={formData.project_types.includes(project)}
-                          onChange={() => toggleProjectType(project)}
-                          className="rounded"
-                        />
-                        <span className="text-gray-300">{project}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <Label className="text-white mb-2 block">الميزات</Label>
-                  <div className="space-y-2">
-                    {formData.features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <span className="text-gray-300 flex-1">{feature}</span>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => removeFeature(index)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={addFeature}
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      إضافة ميزة
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="icon" className="text-white">أيقونة (اسم lucide)</Label>
+                    <Label htmlFor="icon" className="text-white">الأيقونة (اختيارية)</Label>
                     <Input
                       id="icon"
                       value={formData.icon}
                       onChange={(e) => setFormData({...formData, icon: e.target.value})}
                       className="bg-gray-600 border-gray-500 text-white"
-                      placeholder="مثال: Star, Shield, Zap"
+                      placeholder="مثال: ⭐ أو 🚀"
                     />
                   </div>
                   <div>
@@ -476,20 +243,22 @@ const SpecialServicesManagement = () => {
                       className="bg-gray-600 border-gray-500 text-white h-10"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="display_order" className="text-white">ترتيب العرض</Label>
-                    <Input
-                      id="display_order"
-                      type="number"
-                      value={formData.display_order}
-                      onChange={(e) => setFormData({...formData, display_order: parseInt(e.target.value) || 0})}
-                      className="bg-gray-600 border-gray-500 text-white"
-                    />
-                  </div>
                 </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center space-x-2">
+
+                <div>
+                  <Label htmlFor="display_order" className="text-white">ترتيب العرض</Label>
+                  <Input
+                    id="display_order"
+                    type="number"
+                    value={formData.display_order}
+                    onChange={(e) => setFormData({...formData, display_order: parseInt(e.target.value)})}
+                    className="bg-gray-600 border-gray-500 text-white"
+                    min="0"
+                  />
+                </div>
+
+                <div className="flex items-center space-x-4 space-x-reverse">
+                  <div className="flex items-center space-x-2 space-x-reverse">
                     <Switch
                       id="is_featured"
                       checked={formData.is_featured}
@@ -497,7 +266,7 @@ const SpecialServicesManagement = () => {
                     />
                     <Label htmlFor="is_featured" className="text-white">خدمة مميزة</Label>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 space-x-reverse">
                     <Switch
                       id="is_active"
                       checked={formData.is_active}
@@ -527,12 +296,14 @@ const SpecialServicesManagement = () => {
             </div>
           ) : specialServices?.length === 0 ? (
             <div className="text-center py-8">
+              <Star className="h-16 w-16 text-gray-600 mx-auto mb-4" />
               <div className="text-gray-400 mb-4">لا توجد خدمات خاصة حالياً</div>
               <Button
-                onClick={() => initializeMutation.mutate()}
+                onClick={() => setShowForm(true)}
                 className="bg-yellow-500 text-black hover:bg-yellow-400"
               >
-                إضافة الخدمات الافتراضية
+                <Plus className="mr-2 h-4 w-4" />
+                إضافة أول خدمة خاصة
               </Button>
             </div>
           ) : (
@@ -542,6 +313,7 @@ const SpecialServicesManagement = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
+                        {service.icon && <span className="text-lg">{service.icon}</span>}
                         <h3 className="text-white font-semibold">{service.name}</h3>
                         {service.is_featured && (
                           <Badge className="bg-yellow-500 text-black text-xs">
@@ -557,20 +329,21 @@ const SpecialServicesManagement = () => {
                       {service.description && (
                         <p className="text-gray-300 text-sm mb-2">{service.description}</p>
                       )}
-                      {service.project_types && service.project_types.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-2">
-                          {service.project_types.map((project: string, index: number) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {project}
-                            </Badge>
-                          ))}
-                        </div>
+                      {service.detailed_description && (
+                        <p className="text-gray-400 text-xs mb-2">{service.detailed_description}</p>
                       )}
-                      {service.features && service.features.length > 0 && (
-                        <div className="text-xs text-gray-400">
-                          الميزات: {service.features.join(', ')}
-                        </div>
-                      )}
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="text-gray-500">ترتيب: {service.display_order}</span>
+                        {service.color && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-gray-500">اللون:</span>
+                            <div 
+                              className="w-4 h-4 rounded border border-gray-500" 
+                              style={{ backgroundColor: service.color }}
+                            ></div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       <Button

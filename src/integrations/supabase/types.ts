@@ -754,6 +754,7 @@ export type Database = {
           is_active: boolean | null
           name: string
           price: number
+          project_id: string | null
           type: string
           unit: string | null
         }
@@ -764,6 +765,7 @@ export type Database = {
           is_active?: boolean | null
           name: string
           price: number
+          project_id?: string | null
           type: string
           unit?: string | null
         }
@@ -774,6 +776,7 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           price?: number
+          project_id?: string | null
           type?: string
           unit?: string | null
         }
@@ -820,6 +823,7 @@ export type Database = {
           is_active: boolean | null
           is_featured: boolean | null
           name: string
+          project_id: string | null
           project_types: Json | null
           updated_at: string | null
         }
@@ -836,6 +840,7 @@ export type Database = {
           is_active?: boolean | null
           is_featured?: boolean | null
           name: string
+          project_id?: string | null
           project_types?: Json | null
           updated_at?: string | null
         }
@@ -852,6 +857,7 @@ export type Database = {
           is_active?: boolean | null
           is_featured?: boolean | null
           name?: string
+          project_id?: string | null
           project_types?: Json | null
           updated_at?: string | null
         }
