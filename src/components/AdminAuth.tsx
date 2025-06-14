@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Lock, Eye, EyeOff, ArrowLeft, User } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft, Mail, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,131 +13,73 @@ interface AdminAuthProps {
 }
 
 const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
-  const [username, setUsername] = useState('');
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    checkExistingSession();
-  }, [onAuthenticated]);
-
-  const checkExistingSession = async () => {
-    try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error('Session check error:', error);
-        return;
-      }
-
-      if (session?.user) {
-        // التحقق من صلاحيات المدير
-        const isAdmin = await verifyAdminRole(session.user.id);
-        if (isAdmin) {
+    // التحقق من وجود جلسة مصادقة
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // التحقق من أن المستخدم مدير
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (profile?.role === 'admin') {
           onAuthenticated();
         }
       }
-    } catch (error) {
-      console.error('Error checking session:', error);
-    }
-  };
+    };
 
-  const verifyAdminRole = async (userId: string): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .single();
-      
-      if (error) {
-        console.error('Error verifying admin role:', error);
-        return false;
-      }
-      
-      return data?.role === 'admin';
-    } catch (error) {
-      console.error('Admin verification error:', error);
-      return false;
-    }
-  };
+    checkSession();
+  }, [onAuthenticated]);
 
   const handleLogin = async () => {
-    if (!username || !password) {
-      toast({
-        title: "خطأ في البيانات",
-        description: "يرجى إدخال اسم المستخدم وكلمة المرور",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsLoading(true);
     
     try {
-      // تنظيف الجلسة السابقة
-      await supabase.auth.signOut();
-      
-      // التحقق من بيانات الدخول
-      if (username !== 'admin12' || password !== 'AhmedOman2025$') {
-        throw new Error('بيانات الدخول غير صحيحة');
-      }
-
-      const adminEmail = 'admin@techservices.com';
-      
-      // محاولة تسجيل الدخول
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: adminEmail,
-        password: password,
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
       
-      if (signInError) {
-        // إذا كان الحساب غير موجود، قم بإنشائه
-        if (signInError.message.includes('Invalid login credentials')) {
-          await createAdminAccount(adminEmail, password, username);
-          return;
-        }
-        
-        // إذا كان البريد غير مؤكد، تجاهل المشكلة وتابع
-        if (signInError.message.includes('Email not confirmed')) {
-          console.log('Email not confirmed, but proceeding with login');
-          
-          // الحصول على الجلسة الحالية
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session?.user) {
-            await ensureAdminProfile(session.user.id, username);
-            await logLoginActivity(username);
-            
-            toast({
-              title: "تم تسجيل الدخول بنجاح",
-              description: "مرحباً بك في لوحة التحكم"
-            });
-            
-            onAuthenticated();
-            return;
-          }
-        }
-        
-        throw signInError;
-      }
+      if (error) throw error;
       
-      if (signInData.user) {
-        await ensureAdminProfile(signInData.user.id, username);
-        await logLoginActivity(username);
+      if (data.user) {
+        // التحقق من أن المستخدم مدير
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
         
-        toast({
-          title: "تم تسجيل الدخول بنجاح",
-          description: "مرحباً بك في لوحة التحكم"
+        if (profileError) throw profileError;
+        
+        if (profile?.role !== 'admin') {
+          await supabase.auth.signOut();
+          throw new Error('ليس لديك صلاحية للوصول إلى لوحة التحكم');
+        }
+        
+        // تسجيل نشاط تسجيل الدخول
+        await supabase.rpc('log_activity', {
+          p_action: 'user_login',
+          p_details: { email, login_type: 'admin_panel' }
         });
         
+        toast({ title: "تم تسجيل الدخول بنجاح" });
         onAuthenticated();
       }
-      
     } catch (error: any) {
       console.error('Login error:', error);
-      toast({
-        title: "خطأ في تسجيل الدخول",
+      toast({ 
+        title: "خطأ في تسجيل الدخول", 
         description: error.message || "يرجى المحاولة مرة أخرى",
         variant: "destructive"
       });
@@ -146,108 +88,51 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
     }
   };
 
-  const createAdminAccount = async (email: string, password: string, username: string) => {
+  const handleSignup = async () => {
+    setIsLoading(true);
+    
     try {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: email,
-        password: password,
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
         options: {
-          data: { username: username },
-          emailRedirectTo: `${window.location.origin}/admin`
+          data: {
+            username: username
+          }
         }
       });
       
-      if (signUpError) {
-        throw signUpError;
-      }
+      if (error) throw error;
       
-      if (signUpData.user) {
-        await ensureAdminProfile(signUpData.user.id, username);
-        
-        // محاولة تسجيل دخول فوري
-        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-          email: email,
-          password: password,
+      if (data.user) {
+        toast({ 
+          title: "تم إنشاء الحساب بنجاح",
+          description: "يرجى تسجيل الدخول الآن"
         });
-        
-        if (!loginError && loginData.user) {
-          await logLoginActivity(username);
-          
-          toast({
-            title: "تم إنشاء الحساب وتسجيل الدخول",
-            description: "مرحباً بك في لوحة التحكم"
-          });
-          
-          onAuthenticated();
-        }
+        setIsLogin(true);
+        setEmail('');
+        setPassword('');
+        setUsername('');
       }
     } catch (error: any) {
-      throw new Error('فشل في إنشاء حساب المدير: ' + error.message);
-    }
-  };
-
-  const ensureAdminProfile = async (userId: string, username: string) => {
-    try {
-      // التحقق من وجود البروفايل
-      const { data: existingProfile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-      
-      if (fetchError) {
-        console.error('Error fetching profile:', fetchError);
-      }
-      
-      if (!existingProfile) {
-        // إنشاء بروفايل جديد
-        const { error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: userId,
-            username: username,
-            email: 'admin@techservices.com',
-            role: 'admin',
-            status: 'active'
-          });
-        
-        if (insertError) {
-          console.error('Error creating admin profile:', insertError);
-        }
-      } else if (existingProfile.role !== 'admin') {
-        // تحديث الدور إلى مدير
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({ 
-            role: 'admin',
-            username: username,
-            status: 'active'
-          })
-          .eq('id', userId);
-        
-        if (updateError) {
-          console.error('Error updating admin profile:', updateError);
-        }
-      }
-    } catch (error) {
-      console.error('Error in ensureAdminProfile:', error);
-    }
-  };
-
-  const logLoginActivity = async (username: string) => {
-    try {
-      await supabase.rpc('log_activity', {
-        p_action: 'user_login',
-        p_details: { username, login_type: 'admin_panel' }
+      console.error('Signup error:', error);
+      toast({ 
+        title: "خطأ في إنشاء الحساب", 
+        description: error.message || "يرجى المحاولة مرة أخرى",
+        variant: "destructive"
       });
-    } catch (error) {
-      console.error('Error logging activity:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleLogin();
+    if (isLogin) {
+      handleLogin();
+    } else {
+      handleSignup();
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -259,6 +144,7 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
       <div className="container mx-auto px-6 max-w-md">
+        {/* زر العودة إلى الرئيسية */}
         <div className="mb-6">
           <Link to="/">
             <Button 
@@ -277,21 +163,40 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
               <Lock className="h-8 w-8" />
             </div>
             <CardTitle className="text-2xl font-bold text-white">
-              دخول لوحة التحكم
+              {isLogin ? 'دخول لوحة التحكم' : 'إنشاء حساب إداري'}
             </CardTitle>
             <p className="text-gray-400 mt-2">
-              يرجى إدخال بيانات المدير للوصول إلى لوحة التحكم
+              {isLogin 
+                ? 'يرجى إدخال بيانات المدير للوصول إلى لوحة التحكم'
+                : 'إنشاء حساب إداري جديد للوصول إلى لوحة التحكم'
+              }
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
+              {!isLogin && (
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    type="text"
+                    placeholder="اسم المستخدم"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="bg-gray-800 border-gray-600 text-white pl-10"
+                    disabled={isLoading}
+                    required
+                  />
+                </div>
+              )}
+              
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  type="text"
-                  placeholder="اسم المستخدم"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="email"
+                  placeholder="البريد الإلكتروني"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   onKeyPress={handleKeyPress}
                   className="bg-gray-800 border-gray-600 text-white pl-10"
                   disabled={isLoading}
@@ -321,12 +226,33 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuthenticated }) => {
               
               <Button 
                 type="submit"
-                disabled={isLoading || !username || !password}
+                disabled={isLoading || !email || !password || (!isLogin && !username)}
                 className="w-full bg-yellow-500 text-black hover:bg-yellow-400"
               >
-                {isLoading ? "جارٍ المعالجة..." : "تسجيل الدخول"}
+                {isLoading 
+                  ? "جارٍ المعالجة..." 
+                  : isLogin ? "تسجيل الدخول" : "إنشاء الحساب"
+                }
               </Button>
             </form>
+            
+            <div className="text-center">
+              <button
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setEmail('');
+                  setPassword('');
+                  setUsername('');
+                }}
+                className="text-yellow-400 hover:text-yellow-300 text-sm transition-colors"
+                disabled={isLoading}
+              >
+                {isLogin 
+                  ? 'ليس لديك حساب؟ إنشاء حساب جديد'
+                  : 'لديك حساب؟ تسجيل الدخول'
+                }
+              </button>
+            </div>
           </CardContent>
         </Card>
       </div>
