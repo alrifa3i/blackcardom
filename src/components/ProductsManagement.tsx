@@ -345,83 +345,87 @@ const ProductsManagement = () => {
               <div className="text-gray-400">لا توجد منتجات حالياً</div>
             </div>
           ) : (
-            products?.map((product) => (
-              <Card key={product.id} className="bg-gray-700 border-gray-600">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    {product.image_url && (
-                      <div className="flex-shrink-0">
-                        <img 
-                          src={product.image_url} 
-                          alt={product.name}
-                          className="w-20 h-20 object-cover rounded-lg"
-                        />
-                      </div>
-                    )}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-white font-semibold">{product.name}</h3>
-                        {product.is_featured && (
-                          <Badge className="bg-yellow-500 text-black text-xs">مميز</Badge>
-                        )}
-                        {!product.is_available && (
-                          <Badge variant="secondary" className="text-xs">غير متاح</Badge>
-                        )}
-                        <Badge variant="outline" className="text-xs">
-                          {getCategoryLabel(product.category)}
-                        </Badge>
-                      </div>
-                      <p className="text-gray-300 text-sm mb-2">{product.description}</p>
-                      <div className="flex items-center gap-4 text-sm mb-2">
-                        <span className="text-yellow-500 font-semibold text-lg">
-                          ${product.price}
-                        </span>
-                      </div>
-                      {product.features && product.features.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {product.features.slice(0, 3).map((feature: string, index: number) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {feature}
-                            </Badge>
-                          ))}
-                          {product.features.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{product.features.length - 3} أخرى
-                            </Badge>
-                          )}
+            products?.map((product) => {
+              const productFeatures = Array.isArray(product.features) ? product.features : [];
+              
+              return (
+                <Card key={product.id} className="bg-gray-700 border-gray-600">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-4">
+                      {product.image_url && (
+                        <div className="flex-shrink-0">
+                          <img 
+                            src={product.image_url} 
+                            alt={product.name}
+                            className="w-20 h-20 object-cover rounded-lg"
+                          />
                         </div>
                       )}
-                    </div>
-                    <div className="flex gap-2">
-                      {product.demo_url && (
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-white font-semibold">{product.name}</h3>
+                          {product.is_featured && (
+                            <Badge className="bg-yellow-500 text-black text-xs">مميز</Badge>
+                          )}
+                          {!product.is_available && (
+                            <Badge variant="secondary" className="text-xs">غير متاح</Badge>
+                          )}
+                          <Badge variant="outline" className="text-xs">
+                            {getCategoryLabel(product.category)}
+                          </Badge>
+                        </div>
+                        <p className="text-gray-300 text-sm mb-2">{product.description}</p>
+                        <div className="flex items-center gap-4 text-sm mb-2">
+                          <span className="text-yellow-500 font-semibold text-lg">
+                            ${product.price}
+                          </span>
+                        </div>
+                        {productFeatures.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {productFeatures.slice(0, 3).map((feature: string, index: number) => (
+                              <Badge key={index} variant="outline" className="text-xs">
+                                {feature}
+                              </Badge>
+                            ))}
+                            {productFeatures.length > 3 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{productFeatures.length - 3} أخرى
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        {product.demo_url && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => window.open(product.demo_url, '_blank')}
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => window.open(product.demo_url, '_blank')}
+                          onClick={() => handleEdit(product)}
                         >
-                          <ExternalLink className="h-3 w-3" />
+                          <Edit className="h-3 w-3" />
                         </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(product)}
-                      >
-                        <Edit className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDelete(product.id)}
-                        disabled={deleteProductMutation.isPending}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDelete(product.id)}
+                          disabled={deleteProductMutation.isPending}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+                  </CardContent>
+                </Card>
+              );
+            })
           )}
         </div>
       </CardContent>
