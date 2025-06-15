@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, Download, ExternalLink, ShoppingCart, ChevronDown, ChevronUp } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import PayPalButton from './PayPalButton';
 
 const ProductsSection = () => {
@@ -12,136 +14,21 @@ const ProductsSection = () => {
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
 
-  const products = [
-    {
-      id: 1,
-      title: "نظام إدارة المخزون الذكي",
-      description: "نظام متطور لإدارة المخزون مع تتبع المنتجات والتنبيهات التلقائية",
-      price: "400",
-      originalPrice: "400 ريال عُماني",
-      downloads: "1,200+",
-      rating: 4.8,
-      category: "إدارة أعمال",
-      demoUrl: "https://inventory-demo.theblack-card.com",
-      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80",
-      features: ["تتبع المخزون", "تقارير مفصلة", "تنبيهات ذكية", "إدارة الموردين"],
-      isVisible: true
-    },
-    {
-      id: 2,
-      title: "نظام إدارة علاقات العملاء",
-      description: "نظام CRM شامل لإدارة العملاء والمبيعات والتسويق",
-      price: "350",
-      originalPrice: "350 ريال عُماني",
-      downloads: "890+",
-      rating: 4.7,
-      category: "إدارة أعمال",
-      demoUrl: "https://crm-demo.theblack-card.com",
-      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80",
-      features: ["إدارة العملاء", "تتبع المبيعات", "حملات تسويقية", "تقارير شاملة"],
-      isVisible: true
-    },
-    {
-      id: 3,
-      title: "نظام نقاط البيع الذكي",
-      description: "نظام POS متطور للمتاجر والمطاعم مع إدارة شاملة",
-      price: "300",
-      originalPrice: "300 ريال عُماني",
-      downloads: "2,100+",
-      rating: 4.9,
-      category: "تجارة إلكترونية",
-      demoUrl: "https://pos-demo.theblack-card.com",
-      image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
-      features: ["معالجة سريعة", "إدارة المخزون", "تقارير مبيعات", "دعم متعدد الفروع"],
-      isVisible: true
-    },
-    {
-      id: 4,
-      title: "منصة إدارة المشاريع",
-      description: "أداة شاملة لإدارة المشاريع والفرق والمهام",
-      price: "450",
-      originalPrice: "450 ريال عُماني",
-      downloads: "650+",
-      rating: 4.6,
-      category: "إدارة أعمال",
-      demoUrl: "https://project-demo.theblack-card.com",
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=500&q=80",
-      features: ["تتبع المشاريع", "إدارة الفرق", "تقارير التقدم", "تعاون سحابي"],
-      isVisible: true
-    },
-    {
-      id: 5,
-      title: "نظام إدارة الموارد البشرية",
-      description: "حل متكامل لإدارة الموظفين والرواتب والحضور",
-      price: "380",
-      originalPrice: "380 ريال عُماني",
-      downloads: "750+",
-      rating: 4.5,
-      category: "موارد بشرية",
-      demoUrl: "https://hr-demo.theblack-card.com",
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
-      features: ["إدارة الموظفين", "حساب الرواتب", "تتبع الحضور", "تقييم الأداء"],
-      isVisible: true
-    },
-    {
-      id: 6,
-      title: "نظام إدارة العقارات",
-      description: "منصة شاملة لإدارة العقارات والإيجارات والصيانة",
-      price: "500",
-      originalPrice: "500 ريال عُماني",
-      downloads: "420+",
-      rating: 4.8,
-      category: "إدارة أعمال",
-      demoUrl: "https://property-demo.theblack-card.com",
-      image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=500&q=80",
-      features: ["إدارة العقارات", "تتبع الإيجارات", "طلبات الصيانة", "تقارير مالية"],
-      isVisible: true
-    },
-    {
-      id: 7,
-      title: "نظام إدارة المدارس",
-      description: "نظام تعليمي شامل للمدارس والمعاهد التعليمية",
-      price: "600",
-      originalPrice: "600 ريال عُماني",
-      downloads: "320+",
-      rating: 4.7,
-      category: "تعليم",
-      demoUrl: "https://school-demo.theblack-card.com",
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=500&q=80",
-      features: ["إدارة الطلاب", "جدولة الحصص", "تتبع الدرجات", "تواصل مع الأهل"],
-      isVisible: true
-    },
-    {
-      id: 8,
-      title: "نظام إدارة المستشفيات",
-      description: "حل متطور لإدارة المستشفيات والعيادات الطبية",
-      price: "800",
-      originalPrice: "800 ريال عُماني",
-      downloads: "180+",
-      rating: 4.9,
-      category: "صحة",
-      demoUrl: "https://hospital-demo.theblack-card.com",
-      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80",
-      features: ["إدارة المرضى", "مواعيد الأطباء", "السجلات الطبية", "إدارة الأدوية"],
-      isVisible: true
-    },
-    {
-      id: 9,
-      title: "نظام إدارة المطاعم المتطور",
-      description: "نظام شامل لإدارة المطاعم والطلبات والتوصيل",
-      price: "450",
-      originalPrice: "450 ريال عُماني",
-      downloads: "980+",
-      rating: 4.6,
-      category: "مطاعم",
-      demoUrl: "https://restaurant-demo.theblack-card.com",
-      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=500&q=80",
-      features: ["إدارة القوائم", "معالجة الطلبات", "نظام التوصيل", "تقارير المبيعات"],
-      isVisible: true
+  const { data: products, isLoading } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_available', true)
+        .order('display_order', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
     }
-  ];
+  });
 
-  const visibleProducts = products.filter(product => product.isVisible);
+  const visibleProducts = products?.filter(product => product.is_available) || [];
   const displayedProducts = showMore ? visibleProducts : visibleProducts.slice(0, 3);
 
   const handlePurchase = (product: any) => {
@@ -154,6 +41,42 @@ const ProductsSection = () => {
     setIsPaymentOpen(false);
     setSelectedProduct(null);
   };
+
+  const getCategoryLabel = (category: string) => {
+    const categories = {
+      'systems': 'أنظمة',
+      'ecommerce': 'تجارة إلكترونية',
+      'mobile': 'تطبيقات محمولة',
+      'web': 'تطبيقات ويب',
+      'desktop': 'تطبيقات سطح المكتب'
+    };
+    return categories[category as keyof typeof categories] || category;
+  };
+
+  if (isLoading) {
+    return (
+      <section id="products" className="py-16 md:py-20 bg-black">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-12 md:mb-16">
+            <Badge className="mb-4 bg-yellow-500 text-black">منتجاتنا</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">حلول جاهزة للاستخدام</h2>
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
+              مجموعة من المنتجات التقنية المطورة خصيصاً لتلبية احتياجات الأعمال المختلفة
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-gray-800 rounded-lg p-6 animate-pulse">
+                <div className="h-48 bg-gray-700 rounded mb-4"></div>
+                <div className="h-4 bg-gray-700 rounded mb-2"></div>
+                <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>
@@ -168,62 +91,77 @@ const ProductsSection = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {displayedProducts.map((product) => (
-              <Card key={product.id} className="modern-card bg-gradient-to-br from-gray-800 to-gray-700 border-0 shadow-lg group hover:shadow-2xl transition-all duration-300">
-                <CardHeader className="pb-4">
-                  <div className="w-full h-48 bg-gray-600 rounded-lg mb-4 overflow-hidden">
-                    <img 
-                      src={product.image} 
-                      alt={product.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge className="bg-green-500 text-white">{product.category}</Badge>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                      <span className="text-yellow-500 font-medium">{product.rating}</span>
+            {displayedProducts.length === 0 ? (
+              <div className="col-span-full text-center py-16">
+                <p className="text-gray-400 text-lg">لا توجد منتجات متاحة حالياً</p>
+              </div>
+            ) : (
+              displayedProducts.map((product) => (
+                <Card key={product.id} className="modern-card bg-gradient-to-br from-gray-800 to-gray-700 border-0 shadow-lg group hover:shadow-2xl transition-all duration-300">
+                  <CardHeader className="pb-4">
+                    <div className="w-full h-48 bg-gray-600 rounded-lg mb-4 overflow-hidden">
+                      <img 
+                        src={product.image_url || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80'} 
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
-                  </div>
-                  <CardTitle className="text-xl font-bold text-white mb-2">{product.title}</CardTitle>
-                  <p className="text-gray-300 text-sm">{product.description}</p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-4 text-sm text-gray-400">
-                    <span className="flex items-center gap-1">
-                      <Download className="h-4 w-4" />
-                      {product.downloads}
-                    </span>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-gray-600">
-                    <div className="flex items-center justify-between mb-4">
-                      <Badge className="bg-yellow-500 text-black font-bold text-lg px-3 py-1">
-                        {product.originalPrice}
-                      </Badge>
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge className="bg-green-500 text-white">{getCategoryLabel(product.category)}</Badge>
+                      {product.is_featured && (
+                        <Badge className="bg-yellow-500 text-black">مميز</Badge>
+                      )}
                     </div>
+                    <CardTitle className="text-xl font-bold text-white mb-2">{product.name}</CardTitle>
+                    <p className="text-gray-300 text-sm">{product.description}</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {product.features && product.features.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {product.features.slice(0, 3).map((feature: string, index: number) => (
+                          <Badge key={index} variant="outline" className="text-xs border-gray-600 text-gray-300">
+                            {feature}
+                          </Badge>
+                        ))}
+                        {product.features.length > 3 && (
+                          <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+                            +{product.features.length - 3} أخرى
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                     
-                    <div className="flex gap-2">
-                      <Button 
-                        className="flex-1 bg-yellow-500 text-black hover:bg-yellow-400 transition-colors"
-                        onClick={() => handlePurchase(product)}
-                      >
-                        <ShoppingCart className="mr-2 h-4 w-4" />
-                        شراء الآن
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="border-gray-600 text-white hover:bg-gray-700"
-                        onClick={() => window.open(product.demoUrl, '_blank')}
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
+                    <div className="pt-4 border-t border-gray-600">
+                      <div className="flex items-center justify-between mb-4">
+                        <Badge className="bg-yellow-500 text-black font-bold text-lg px-3 py-1">
+                          ${product.price}
+                        </Badge>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button 
+                          className="flex-1 bg-yellow-500 text-black hover:bg-yellow-400 transition-colors"
+                          onClick={() => handlePurchase(product)}
+                        >
+                          <ShoppingCart className="mr-2 h-4 w-4" />
+                          شراء الآن
+                        </Button>
+                        {product.demo_url && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="border-gray-600 text-white hover:bg-gray-700"
+                            onClick={() => window.open(product.demo_url, '_blank')}
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
 
           {visibleProducts.length > 3 && (
@@ -254,18 +192,18 @@ const ProductsSection = () => {
       <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
         <DialogContent className="max-w-md bg-gray-900 border-gray-700">
           <DialogHeader>
-            <DialogTitle className="text-white">الدفع - {selectedProduct?.title}</DialogTitle>
+            <DialogTitle className="text-white">الدفع - {selectedProduct?.name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="text-center">
               <p className="text-gray-300 mb-2">المبلغ المطلوب:</p>
-              <p className="text-2xl font-bold text-yellow-500">{selectedProduct?.originalPrice}</p>
+              <p className="text-2xl font-bold text-yellow-500">${selectedProduct?.price}</p>
             </div>
             {selectedProduct && (
               <PayPalButton
                 amount={selectedProduct.price}
                 currency="USD"
-                description={selectedProduct.title}
+                description={selectedProduct.name}
                 onSuccess={handlePaymentSuccess}
                 onError={(error) => console.error('Payment error:', error)}
               />
