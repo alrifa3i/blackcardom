@@ -9,37 +9,14 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Plus, Edit, Trash2, Package, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import ImageUpload from './ImageUpload';
 
 const ProductsManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
-  const [products, setProducts] = useState([
-    {
-      id: '1',
-      name: 'نظام إدارة المحتوى المتقدم',
-      description: 'نظام شامل لإدارة المحتوى مع لوحة تحكم متقدمة',
-      price: 2999,
-      category: 'systems',
-      image_url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80',
-      features: ['لوحة تحكم شاملة', 'إدارة المستخدمين', 'تحليلات متقدمة', 'أمان عالي'],
-      is_featured: true,
-      is_available: true,
-      demo_url: '#'
-    },
-    {
-      id: '2',
-      name: 'تطبيق التجارة الإلكترونية',
-      description: 'متجر إلكتروني متكامل مع نظام دفع آمن',
-      price: 3999,
-      category: 'ecommerce',
-      image_url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80',
-      features: ['نظام دفع متكامل', 'إدارة المخزون', 'تتبع الطلبات', 'تحليلات المبيعات'],
-      is_featured: true,
-      is_available: true,
-      demo_url: '#'
-    }
-  ]);
+  const queryClient = useQueryClient();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -51,6 +28,96 @@ const ProductsManagement = () => {
     is_featured: false,
     is_available: true,
     demo_url: ''
+  });
+
+  // جلب المنتجات من قاعدة البيانات
+  const { data: products, isLoading } = useQuery({
+    queryKey: ['products-management'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('display_order', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // إضافة منتج جديد
+  const addProductMutation = useMutation({
+    mutationFn: async (productData: any) => {
+      const { error } = await supabase
+        .from('products')
+        .insert([productData]);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products-management'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast({ title: "تم إضافة المنتج بنجاح" });
+      resetForm();
+    },
+    onError: (error) => {
+      console.error('Error adding product:', error);
+      toast({ 
+        title: "خطأ في إضافة المنتج", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
+    }
+  });
+
+  // تحديث منتج
+  const updateProductMutation = useMutation({
+    mutationFn: async ({ id, ...productData }: any) => {
+      const { error } = await supabase
+        .from('products')
+        .update(productData)
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products-management'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast({ title: "تم تحديث المنتج بنجاح" });
+      resetForm();
+    },
+    onError: (error) => {
+      console.error('Error updating product:', error);
+      toast({ 
+        title: "خطأ في تحديث المنتج", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
+    }
+  });
+
+  // حذف منتج
+  const deleteProductMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products-management'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast({ title: "تم حذف المنتج بنجاح" });
+    },
+    onError: (error) => {
+      console.error('Error deleting product:', error);
+      toast({ 
+        title: "خطأ في حذف المنتج", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
+    }
   });
 
   const resetForm = () => {
@@ -79,26 +146,23 @@ const ProductsManagement = () => {
   };
 
   const handleDelete = (id: string) => {
-    setProducts(products.filter(p => p.id !== id));
-    toast({ title: "تم حذف المنتج بنجاح" });
+    if (window.confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+      deleteProductMutation.mutate(id);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const productData = {
       ...formData,
-      features: formData.features.split(',').map(f => f.trim()).filter(Boolean),
-      id: editingProduct ? editingProduct.id : Date.now().toString()
+      features: formData.features.split(',').map(f => f.trim()).filter(Boolean)
     };
 
     if (editingProduct) {
-      setProducts(products.map(p => p.id === editingProduct.id ? productData : p));
-      toast({ title: "تم تحديث المنتج بنجاح" });
+      updateProductMutation.mutate({ id: editingProduct.id, ...productData });
     } else {
-      setProducts([...products, productData]);
-      toast({ title: "تم إضافة المنتج بنجاح" });
+      addProductMutation.mutate(productData);
     }
-    resetForm();
   };
 
   const getCategoryLabel = (category: string) => {
@@ -111,6 +175,24 @@ const ProductsManagement = () => {
     };
     return categories[category as keyof typeof categories] || category;
   };
+
+  if (isLoading) {
+    return (
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-yellow-500 flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            إدارة المنتجات
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <div className="text-gray-400">جاري تحميل المنتجات...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -241,8 +323,12 @@ const ProductsManagement = () => {
                 </div>
                 
                 <div className="flex gap-4">
-                  <Button type="submit" className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    {editingProduct ? 'تحديث' : 'إضافة'}
+                  <Button 
+                    type="submit" 
+                    className="bg-yellow-500 text-black hover:bg-yellow-400"
+                    disabled={addProductMutation.isPending || updateProductMutation.isPending}
+                  >
+                    {addProductMutation.isPending || updateProductMutation.isPending ? 'جاري الحفظ...' : editingProduct ? 'تحديث' : 'إضافة'}
                   </Button>
                   <Button type="button" variant="outline" onClick={resetForm}>
                     إلغاء
@@ -254,12 +340,12 @@ const ProductsManagement = () => {
         )}
         
         <div className="grid gap-4">
-          {products.length === 0 ? (
+          {products && products.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-gray-400">لا توجد منتجات حالياً</div>
             </div>
           ) : (
-            products.map((product) => (
+            products?.map((product) => (
               <Card key={product.id} className="bg-gray-700 border-gray-600">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
@@ -288,7 +374,7 @@ const ProductsManagement = () => {
                       <p className="text-gray-300 text-sm mb-2">{product.description}</p>
                       <div className="flex items-center gap-4 text-sm mb-2">
                         <span className="text-yellow-500 font-semibold text-lg">
-                          ${product.price.toLocaleString()}
+                          ${product.price}
                         </span>
                       </div>
                       {product.features && product.features.length > 0 && (
@@ -327,6 +413,7 @@ const ProductsManagement = () => {
                         size="sm"
                         variant="destructive"
                         onClick={() => handleDelete(product.id)}
+                        disabled={deleteProductMutation.isPending}
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
