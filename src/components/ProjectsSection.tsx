@@ -5,10 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, MapPin, Calendar, ExternalLink, Users, Zap, Shield, Globe, ChevronDown, ChevronUp } from 'lucide-react';
 import ServiceRequestForm from './ServiceRequestForm';
+import ProjectViewer from './ProjectViewer';
 
 const ProjectsSection = () => {
   const [showServiceForm, setShowServiceForm] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<{url: string, title: string} | null>(null);
 
   const projects = [
     {
@@ -211,6 +214,13 @@ const ProjectsSection = () => {
     }
   ];
 
+  const handleViewProject = (url: string, title: string) => {
+    if (url && title) {
+      setSelectedProject({ url, title });
+      setIsViewerOpen(true);
+    }
+  };
+
   const visibleProjects = projects.filter(project => project.isVisible);
   const displayedProjects = showMore ? visibleProjects : visibleProjects.slice(0, 3);
 
@@ -316,9 +326,10 @@ const ProjectsSection = () => {
                       size="sm" 
                       variant="outline" 
                       className="border-gray-600 text-white hover:bg-gray-700"
-                      onClick={() => window.open(project.projectUrl, '_blank')}
+                      onClick={() => handleViewProject(project.projectUrl, project.name)}
                     >
-                      <ExternalLink className="h-3 w-3" />
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      عرض
                     </Button>
                   </div>
                 </CardContent>
@@ -374,8 +385,18 @@ const ProjectsSection = () => {
         isOpen={showServiceForm} 
         onClose={() => setShowServiceForm(false)} 
       />
+
+      {selectedProject && (
+        <ProjectViewer
+          isOpen={isViewerOpen}
+          onClose={() => setIsViewerOpen(false)}
+          url={selectedProject.url}
+          title={selectedProject.title}
+        />
+      )}
     </>
   );
 };
 
 export default ProjectsSection;
+
