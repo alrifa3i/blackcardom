@@ -91,7 +91,7 @@ const Navigation = () => {
                   animation: showArabic ? 'gradient-shift 2s ease infinite, slide-in-arabic 1s ease-out' : 'none',
                   textShadow: '0 0 20px rgba(255, 215, 0, 0.5)',
                   filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))'
-                }} className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap md:text-2xl lg:text-3xl animate-slide-in-arabic text-2xl text-center">
+                }} className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent font-extrabold whitespace-nowrap md:text-2xl lg:text-3xl animate-slide-in-arabic text-center text-2xl">
                     شركة الكارت الاسود
                   </span>
                 </div>
