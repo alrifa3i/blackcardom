@@ -13,10 +13,14 @@ const AdminDashboardSidebar: React.FC<AdminDashboardSidebarProps> = ({
   onSectionChange
 }) => {
   const handleSectionClick = (sectionId: string) => {
+    console.log('Section clicked:', sectionId); // Debug log
     onSectionChange(sectionId);
     // Scroll to top of the page
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  console.log('Current active section:', activeSection); // Debug log
+  console.log('Available sections:', adminMenuSections.map(s => s.id)); // Debug log
 
   return (
     <div className="w-80 bg-gray-900 border-r border-gray-700 min-h-screen">

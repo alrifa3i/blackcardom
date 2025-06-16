@@ -27,6 +27,8 @@ const AdminDashboardContentRenderer: React.FC<AdminDashboardContentRendererProps
   activeSection,
   sessionExpiry
 }) => {
+  console.log('Active section:', activeSection); // Debug log
+
   switch (activeSection) {
     case 'overview':
       return <AdminDashboardOverview sessionExpiry={sessionExpiry} />;
@@ -61,7 +63,8 @@ const AdminDashboardContentRenderer: React.FC<AdminDashboardContentRendererProps
     case 'activity-logs':
       return <ActivityLogs />;
     default:
-      return null;
+      console.log('Unknown section:', activeSection); // Debug log
+      return <AdminDashboardOverview sessionExpiry={sessionExpiry} />;
   }
 };
 
