@@ -73,112 +73,119 @@ const ProjectsSection = () => {
           </div>
 
           <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {displayedProjects?.map((project) => (
-              <Card key={project.id} className="modern-card border-0 shadow-xl bg-gradient-to-br from-gray-800 to-gray-700 hover:shadow-2xl transition-all duration-300 group">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center overflow-hidden">
-                      <img src={project.logo || project.image_url} alt={project.name} className="w-full h-full object-cover" />
-                    </div>
-                    <Badge className={`${
-                      project.status === 'مكتمل' ? 'bg-green-500' : 'bg-blue-500'
-                    } text-white`}>
-                      {project.status}
-                    </Badge>
-                  </div>
-                  <CardTitle className="text-xl font-bold text-white mb-2 group-hover:text-yellow-500 transition-colors">
-                    {project.name}
-                  </CardTitle>
-                  <div className="flex items-center text-gray-300 text-sm mb-2">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span>{project.country}</span>
-                  </div>
-                  <div className="flex items-center text-gray-300 text-sm">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    <span>{project.date}</span>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-6">
-                  <p className="text-gray-300 text-sm leading-relaxed">
-                    {project.description}
-                  </p>
+            {displayedProjects?.map((project) => {
+              // Safely access stats object properties with proper type checking
+              const projectStats = project.stats && typeof project.stats === 'object' && !Array.isArray(project.stats) 
+                ? project.stats as Record<string, any>
+                : {};
 
-                  {/* إحصائيات المشروع */}
-                  {project.stats && typeof project.stats === 'object' && (
-                    <div className="grid grid-cols-3 gap-4 p-4 bg-black/30 rounded-lg">
-                      <div className="text-center">
-                        <Users className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
-                        <div className="text-sm font-bold text-white">{project.stats.users || 'N/A'}</div>
-                        <div className="text-xs text-gray-400">مستخدم</div>
+              return (
+                <Card key={project.id} className="modern-card border-0 shadow-xl bg-gradient-to-br from-gray-800 to-gray-700 hover:shadow-2xl transition-all duration-300 group">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center overflow-hidden">
+                        <img src={project.logo || project.image_url} alt={project.name} className="w-full h-full object-cover" />
                       </div>
-                      <div className="text-center">
-                        <Zap className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
-                        <div className="text-sm font-bold text-white">{project.stats.efficiency || 'N/A'}</div>
-                        <div className="text-xs text-gray-400">كفاءة</div>
-                      </div>
-                      <div className="text-center">
-                        <Shield className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
-                        <div className="text-sm font-bold text-white">{project.stats.satisfaction || 'N/A'}</div>
-                        <div className="text-xs text-gray-400">تقييم</div>
-                      </div>
+                      <Badge className={`${
+                        project.status === 'مكتمل' ? 'bg-green-500' : 'bg-blue-500'
+                      } text-white`}>
+                        {project.status}
+                      </Badge>
                     </div>
-                  )}
+                    <CardTitle className="text-xl font-bold text-white mb-2 group-hover:text-yellow-500 transition-colors">
+                      {project.name}
+                    </CardTitle>
+                    <div className="flex items-center text-gray-300 text-sm mb-2">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      <span>{project.country}</span>
+                    </div>
+                    <div className="flex items-center text-gray-300 text-sm">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      <span>{project.date}</span>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-6">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      {project.description}
+                    </p>
 
-                  {/* التقنيات المستخدمة */}
-                  {project.technologies && Array.isArray(project.technologies) && (
-                    <div>
-                      <h4 className="text-sm font-semibold text-white mb-2">التقنيات المستخدمة:</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {project.technologies.map((tech: string, techIndex: number) => (
-                          <Badge key={techIndex} variant="outline" className="text-xs border-yellow-500 text-yellow-500">
-                            {tech}
-                          </Badge>
-                        ))}
+                    {/* إحصائيات المشروع */}
+                    {Object.keys(projectStats).length > 0 && (
+                      <div className="grid grid-cols-3 gap-4 p-4 bg-black/30 rounded-lg">
+                        <div className="text-center">
+                          <Users className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
+                          <div className="text-sm font-bold text-white">{projectStats.users || 'N/A'}</div>
+                          <div className="text-xs text-gray-400">مستخدم</div>
+                        </div>
+                        <div className="text-center">
+                          <Zap className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
+                          <div className="text-sm font-bold text-white">{projectStats.efficiency || 'N/A'}</div>
+                          <div className="text-xs text-gray-400">كفاءة</div>
+                        </div>
+                        <div className="text-center">
+                          <Shield className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
+                          <div className="text-sm font-bold text-white">{projectStats.satisfaction || 'N/A'}</div>
+                          <div className="text-xs text-gray-400">تقييم</div>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* الإنجازات */}
-                  {project.achievements && Array.isArray(project.achievements) && (
-                    <div>
-                      <h4 className="text-sm font-semibold text-white mb-2">الإنجازات الرئيسية:</h4>
-                      <ul className="space-y-1">
-                        {project.achievements.map((achievement: string, achIndex: number) => (
-                          <li key={achIndex} className="text-xs text-gray-300 flex items-center">
-                            <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full mr-2"></div>
-                            {achievement}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                    {/* التقنيات المستخدمة */}
+                    {project.technologies && Array.isArray(project.technologies) && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-white mb-2">التقنيات المستخدمة:</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {project.technologies.map((tech: string, techIndex: number) => (
+                            <Badge key={techIndex} variant="outline" className="text-xs border-yellow-500 text-yellow-500">
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-                  {/* أزرار العمل */}
-                  <div className="flex gap-2 pt-4">
-                    <Button 
-                      size="sm" 
-                      className="flex-1 bg-yellow-500 text-black hover:bg-yellow-400"
-                      onClick={() => setShowServiceForm(true)}
-                    >
-                      طلب خدمة مماثلة
-                      <ArrowRight className="mr-1 h-3 w-3" />
-                    </Button>
-                    {project.project_url && (
+                    {/* الإنجازات */}
+                    {project.achievements && Array.isArray(project.achievements) && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-white mb-2">الإنجازات الرئيسية:</h4>
+                        <ul className="space-y-1">
+                          {project.achievements.map((achievement: string, achIndex: number) => (
+                            <li key={achIndex} className="text-xs text-gray-300 flex items-center">
+                              <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full mr-2"></div>
+                              {achievement}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* أزرار العمل */}
+                    <div className="flex gap-2 pt-4">
                       <Button 
                         size="sm" 
-                        variant="outline" 
-                        className="border-gray-600 text-white hover:bg-gray-700"
-                        onClick={() => handleViewProject(project.project_url, project.name)}
+                        className="flex-1 bg-yellow-500 text-black hover:bg-yellow-400"
+                        onClick={() => setShowServiceForm(true)}
                       >
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        عرض
+                        طلب خدمة مماثلة
+                        <ArrowRight className="mr-1 h-3 w-3" />
                       </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                      {project.project_url && (
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="border-gray-600 text-white hover:bg-gray-700"
+                          onClick={() => handleViewProject(project.project_url, project.name)}
+                        >
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          عرض
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           {projects && projects.length > 3 && (
