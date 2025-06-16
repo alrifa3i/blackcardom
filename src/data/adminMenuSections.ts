@@ -1,140 +1,117 @@
+
 import { 
+  BarChart3, 
   Users, 
   Settings, 
-  BarChart3, 
-  MessageSquare,
-  Share2,
-  HelpCircle,
-  Globe,
-  Monitor,
-  TrendingUp,
-  Zap,
+  MessageCircle, 
+  HelpCircle, 
+  Globe, 
+  Smartphone, 
+  TrendingUp, 
+  Eye,
+  Wrench,
   Package,
-  Star,
-  Home,
-  Activity,
-  Database,
-  Briefcase,
+  FolderOpen,
   Code,
-  MessageCircle,
-  Cog,
-  FileText
+  Activity,
+  Search
 } from 'lucide-react';
 
-export const menuSections = [
+export const adminMenuSections = [
   {
-    title: "نظرة عامة",
-    items: [
-      {
-        id: "overview",
-        name: "الرئيسية",
-        description: "نظرة عامة على النظام",
-        icon: BarChart3
-      }
-    ]
+    id: 'overview',
+    title: 'نظرة عامة',
+    icon: BarChart3,
+    description: 'إحصائيات ولوحة تحكم عامة'
   },
   {
-    title: "إدارة المحتوى",
-    items: [
-      {
-        id: "services",
-        name: "الخدمات",
-        description: "إدارة خدمات الشركة",
-        icon: Briefcase
-      },
-      {
-        id: "special-services", 
-        name: "الخدمات المميزة",
-        description: "إدارة الخدمات الخاصة",
-        icon: Star
-      },
-      {
-        id: "products",
-        name: "المنتجات",
-        description: "إدارة منتجات الشركة",
-        icon: Package
-      },
-      {
-        id: "website-projects",
-        name: "مشاريع المواقع",
-        description: "إدارة مشاريع تطوير المواقع",
-        icon: Globe
-      },
-      {
-        id: "web-applications",
-        name: "تطبيقات الويب",
-        description: "إدارة تطبيقات الويب",
-        icon: Code
-      }
-    ]
+    id: 'services',
+    title: 'إدارة الخدمات',
+    icon: Wrench,
+    description: 'إدارة خدمات الشركة'
   },
   {
-    title: "التحليلات والإحصائيات",
-    items: [
-      {
-        id: "whatsapp",
-        name: "تحليلات الواتساب المتقدمة",
-        description: "إحصائيات مفصلة للواتساب",
-        icon: MessageCircle
-      },
-      {
-        id: "google-ads",
-        name: "تحليلات Google Ads",
-        description: "مراقبة الحملات الإعلانية",
-        icon: TrendingUp
-      },
-      {
-        id: "google-analytics-settings",
-        name: "إعدادات Google Analytics",
-        description: "تكوين تتبع التحويلات",
-        icon: BarChart3
-      }
-    ]
+    id: 'special-services',
+    title: 'الخدمات المتخصصة',
+    icon: Settings,
+    description: 'إدارة الخدمات المتخصصة'
   },
   {
-    title: "الإعدادات",
-    items: [
-      {
-        id: "whatsapp-settings",
-        name: "إعدادات الواتساب",
-        description: "تخصيص زر وإعدادات الواتساب",
-        icon: Settings
-      },
-      {
-        id: "social",
-        name: "وسائل التواصل",
-        description: "إدارة روابط التواصل الاجتماعي",
-        icon: Share2
-      },
-      {
-        id: "faq",
-        name: "الأسئلة الشائعة",
-        description: "إدارة الأسئلة والأجوبة",
-        icon: HelpCircle
-      }
-    ]
+    id: 'products',
+    title: 'إدارة المنتجات',
+    icon: Package,
+    description: 'إدارة منتجات الشركة'
   },
   {
-    title: "إدارة النظام",
-    items: [
-      {
-        id: "users",
-        name: "المستخدمين",
-        description: "إدارة حسابات المستخدمين",
-        icon: Users
-      },
-      {
-        id: "system-settings",
-        name: "إعدادات النظام",
-        description: "الإعدادات العامة للنظام",
-        icon: Cog
-      },
-      {
-        id: "activity-logs",
-        name: "سجل الأنشطة",
-        description: "مراقبة نشاطات النظام",
-        icon: FileText
-      }
-    ]
+    id: 'projects',
+    title: 'إدارة المشاريع',
+    icon: FolderOpen,
+    description: 'إدارة جميع المشاريع'
+  },
+  {
+    id: 'website-projects',
+    title: 'مشاريع تصميم المواقع',
+    icon: Globe,
+    description: 'إدارة مشاريع تصميم المواقع'
+  },
+  {
+    id: 'web-applications',
+    title: 'تطبيقات الويب',
+    icon: Code,
+    description: 'إدارة تطبيقات الويب'
+  },
+  {
+    id: 'whatsapp',
+    title: 'تحليلات واتساب',
+    icon: MessageCircle,
+    description: 'إحصائيات وتحليلات واتساب'
+  },
+  {
+    id: 'google-ads',
+    title: 'تحليلات إعلانات جوجل',
+    icon: TrendingUp,
+    description: 'إحصائيات إعلانات جوجل'
+  },
+  {
+    id: 'google-analytics-settings',
+    title: 'إعدادات Google Analytics',
+    icon: BarChart3,
+    description: 'إعدادات وربط Google Analytics'
+  },
+  {
+    id: 'whatsapp-settings',
+    title: 'إعدادات واتساب',
+    icon: MessageCircle,
+    description: 'إعدادات أرقام واتساب'
+  },
+  {
+    id: 'social',
+    title: 'وسائل التواصل',
+    icon: Smartphone,
+    description: 'إدارة روابط وسائل التواصل'
+  },
+  {
+    id: 'faq',
+    title: 'الأسئلة الشائعة',
+    icon: HelpCircle,
+    description: 'إدارة الأسئلة والأجوبة'
+  },
+  {
+    id: 'users',
+    title: 'إدارة المستخدمين',
+    icon: Users,
+    description: 'إدارة حسابات المستخدمين'
+  },
+  {
+    id: 'system-settings',
+    title: 'إعدادات النظام',
+    icon: Settings,
+    description: 'إعدادات عامة للنظام'
+  },
+  {
+    id: 'activity-logs',
+    title: 'سجل الأنشطة',
+    icon: Activity,
+    description: 'مراجعة سجل أنشطة النظام'
   }
 ];

@@ -806,6 +806,63 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          achievements: Json | null
+          country: string
+          created_at: string
+          date: string
+          description: string
+          display_order: number | null
+          id: string
+          image_url: string | null
+          is_visible: boolean | null
+          logo: string | null
+          name: string
+          project_url: string | null
+          stats: Json | null
+          status: string
+          technologies: Json | null
+          updated_at: string
+        }
+        Insert: {
+          achievements?: Json | null
+          country: string
+          created_at?: string
+          date: string
+          description: string
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_visible?: boolean | null
+          logo?: string | null
+          name: string
+          project_url?: string | null
+          stats?: Json | null
+          status?: string
+          technologies?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          achievements?: Json | null
+          country?: string
+          created_at?: string
+          date?: string
+          description?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_visible?: boolean | null
+          logo?: string | null
+          name?: string
+          project_url?: string | null
+          stats?: Json | null
+          status?: string
+          technologies?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       saved_locations: {
         Row: {
           created_at: string

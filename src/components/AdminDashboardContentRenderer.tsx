@@ -1,3 +1,4 @@
+
 import React from 'react';
 import AdminDashboardOverview from './AdminDashboardOverview';
 import SocialMediaSettings from './SocialMediaSettings';
@@ -9,6 +10,7 @@ import WhatsAppSettings from './WhatsAppSettings';
 import GoogleAdsAnalytics from './GoogleAdsAnalytics';
 import ServicesManagement from './ServicesManagement';
 import ProductsManagement from './ProductsManagement';
+import ProjectsManagement from './ProjectsManagement';
 import SpecialServicesManagement from './SpecialServicesManagement';
 import UserManagement from './UserManagement';
 import SystemSettings from './SystemSettings';
@@ -34,6 +36,8 @@ const AdminDashboardContentRenderer: React.FC<AdminDashboardContentRendererProps
       return <SpecialServicesManagement />;
     case 'products':
       return <ProductsManagement />;
+    case 'projects':
+      return <ProjectsManagement />;
     case 'website-projects':
       return <WebsiteProjectsManagement />;
     case 'web-applications':
