@@ -15,6 +15,8 @@ import { toast } from '@/hooks/use-toast';
 import ImageUpload from './ImageUpload';
 
 const ProjectsManagement = () => {
+  console.log('ProjectsManagement component mounted');
+  
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -35,21 +37,32 @@ const ProjectsManagement = () => {
 
   const queryClient = useQueryClient();
 
-  const { data: projects, isLoading } = useQuery({
+  const { data: projects, isLoading, error } = useQuery({
     queryKey: ['admin-projects'],
     queryFn: async () => {
+      console.log('Fetching projects from database...');
       const { data, error } = await supabase
         .from('projects')
         .select('*')
         .order('display_order', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching projects:', error);
+        throw error;
+      }
+      
+      console.log('Projects fetched successfully:', data);
       return data;
     }
   });
 
+  console.log('Projects data:', projects);
+  console.log('Loading state:', isLoading);
+  console.log('Error state:', error);
+
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
+      console.log('Creating project with data:', data);
       const { error } = await supabase
         .from('projects')
         .insert([{
@@ -58,18 +71,26 @@ const ProjectsManagement = () => {
           achievements: data.achievements.split(',').map((a: string) => a.trim()).filter(Boolean),
           stats: data.stats ? JSON.parse(data.stats) : {}
         }]);
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating project:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       toast({ title: "تم إضافة المشروع بنجاح" });
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Create mutation error:', error);
+      toast({ title: "حدث خطأ أثناء إضافة المشروع", variant: "destructive" });
     }
   });
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      console.log('Updating project:', id, 'with data:', data);
       const { error } = await supabase
         .from('projects')
         .update({
@@ -79,28 +100,43 @@ const ProjectsManagement = () => {
           stats: data.stats ? JSON.parse(data.stats) : {}
         })
         .eq('id', id);
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating project:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       toast({ title: "تم تحديث المشروع بنجاح" });
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Update mutation error:', error);
+      toast({ title: "حدث خطأ أثناء تحديث المشروع", variant: "destructive" });
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log('Deleting project:', id);
       const { error } = await supabase
         .from('projects')
         .delete()
         .eq('id', id);
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting project:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       toast({ title: "تم حذف المشروع بنجاح" });
+    },
+    onError: (error) => {
+      console.error('Delete mutation error:', error);
+      toast({ title: "حدث خطأ أثناء حذف المشروع", variant: "destructive" });
     }
   });
 
@@ -125,6 +161,7 @@ const ProjectsManagement = () => {
   };
 
   const handleEdit = (project: any) => {
+    console.log('Editing project:', project);
     setEditingProject(project);
     setFormData({
       ...project,
@@ -137,12 +174,26 @@ const ProjectsManagement = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting form with data:', formData);
     if (editingProject) {
       updateMutation.mutate({ id: editingProject.id, data: formData });
     } else {
       createMutation.mutate(formData);
     }
   };
+
+  if (error) {
+    console.error('Query error:', error);
+    return (
+      <Card className="bg-gray-800 border-gray-700">
+        <CardContent className="p-6">
+          <div className="text-center text-red-400">
+            حدث خطأ أثناء تحميل المشاريع: {error.message}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -325,12 +376,18 @@ const ProjectsManagement = () => {
             <div className="text-center py-8">
               <div className="text-gray-400">جاري التحميل...</div>
             </div>
-          ) : projects?.length === 0 ? (
+          ) : !projects || projects.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-gray-400">لا توجد مشاريع حالياً</div>
+              <Button 
+                onClick={() => setShowForm(true)}
+                className="bg-yellow-500 text-black hover:bg-yellow-400 mt-4"
+              >
+                إضافة أول مشروع
+              </Button>
             </div>
           ) : (
-            projects?.map((project) => (
+            projects.map((project) => (
               <Card key={project.id} className="bg-gray-700 border-gray-600">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
