@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,25 +10,9 @@ import { Plus, Edit, Trash2, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { Database } from '@/integrations/supabase/types';
 
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  country: string;
-  date: string;
-  status: string;
-  project_url: string | null;
-  image_url: string | null;
-  logo: string | null;
-  technologies: string[];
-  achievements: string[];
-  stats: Record<string, any>;
-  is_visible: boolean;
-  display_order: number;
-  created_at: string;
-  updated_at: string;
-}
+type Project = Database['public']['Tables']['projects']['Row'];
 
 const ProjectsManagement = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -227,6 +210,14 @@ const ProjectsManagement = () => {
       display_order: 0
     });
     setEditingProject(null);
+  };
+
+  // Helper function to safely convert Json to string array
+  const getStringArray = (value: any): string[] => {
+    if (Array.isArray(value)) {
+      return value;
+    }
+    return [];
   };
 
   if (loading) {
@@ -444,9 +435,9 @@ const ProjectsManagement = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300 mb-4">{project.description}</p>
-                {project.technologies && project.technologies.length > 0 && (
+                {project.technologies && getStringArray(project.technologies).length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech, index) => (
+                    {getStringArray(project.technologies).map((tech, index) => (
                       <Badge key={index} variant="outline" className="text-xs">
                         {tech}
                       </Badge>
