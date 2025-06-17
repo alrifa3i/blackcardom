@@ -1,462 +1,464 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Plus, Edit, Trash2, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Edit, Trash2, ExternalLink, FolderOpen } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
-import ImageUpload from './ImageUpload';
+
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  country: string;
+  date: string;
+  status: string;
+  project_url: string | null;
+  image_url: string | null;
+  logo: string | null;
+  technologies: string[];
+  achievements: string[];
+  stats: Record<string, any>;
+  is_visible: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
 
 const ProjectsManagement = () => {
-  console.log('ProjectsManagement component mounted');
-  
-  const [showForm, setShowForm] = useState(false);
-  const [editingProject, setEditingProject] = useState<any>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    image_url: '',
-    logo: '',
     country: '',
     date: '',
     status: 'مكتمل',
+    project_url: '',
+    image_url: '',
+    logo: '',
     technologies: '',
     achievements: '',
-    project_url: '',
     stats: '',
     is_visible: true,
     display_order: 0
   });
 
-  const queryClient = useQueryClient();
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
-  const { data: projects, isLoading, error } = useQuery({
-    queryKey: ['admin-projects'],
-    queryFn: async () => {
-      console.log('Fetching projects from database...');
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('projects')
         .select('*')
         .order('display_order', { ascending: true });
-      
+
       if (error) {
         console.error('Error fetching projects:', error);
-        throw error;
+        toast({
+          title: "خطأ في تحميل المشاريع",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
       }
-      
-      console.log('Projects fetched successfully:', data);
-      return data;
+
+      setProjects(data || []);
+    } catch (error: any) {
+      console.error('Error fetching projects:', error);
+      toast({
+        title: "خطأ في تحميل المشاريع",
+        description: error.message || "حدث خطأ غير متوقع",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-  });
+  };
 
-  console.log('Projects data:', projects);
-  console.log('Loading state:', isLoading);
-  console.log('Error state:', error);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const projectData = {
+        name: formData.name,
+        description: formData.description,
+        country: formData.country,
+        date: formData.date,
+        status: formData.status,
+        project_url: formData.project_url || null,
+        image_url: formData.image_url || null,
+        logo: formData.logo || null,
+        technologies: formData.technologies ? formData.technologies.split(',').map(t => t.trim()) : [],
+        achievements: formData.achievements ? formData.achievements.split(',').map(a => a.trim()) : [],
+        stats: formData.stats ? JSON.parse(formData.stats) : {},
+        is_visible: formData.is_visible,
+        display_order: formData.display_order
+      };
 
-  const createMutation = useMutation({
-    mutationFn: async (data: any) => {
-      console.log('Creating project with data:', data);
-      const { error } = await supabase
-        .from('projects')
-        .insert([{
-          ...data,
-          technologies: data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean),
-          achievements: data.achievements.split(',').map((a: string) => a.trim()).filter(Boolean),
-          stats: data.stats ? JSON.parse(data.stats) : {}
-        }]);
-      if (error) {
-        console.error('Error creating project:', error);
-        throw error;
+      let error;
+      if (editingProject) {
+        const { error: updateError } = await supabase
+          .from('projects')
+          .update(projectData)
+          .eq('id', editingProject.id);
+        error = updateError;
+      } else {
+        const { error: insertError } = await supabase
+          .from('projects')
+          .insert([projectData]);
+        error = insertError;
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast({ title: "تم إضافة المشروع بنجاح" });
+
+      if (error) {
+        toast({
+          title: "خطأ في حفظ المشروع",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: editingProject ? "تم تحديث المشروع" : "تم إضافة المشروع",
+        description: "تم حفظ البيانات بنجاح"
+      });
+
+      setIsDialogOpen(false);
       resetForm();
-    },
-    onError: (error) => {
-      console.error('Create mutation error:', error);
-      toast({ title: "حدث خطأ أثناء إضافة المشروع", variant: "destructive" });
+      fetchProjects();
+    } catch (error: any) {
+      toast({
+        title: "خطأ في حفظ المشروع",
+        description: error.message,
+        variant: "destructive"
+      });
     }
-  });
+  };
 
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string, data: any }) => {
-      console.log('Updating project:', id, 'with data:', data);
-      const { error } = await supabase
-        .from('projects')
-        .update({
-          ...data,
-          technologies: data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean),
-          achievements: data.achievements.split(',').map((a: string) => a.trim()).filter(Boolean),
-          stats: data.stats ? JSON.parse(data.stats) : {}
-        })
-        .eq('id', id);
-      if (error) {
-        console.error('Error updating project:', error);
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast({ title: "تم تحديث المشروع بنجاح" });
-      resetForm();
-    },
-    onError: (error) => {
-      console.error('Update mutation error:', error);
-      toast({ title: "حدث خطأ أثناء تحديث المشروع", variant: "destructive" });
-    }
-  });
+  const handleEdit = (project: Project) => {
+    setEditingProject(project);
+    setFormData({
+      name: project.name,
+      description: project.description,
+      country: project.country,
+      date: project.date,
+      status: project.status,
+      project_url: project.project_url || '',
+      image_url: project.image_url || '',
+      logo: project.logo || '',
+      technologies: Array.isArray(project.technologies) ? project.technologies.join(', ') : '',
+      achievements: Array.isArray(project.achievements) ? project.achievements.join(', ') : '',
+      stats: JSON.stringify(project.stats || {}),
+      is_visible: project.is_visible,
+      display_order: project.display_order
+    });
+    setIsDialogOpen(true);
+  };
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      console.log('Deleting project:', id);
-      const { error } = await supabase
-        .from('projects')
-        .delete()
-        .eq('id', id);
-      if (error) {
-        console.error('Error deleting project:', error);
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast({ title: "تم حذف المشروع بنجاح" });
-    },
-    onError: (error) => {
-      console.error('Delete mutation error:', error);
-      toast({ title: "حدث خطأ أثناء حذف المشروع", variant: "destructive" });
+  const handleDelete = async (id: string) => {
+    if (!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return;
+
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: "خطأ في حذف المشروع",
+        description: error.message,
+        variant: "destructive"
+      });
+      return;
     }
-  });
+
+    toast({
+      title: "تم حذف المشروع",
+      description: "تم حذف المشروع بنجاح"
+    });
+
+    fetchProjects();
+  };
+
+  const toggleVisibility = async (project: Project) => {
+    const { error } = await supabase
+      .from('projects')
+      .update({ is_visible: !project.is_visible })
+      .eq('id', project.id);
+
+    if (error) {
+      toast({
+        title: "خطأ في تحديث المشروع",
+        description: error.message,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    fetchProjects();
+  };
 
   const resetForm = () => {
     setFormData({
       name: '',
       description: '',
-      image_url: '',
-      logo: '',
       country: '',
       date: '',
       status: 'مكتمل',
+      project_url: '',
+      image_url: '',
+      logo: '',
       technologies: '',
       achievements: '',
-      project_url: '',
       stats: '',
       is_visible: true,
       display_order: 0
     });
     setEditingProject(null);
-    setShowForm(false);
   };
 
-  const handleEdit = (project: any) => {
-    console.log('Editing project:', project);
-    setEditingProject(project);
-    setFormData({
-      ...project,
-      technologies: Array.isArray(project.technologies) ? project.technologies.join(', ') : '',
-      achievements: Array.isArray(project.achievements) ? project.achievements.join(', ') : '',
-      stats: typeof project.stats === 'object' ? JSON.stringify(project.stats) : project.stats || ''
-    });
-    setShowForm(true);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Submitting form with data:', formData);
-    if (editingProject) {
-      updateMutation.mutate({ id: editingProject.id, data: formData });
-    } else {
-      createMutation.mutate(formData);
-    }
-  };
-
-  if (error) {
-    console.error('Query error:', error);
+  if (loading) {
     return (
-      <Card className="bg-gray-800 border-gray-700">
-        <CardContent className="p-6">
-          <div className="text-center text-red-400">
-            حدث خطأ أثناء تحميل المشاريع: {error.message}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="p-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-gray-400">جارٍ تحميل المشاريع...</div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="bg-gray-800 border-gray-700">
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-yellow-500 flex items-center gap-2">
-            <FolderOpen className="h-5 w-5" />
-            إدارة المشاريع
-          </CardTitle>
-          <Button
-            onClick={() => setShowForm(true)}
-            className="bg-yellow-500 text-black hover:bg-yellow-400"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            إضافة مشروع جديد
-          </Button>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-6">
-        {showForm && (
-          <Card className="bg-gray-700 border-gray-600">
-            <CardHeader>
-              <CardTitle className="text-white">
+    <div className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-white">إدارة المشاريع</h1>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button 
+              onClick={() => {
+                resetForm();
+                setIsDialogOpen(true);
+              }}
+              className="bg-yellow-500 text-black hover:bg-yellow-400"
+            >
+              <Plus className="h-4 w-4 ml-2" />
+              إضافة مشروع جديد
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-gray-900 border-gray-700 max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-white">
                 {editingProject ? 'تعديل المشروع' : 'إضافة مشروع جديد'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name" className="text-white">اسم المشروع</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="bg-gray-600 border-gray-500 text-white"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="country" className="text-white">الدولة/المدينة</Label>
-                    <Input
-                      id="country"
-                      value={formData.country}
-                      onChange={(e) => setFormData({...formData, country: e.target.value})}
-                      className="bg-gray-600 border-gray-500 text-white"
-                      required
-                    />
-                  </div>
-                </div>
-                
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="description" className="text-white">الوصف</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="bg-gray-600 border-gray-500 text-white"
+                  <Label htmlFor="name" className="text-white">اسم المشروع *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="bg-gray-800 border-gray-600 text-white"
                     required
                   />
                 </div>
-
-                <ImageUpload
-                  currentImageUrl={formData.image_url}
-                  onImageChange={(url) => setFormData({...formData, image_url: url})}
-                  label="صورة المشروع"
-                />
-
-                <ImageUpload
-                  currentImageUrl={formData.logo}
-                  onImageChange={(url) => setFormData({...formData, logo: url})}
-                  label="شعار المشروع"
-                />
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="date" className="text-white">سنة الإنجاز</Label>
-                    <Input
-                      id="date"
-                      value={formData.date}
-                      onChange={(e) => setFormData({...formData, date: e.target.value})}
-                      className="bg-gray-600 border-gray-500 text-white"
-                      placeholder="2024"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="status" className="text-white">حالة المشروع</Label>
-                    <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
-                      <SelectTrigger className="bg-gray-600 border-gray-500 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-600 border-gray-500">
-                        <SelectItem value="مكتمل">مكتمل</SelectItem>
-                        <SelectItem value="قيد التطوير">قيد التطوير</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="display_order" className="text-white">ترتيب العرض</Label>
-                    <Input
-                      id="display_order"
-                      type="number"
-                      value={formData.display_order}
-                      onChange={(e) => setFormData({...formData, display_order: parseInt(e.target.value)})}
-                      className="bg-gray-600 border-gray-500 text-white"
-                    />
-                  </div>
+                <div>
+                  <Label htmlFor="country" className="text-white">البلد *</Label>
+                  <Input
+                    id="country"
+                    value={formData.country}
+                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    required
+                  />
                 </div>
+              </div>
 
+              <div>
+                <Label htmlFor="description" className="text-white">الوصف *</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="bg-gray-800 border-gray-600 text-white"
+                  rows={3}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="date" className="text-white">تاريخ المشروع *</Label>
+                  <Input
+                    id="date"
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    className="bg-gray-800 border-gray-600 text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="status" className="text-white">الحالة</Label>
+                  <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="مكتمل">مكتمل</SelectItem>
+                      <SelectItem value="قيد التطوير">قيد التطوير</SelectItem>
+                      <SelectItem value="متوقف">متوقف</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="project_url" className="text-white">رابط المشروع</Label>
                   <Input
                     id="project_url"
+                    type="url"
                     value={formData.project_url}
-                    onChange={(e) => setFormData({...formData, project_url: e.target.value})}
-                    className="bg-gray-600 border-gray-500 text-white"
-                    placeholder="https://example.com"
+                    onChange={(e) => setFormData({ ...formData, project_url: e.target.value })}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
-                
                 <div>
-                  <Label htmlFor="technologies" className="text-white">التقنيات (مفصولة بفواصل)</Label>
+                  <Label htmlFor="image_url" className="text-white">رابط الصورة</Label>
                   <Input
-                    id="technologies"
-                    value={formData.technologies}
-                    onChange={(e) => setFormData({...formData, technologies: e.target.value})}
-                    className="bg-gray-600 border-gray-500 text-white"
-                    placeholder="React, Node.js, MongoDB"
+                    id="image_url"
+                    type="url"
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
+              </div>
 
-                <div>
-                  <Label htmlFor="achievements" className="text-white">الإنجازات (مفصولة بفواصل)</Label>
-                  <Textarea
-                    id="achievements"
-                    value={formData.achievements}
-                    onChange={(e) => setFormData({...formData, achievements: e.target.value})}
-                    className="bg-gray-600 border-gray-500 text-white"
-                    placeholder="تحسين الأداء بنسبة 50%, زيادة المبيعات بنسبة 30%"
-                  />
-                </div>
+              <div>
+                <Label htmlFor="technologies" className="text-white">التقنيات المستخدمة (مفصولة بفواصل)</Label>
+                <Input
+                  id="technologies"
+                  value={formData.technologies}
+                  onChange={(e) => setFormData({ ...formData, technologies: e.target.value })}
+                  className="bg-gray-800 border-gray-600 text-white"
+                  placeholder="React, Node.js, MongoDB"
+                />
+              </div>
 
-                <div>
-                  <Label htmlFor="stats" className="text-white">الإحصائيات (JSON)</Label>
-                  <Textarea
-                    id="stats"
-                    value={formData.stats}
-                    onChange={(e) => setFormData({...formData, stats: e.target.value})}
-                    className="bg-gray-600 border-gray-500 text-white"
-                    placeholder='{"users": "500+", "efficiency": "95%", "satisfaction": "4.9/5"}'
-                  />
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_visible"
-                    checked={formData.is_visible}
-                    onCheckedChange={(checked) => setFormData({...formData, is_visible: checked})}
-                  />
-                  <Label htmlFor="is_visible" className="text-white">مرئي للزوار</Label>
-                </div>
-                
-                <div className="flex gap-4">
-                  <Button type="submit" className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    {editingProject ? 'تحديث' : 'إضافة'}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={resetForm}>
-                    إلغاء
-                  </Button>
-                </div>
-              </form>
+              <div className="flex justify-end gap-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsDialogOpen(false)}
+                  className="border-gray-600 text-gray-300"
+                >
+                  إلغاء
+                </Button>
+                <Button 
+                  type="submit"
+                  className="bg-yellow-500 text-black hover:bg-yellow-400"
+                >
+                  {editingProject ? 'تحديث' : 'إضافة'}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="grid gap-6">
+        {projects.length === 0 ? (
+          <Card className="bg-gray-900 border-gray-700">
+            <CardContent className="p-6 text-center">
+              <p className="text-gray-400">لا توجد مشاريع حتى الآن</p>
             </CardContent>
           </Card>
-        )}
-        
-        <div className="grid gap-4">
-          {isLoading ? (
-            <div className="text-center py-8">
-              <div className="text-gray-400">جاري التحميل...</div>
-            </div>
-          ) : !projects || projects.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="text-gray-400">لا توجد مشاريع حالياً</div>
-              <Button 
-                onClick={() => setShowForm(true)}
-                className="bg-yellow-500 text-black hover:bg-yellow-400 mt-4"
-              >
-                إضافة أول مشروع
-              </Button>
-            </div>
-          ) : (
-            projects.map((project) => (
-              <Card key={project.id} className="bg-gray-700 border-gray-600">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    {project.image_url && (
-                      <div className="flex-shrink-0">
-                        <img 
-                          src={project.image_url} 
-                          alt={project.name}
-                          className="w-20 h-20 object-cover rounded-lg"
-                        />
-                      </div>
-                    )}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-white font-semibold">{project.name}</h3>
-                        <Badge className={`${
-                          project.status === 'مكتمل' ? 'bg-green-500' : 'bg-blue-500'
-                        } text-white text-xs`}>
-                          {project.status}
-                        </Badge>
-                        {!project.is_visible && (
-                          <Badge variant="secondary" className="text-xs">مخفي</Badge>
-                        )}
-                      </div>
-                      <p className="text-gray-300 text-sm mb-2">{project.description}</p>
-                      <p className="text-gray-400 text-xs mb-2">{project.country} - {project.date}</p>
-                      {project.technologies && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {(Array.isArray(project.technologies) ? project.technologies : []).map((tech: string, index: number) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {tech}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex gap-2">
-                      {project.project_url && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => window.open(project.project_url, '_blank')}
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(project)}
-                      >
-                        <Edit className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => deleteMutation.mutate(project.id)}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
+        ) : (
+          projects.map((project) => (
+            <Card key={project.id} className="bg-gray-900 border-gray-700">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      {project.name}
+                      {!project.is_visible && <EyeOff className="h-4 w-4 text-gray-500" />}
+                    </CardTitle>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant="secondary">{project.country}</Badge>
+                      <Badge variant="outline">{project.status}</Badge>
+                      <span className="text-gray-400 text-sm">{project.date}</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
-      </CardContent>
-    </Card>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleVisibility(project)}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      {project.is_visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                    </Button>
+                    {project.project_url && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => window.open(project.project_url!, '_blank')}
+                        className="text-gray-400 hover:text-white"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(project)}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(project.id)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-300 mb-4">{project.description}</p>
+                {project.technologies && project.technologies.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((tech, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
+    </div>
   );
 };
 
