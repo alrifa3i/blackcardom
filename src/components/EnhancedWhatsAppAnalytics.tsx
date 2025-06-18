@@ -13,26 +13,34 @@ const EnhancedWhatsAppAnalytics = () => {
   const [realtimeEnabled, setRealtimeEnabled] = useState(true);
 
   const { data: contacts, isLoading, refetch } = useQuery({
-    queryKey: ['whatsapp-contacts'],
+    queryKey: ['enhanced-whatsapp-contacts'],
     queryFn: async () => {
+      console.log('Enhanced: Fetching WhatsApp contacts...');
       const { data, error } = await supabase
         .from('whatsapp_contacts')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Enhanced: Error fetching WhatsApp contacts:', error);
+        throw error;
+      }
+      
+      console.log('Enhanced: WhatsApp contacts fetched:', data?.length || 0, 'contacts');
       return data;
     },
-    refetchInterval: realtimeEnabled ? 5000 : false, // تحديث كل 5 ثوانٍ عند تفعيل الوقت الحقيقي
+    refetchInterval: realtimeEnabled ? 3000 : false,
   });
 
-  // إعداد التحديثات الفورية
+  // إعداد التحديثات الفورية المحسن
   useEffect(() => {
     if (!realtimeEnabled) return;
 
+    console.log('Enhanced: Setting up WhatsApp realtime subscription...');
+
     const channel = supabase
-      .channel('whatsapp-analytics-realtime')
+      .channel('enhanced-whatsapp-analytics')
       .on(
         'postgres_changes',
         {
@@ -41,7 +49,7 @@ const EnhancedWhatsAppAnalytics = () => {
           table: 'whatsapp_contacts'
         },
         (payload) => {
-          console.log('New WhatsApp contact received:', payload);
+          console.log('🟢 Enhanced: New WhatsApp contact received:', payload);
           setLiveUpdates(prev => prev + 1);
           
           // تحديث البيانات تلقائياً
@@ -60,26 +68,31 @@ const EnhancedWhatsAppAnalytics = () => {
           schema: 'public',
           table: 'whatsapp_contacts'
         },
-        () => {
-          console.log('WhatsApp contact updated');
+        (payload) => {
+          console.log('🔄 Enhanced: WhatsApp contact updated:', payload);
           refetch();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Enhanced: WhatsApp realtime subscription status:', status);
+      });
 
     return () => {
+      console.log('Enhanced: Cleaning up WhatsApp realtime subscription...');
       supabase.removeChannel(channel);
     };
   }, [realtimeEnabled, refetch]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
+    console.log('Enhanced: Manual refresh triggered');
     await refetch();
     setTimeout(() => setRefreshing(false), 1000);
   };
 
   const toggleRealtime = () => {
     setRealtimeEnabled(!realtimeEnabled);
+    console.log('Enhanced: Realtime toggled to:', !realtimeEnabled);
   };
 
   // إحصائيات متقدمة
@@ -121,7 +134,13 @@ const EnhancedWhatsAppAnalytics = () => {
     return new Date(contact.created_at) >= thirtyMinutesAgo;
   }).length || 0;
 
-  const conversionRate = totalContacts > 0 ? ((todayContacts / totalContacts) * 100).toFixed(1) : '0';
+  console.log('Enhanced analytics state:', {
+    totalContacts,
+    todayContacts,
+    liveUpdates,
+    realtimeEnabled,
+    last30MinutesContacts
+  });
 
   return (
     <div className="space-y-6">
@@ -407,6 +426,24 @@ const EnhancedWhatsAppAnalytics = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* معلومات التشخيص المحسنة */}
+      <div className="text-xs text-gray-500 p-3 bg-gray-900 rounded-lg">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <span className="font-semibold">حالة الاتصال:</span> متصل
+          </div>
+          <div>
+            <span className="font-semibold">التحديث المباشر:</span> {realtimeEnabled ? 'مفعل' : 'متوقف'}
+          </div>
+          <div>
+            <span className="font-semibold">إجمالي المراسلات:</span> {totalContacts}
+          </div>
+          <div>
+            <span className="font-semibold">آخر تحديث:</span> {new Date().toLocaleTimeString('ar-EG')}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

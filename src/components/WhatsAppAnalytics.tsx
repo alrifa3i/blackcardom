@@ -12,22 +12,30 @@ const WhatsAppAnalytics = () => {
   const { data: contacts, isLoading, refetch } = useQuery({
     queryKey: ['whatsapp-contacts'],
     queryFn: async () => {
+      console.log('Fetching WhatsApp contacts...');
       const { data, error } = await supabase
         .from('whatsapp_contacts')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching WhatsApp contacts:', error);
+        throw error;
+      }
+      
+      console.log('WhatsApp contacts fetched:', data?.length || 0, 'contacts');
       return data;
     },
-    refetchInterval: 5000, // تحديث كل 5 ثوانٍ
+    refetchInterval: 5000,
   });
 
-  // إعداد التحديثات الفورية
+  // إعداد التحديثات الفورية المحسن
   useEffect(() => {
+    console.log('Setting up WhatsApp realtime subscription...');
+    
     const channel = supabase
-      .channel('whatsapp-basic-analytics')
+      .channel('whatsapp-analytics-channel')
       .on(
         'postgres_changes',
         {
@@ -36,8 +44,10 @@ const WhatsAppAnalytics = () => {
           table: 'whatsapp_contacts'
         },
         (payload) => {
-          console.log('New WhatsApp contact received:', payload);
+          console.log('🟢 New WhatsApp contact received via realtime:', payload);
           setLiveUpdates(prev => prev + 1);
+          
+          // تحديث البيانات فوراً
           refetch();
           
           // إزالة التأثير بعد 3 ثوانٍ
@@ -46,9 +56,24 @@ const WhatsAppAnalytics = () => {
           }, 3000);
         }
       )
-      .subscribe();
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'whatsapp_contacts'
+        },
+        (payload) => {
+          console.log('🔄 WhatsApp contact updated via realtime:', payload);
+          refetch();
+        }
+      )
+      .subscribe((status) => {
+        console.log('WhatsApp realtime subscription status:', status);
+      });
 
     return () => {
+      console.log('Cleaning up WhatsApp realtime subscription...');
       supabase.removeChannel(channel);
     };
   }, [refetch]);
@@ -62,6 +87,13 @@ const WhatsAppAnalytics = () => {
     acc[contact.employee_name] = (acc[contact.employee_name] || 0) + 1;
     return acc;
   }, {}) || {};
+
+  console.log('Current analytics state:', {
+    totalContacts,
+    todayContacts,
+    liveUpdates,
+    employeeStats
+  });
 
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -198,6 +230,11 @@ const WhatsAppAnalytics = () => {
               })
             )}
           </div>
+        </div>
+
+        {/* معلومات التشخيص */}
+        <div className="text-xs text-gray-500 p-2 bg-gray-900 rounded">
+          حالة الاتصال: متصل | إجمالي المراسلات: {totalContacts} | آخر تحديث: {new Date().toLocaleTimeString('ar-EG')}
         </div>
       </CardContent>
     </Card>

@@ -61,8 +61,10 @@ const WhatsAppButton = () => {
 
   // إعداد الاستماع للتحديثات الفورية
   useEffect(() => {
+    console.log('WhatsApp Button: Setting up realtime subscription...');
+    
     const channel = supabase
-      .channel('whatsapp-contacts-realtime')
+      .channel('whatsapp-button-realtime')
       .on(
         'postgres_changes',
         {
@@ -71,7 +73,7 @@ const WhatsAppButton = () => {
           table: 'whatsapp_contacts'
         },
         (payload) => {
-          console.log('New WhatsApp contact:', payload);
+          console.log('🟢 WhatsApp Button: New contact detected:', payload);
           // تحديث العداد
           setClickCount(prev => prev + 1);
           
@@ -80,9 +82,12 @@ const WhatsAppButton = () => {
           setTimeout(() => setIsClicking(false), 1000);
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('WhatsApp Button: Realtime subscription status:', status);
+      });
 
     return () => {
+      console.log('WhatsApp Button: Cleaning up realtime subscription...');
       supabase.removeChannel(channel);
     };
   }, []);
@@ -105,25 +110,33 @@ const WhatsAppButton = () => {
 
   const logWhatsAppContact = async () => {
     try {
+      console.log('🔄 WhatsApp Button: Logging contact...');
       const location = await getVisitorLocation();
       
-      const { data, error } = await supabase.from('whatsapp_contacts').insert({
+      const contactData = {
         visitor_location: location,
         employee_name: employeeName,
         user_agent: navigator.userAgent || '',
         ip_address: '',
         page_url: window.location.href
-      }).select();
+      };
+
+      console.log('📝 WhatsApp Button: Contact data to insert:', contactData);
+
+      const { data, error } = await supabase
+        .from('whatsapp_contacts')
+        .insert(contactData)
+        .select();
 
       if (error) {
-        console.error('Error logging WhatsApp contact:', error);
+        console.error('❌ WhatsApp Button: Error logging contact:', error);
         return null;
       }
 
-      console.log('WhatsApp contact logged successfully:', data);
+      console.log('✅ WhatsApp Button: Contact logged successfully:', data);
       return data;
     } catch (error) {
-      console.error('Error logging WhatsApp contact:', error);
+      console.error('❌ WhatsApp Button: Exception in logWhatsAppContact:', error);
       return null;
     }
   };
@@ -135,7 +148,7 @@ const WhatsAppButton = () => {
     // إضافة تأثير النقر
     setIsClicking(true);
     
-    console.log('WhatsApp button clicked with analytics config:', analyticsConfig);
+    console.log('🎯 WhatsApp Button: Button clicked with analytics config:', analyticsConfig);
     
     try {
       // Track analytics with current configuration from database
@@ -148,7 +161,8 @@ const WhatsAppButton = () => {
       }
       
       // تسجيل جهة الاتصال
-      await logWhatsAppContact();
+      const contactResult = await logWhatsAppContact();
+      console.log('📊 WhatsApp Button: Contact logging result:', contactResult);
       
       const firstName = employeeName.split(' ')[0];
       const message = `السلام عليكم، أود التواصل معكم بخصوص خدماتكم. تحدثت مع ${firstName}`;
@@ -163,7 +177,7 @@ const WhatsAppButton = () => {
         window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
       }
     } catch (error) {
-      console.error('Error in WhatsApp click handler:', error);
+      console.error('❌ WhatsApp Button: Error in click handler:', error);
       // في حالة حدوث خطأ، جرب فتح الرابط مباشرة
       window.location.href = `https://wa.me/96897844321?text=${encodeURIComponent('السلام عليكم، أود التواصل معكم بخصوص خدماتكم')}`;
     } finally {
