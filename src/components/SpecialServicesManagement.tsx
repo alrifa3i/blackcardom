@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -144,6 +145,14 @@ const SpecialServicesManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-special-services', PROJECT_ID] });
       queryClient.invalidateQueries({ queryKey: ['special-services-public'] });
       toast({ title: "تم إضافة الخدمات الخاصة الافتراضية بنجاح" });
+    },
+    onError: (error) => {
+      console.error('Error initializing special services:', error);
+      toast({ 
+        title: "خطأ في إضافة الخدمات الخاصة الافتراضية", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -161,6 +170,14 @@ const SpecialServicesManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['special-services-public'] });
       toast({ title: "تم إضافة الخدمة الخاصة بنجاح" });
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Error creating special service:', error);
+      toast({ 
+        title: "خطأ في إضافة الخدمة الخاصة", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -180,6 +197,14 @@ const SpecialServicesManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['special-services-public'] });
       toast({ title: "تم تحديث الخدمة الخاصة بنجاح" });
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Error updating special service:', error);
+      toast({ 
+        title: "خطأ في تحديث الخدمة الخاصة", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -197,6 +222,14 @@ const SpecialServicesManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-special-services', PROJECT_ID] });
       queryClient.invalidateQueries({ queryKey: ['special-services-public'] });
       toast({ title: "تم حذف الخدمة الخاصة بنجاح" });
+    },
+    onError: (error) => {
+      console.error('Error deleting special service:', error);
+      toast({ 
+        title: "خطأ في حذف الخدمة الخاصة", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -238,12 +271,18 @@ const SpecialServicesManagement = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting special service form:', { editingService, formData });
+    
     if (editingService) {
+      console.log('Updating special service with ID:', editingService.id);
       updateMutation.mutate({ id: editingService.id, data: formData });
     } else {
+      console.log('Creating new special service');
       createMutation.mutate(formData);
     }
   };
+
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -258,8 +297,9 @@ const SpecialServicesManagement = () => {
               onClick={() => initializeMutation.mutate()}
               variant="outline"
               className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+              disabled={initializeMutation.isPending}
             >
-              إعادة تهيئة الخدمات الخاصة
+              {initializeMutation.isPending ? 'جاري التهيئة...' : 'إعادة تهيئة الخدمات الخاصة'}
             </Button>
             <Button
               onClick={() => setShowForm(true)}
@@ -373,8 +413,12 @@ const SpecialServicesManagement = () => {
                 </div>
                 
                 <div className="flex gap-4">
-                  <Button type="submit" className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    {editingService ? 'تحديث' : 'إضافة'}
+                  <Button 
+                    type="submit" 
+                    className="bg-yellow-500 text-black hover:bg-yellow-400"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'جاري الحفظ...' : editingService ? 'تحديث' : 'إضافة'}
                   </Button>
                   <Button type="button" variant="outline" onClick={resetForm}>
                     إلغاء

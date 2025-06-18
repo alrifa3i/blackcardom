@@ -59,6 +59,14 @@ const WebApplicationsManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['web-applications'] });
       toast({ title: "تم إضافة التطبيق بنجاح" });
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Error creating application:', error);
+      toast({ 
+        title: "خطأ في إضافة التطبيق", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -78,6 +86,14 @@ const WebApplicationsManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['web-applications'] });
       toast({ title: "تم تحديث التطبيق بنجاح" });
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Error updating application:', error);
+      toast({ 
+        title: "خطأ في تحديث التطبيق", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -93,6 +109,14 @@ const WebApplicationsManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-web-applications'] });
       queryClient.invalidateQueries({ queryKey: ['web-applications'] });
       toast({ title: "تم حذف التطبيق بنجاح" });
+    },
+    onError: (error) => {
+      console.error('Error deleting application:', error);
+      toast({ 
+        title: "خطأ في حذف التطبيق", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -124,12 +148,18 @@ const WebApplicationsManagement = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting form:', { editingApp, formData });
+    
     if (editingApp) {
+      console.log('Updating application with ID:', editingApp.id);
       updateMutation.mutate({ id: editingApp.id, data: formData });
     } else {
+      console.log('Creating new application');
       createMutation.mutate(formData);
     }
   };
+
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -258,8 +288,12 @@ const WebApplicationsManagement = () => {
                 </div>
                 
                 <div className="flex gap-4">
-                  <Button type="submit" className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    {editingApp ? 'تحديث' : 'إضافة'}
+                  <Button 
+                    type="submit" 
+                    className="bg-yellow-500 text-black hover:bg-yellow-400"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'جاري الحفظ...' : editingApp ? 'تحديث' : 'إضافة'}
                   </Button>
                   <Button type="button" variant="outline" onClick={resetForm}>
                     إلغاء

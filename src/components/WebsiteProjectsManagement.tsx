@@ -59,6 +59,14 @@ const WebsiteProjectsManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['website-projects'] });
       toast({ title: "تم إضافة المشروع بنجاح" });
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Error creating project:', error);
+      toast({ 
+        title: "خطأ في إضافة المشروع", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -78,6 +86,14 @@ const WebsiteProjectsManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['website-projects'] });
       toast({ title: "تم تحديث المشروع بنجاح" });
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Error updating project:', error);
+      toast({ 
+        title: "خطأ في تحديث المشروع", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -93,6 +109,14 @@ const WebsiteProjectsManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-website-projects'] });
       queryClient.invalidateQueries({ queryKey: ['website-projects'] });
       toast({ title: "تم حذف المشروع بنجاح" });
+    },
+    onError: (error) => {
+      console.error('Error deleting project:', error);
+      toast({ 
+        title: "خطأ في حذف المشروع", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -124,12 +148,18 @@ const WebsiteProjectsManagement = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting form:', { editingProject, formData });
+    
     if (editingProject) {
+      console.log('Updating project with ID:', editingProject.id);
       updateMutation.mutate({ id: editingProject.id, data: formData });
     } else {
+      console.log('Creating new project');
       createMutation.mutate(formData);
     }
   };
+
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -258,8 +288,12 @@ const WebsiteProjectsManagement = () => {
                 </div>
                 
                 <div className="flex gap-4">
-                  <Button type="submit" className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    {editingProject ? 'تحديث' : 'إضافة'}
+                  <Button 
+                    type="submit" 
+                    className="bg-yellow-500 text-black hover:bg-yellow-400"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'جاري الحفظ...' : editingProject ? 'تحديث' : 'إضافة'}
                   </Button>
                   <Button type="button" variant="outline" onClick={resetForm}>
                     إلغاء

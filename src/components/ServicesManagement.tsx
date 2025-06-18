@@ -176,6 +176,14 @@ const ServicesManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-services', PROJECT_ID] });
       queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: "تم إضافة الخدمات الافتراضية بنجاح" });
+    },
+    onError: (error) => {
+      console.error('Error initializing services:', error);
+      toast({ 
+        title: "خطأ في إضافة الخدمات الافتراضية", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -193,6 +201,14 @@ const ServicesManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: "تم إضافة الخدمة بنجاح" });
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Error creating service:', error);
+      toast({ 
+        title: "خطأ في إضافة الخدمة", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -212,6 +228,14 @@ const ServicesManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: "تم تحديث الخدمة بنجاح" });
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Error updating service:', error);
+      toast({ 
+        title: "خطأ في تحديث الخدمة", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -229,6 +253,14 @@ const ServicesManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-services', PROJECT_ID] });
       queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: "تم حذف الخدمة بنجاح" });
+    },
+    onError: (error) => {
+      console.error('Error deleting service:', error);
+      toast({ 
+        title: "خطأ في حذف الخدمة", 
+        description: "يرجى المحاولة مرة أخرى",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -255,12 +287,18 @@ const ServicesManagement = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting service form:', { editingService, formData });
+    
     if (editingService) {
+      console.log('Updating service with ID:', editingService.id);
       updateMutation.mutate({ id: editingService.id, data: formData });
     } else {
+      console.log('Creating new service');
       createMutation.mutate(formData);
     }
   };
+
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -275,8 +313,9 @@ const ServicesManagement = () => {
               onClick={() => initializeMutation.mutate()}
               variant="outline"
               className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+              disabled={initializeMutation.isPending}
             >
-              إعادة تهيئة الخدمات
+              {initializeMutation.isPending ? 'جاري التهيئة...' : 'إعادة تهيئة الخدمات'}
             </Button>
             <Button
               onClick={() => setShowForm(true)}
@@ -387,8 +426,12 @@ const ServicesManagement = () => {
                 </div>
                 
                 <div className="flex gap-4">
-                  <Button type="submit" className="bg-yellow-500 text-black hover:bg-yellow-400">
-                    {editingService ? 'تحديث' : 'إضافة'}
+                  <Button 
+                    type="submit" 
+                    className="bg-yellow-500 text-black hover:bg-yellow-400"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'جاري الحفظ...' : editingService ? 'تحديث' : 'إضافة'}
                   </Button>
                   <Button type="button" variant="outline" onClick={resetForm}>
                     إلغاء
