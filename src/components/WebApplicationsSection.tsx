@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +14,7 @@ const WebApplicationsSection = () => {
   const { data: applications, isLoading } = useQuery({
     queryKey: ['web-applications'],
     queryFn: async () => {
+      console.log('Fetching web applications for frontend...');
       const { data, error } = await supabase
         .from('web_applications')
         .select('*')
@@ -22,9 +22,16 @@ const WebApplicationsSection = () => {
         .order('display_order', { ascending: true })
         .limit(3);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching web applications:', error);
+        throw error;
+      }
+      console.log('Web applications fetched for frontend:', data);
       return data;
-    }
+    },
+    staleTime: 0, // البيانات قديمة فوراً
+    refetchOnWindowFocus: true, // إعادة جلب البيانات عند التركيز على النافذة
+    refetchOnMount: true // إعادة جلب البيانات عند تركيب المكون
   });
 
   const handleViewProject = (url: string, title: string) => {

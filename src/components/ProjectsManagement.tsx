@@ -10,13 +10,12 @@ import { Plus, Edit, Trash2, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Database } from '@/integrations/supabase/types';
 
 type Project = Database['public']['Tables']['projects']['Row'];
 
 const ProjectsManagement = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState({
@@ -35,13 +34,12 @@ const ProjectsManagement = () => {
     display_order: 0
   });
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  const queryClient = useQueryClient();
 
-  const fetchProjects = async () => {
-    try {
-      setLoading(true);
+  // استخدام React Query بدلاً من useEffect
+  const { data: projects, isLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
       console.log('Fetching projects...');
       const { data, error } = await supabase
         .from('projects')
@@ -50,90 +48,177 @@ const ProjectsManagement = () => {
 
       if (error) {
         console.error('Error fetching projects:', error);
-        toast({
-          title: "خطأ في تحميل المشاريع",
-          description: error.message,
-          variant: "destructive"
-        });
-        return;
+        throw error;
       }
-
       console.log('Projects fetched:', data);
-      setProjects(data || []);
-    } catch (error: any) {
-      console.error('Error fetching projects:', error);
-      toast({
-        title: "خطأ في تحميل المشاريع",
-        description: error.message || "حدث خطأ غير متوقع",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
+      return data || [];
     }
-  };
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
+  // إضافة مشروع جديد
+  const createMutation = useMutation({
+    mutationFn: async (data: any) => {
+      console.log('Creating project:', data);
       const projectData = {
-        name: formData.name,
-        description: formData.description,
-        country: formData.country,
-        date: formData.date,
-        status: formData.status,
-        project_url: formData.project_url || null,
-        image_url: formData.image_url || null,
-        logo: formData.logo || null,
-        technologies: formData.technologies ? formData.technologies.split(',').map(t => t.trim()) : [],
-        achievements: formData.achievements ? formData.achievements.split(',').map(a => a.trim()) : [],
-        stats: formData.stats ? JSON.parse(formData.stats) : {},
-        is_visible: formData.is_visible,
-        display_order: formData.display_order
+        name: data.name,
+        description: data.description,
+        country: data.country,
+        date: data.date,
+        status: data.status,
+        project_url: data.project_url || null,
+        image_url: data.image_url || null,
+        logo: data.logo || null,
+        technologies: data.technologies ? data.technologies.split(',').map((t: string) => t.trim()) : [],
+        achievements: data.achievements ? data.achievements.split(',').map((a: string) => a.trim()) : [],
+        stats: data.stats ? JSON.parse(data.stats) : {},
+        is_visible: data.is_visible,
+        display_order: data.display_order
       };
 
-      let error;
-      if (editingProject) {
-        console.log('Updating project:', editingProject.id, projectData);
-        const { error: updateError } = await supabase
-          .from('projects')
-          .update(projectData)
-          .eq('id', editingProject.id);
-        error = updateError;
-      } else {
-        console.log('Creating project:', projectData);
-        const { error: insertError } = await supabase
-          .from('projects')
-          .insert([projectData]);
-        error = insertError;
-      }
-
-      if (error) {
-        console.error('Error saving project:', error);
-        toast({
-          title: "خطأ في حفظ المشروع",
-          description: error.message,
-          variant: "destructive"
-        });
-        return;
-      }
-
-      console.log('Project saved successfully');
+      const { error } = await supabase
+        .from('projects')
+        .insert([projectData]);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      console.log('Project created successfully');
+      // إبطال جميع الاستعلامات ذات الصلة
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects-management'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
+      
       toast({
-        title: editingProject ? "تم تحديث المشروع" : "تم إضافة المشروع",
+        title: "تم إضافة المشروع",
         description: "تم حفظ البيانات بنجاح"
       });
-
-      setIsDialogOpen(false);
       resetForm();
-      fetchProjects();
-    } catch (error: any) {
-      console.error('Error saving project:', error);
+    },
+    onError: (error: any) => {
+      console.error('Error creating project:', error);
       toast({
         title: "خطأ في حفظ المشروع",
         description: error.message,
         variant: "destructive"
       });
+    }
+  });
+
+  // تحديث مشروع
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      console.log('Updating project:', id, data);
+      const projectData = {
+        name: data.name,
+        description: data.description,
+        country: data.country,
+        date: data.date,
+        status: data.status,
+        project_url: data.project_url || null,
+        image_url: data.image_url || null,
+        logo: data.logo || null,
+        technologies: data.technologies ? data.technologies.split(',').map((t: string) => t.trim()) : [],
+        achievements: data.achievements ? data.achievements.split(',').map((a: string) => a.trim()) : [],
+        stats: data.stats ? JSON.parse(data.stats) : {},
+        is_visible: data.is_visible,
+        display_order: data.display_order
+      };
+
+      const { error } = await supabase
+        .from('projects')
+        .update(projectData)
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      console.log('Project updated successfully');
+      // إبطال جميع الاستعلامات ذات الصلة
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects-management'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
+      
+      toast({
+        title: "تم تحديث المشروع",
+        description: "تم حفظ البيانات بنجاح"
+      });
+      resetForm();
+    },
+    onError: (error: any) => {
+      console.error('Error updating project:', error);
+      toast({
+        title: "خطأ في تحديث المشروع",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // حذف مشروع
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      console.log('Deleting project:', id);
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      console.log('Project deleted successfully');
+      // إبطال جميع الاستعلامات ذات الصلة
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects-management'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
+      
+      toast({
+        title: "تم حذف المشروع",
+        description: "تم حذف المشروع بنجاح"
+      });
+    },
+    onError: (error: any) => {
+      console.error('Error deleting project:', error);
+      toast({
+        title: "خطأ في حذف المشروع",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // تغيير حالة الرؤية
+  const toggleVisibilityMutation = useMutation({
+    mutationFn: async ({ id, is_visible }: { id: string, is_visible: boolean }) => {
+      console.log('Toggling project visibility:', id, is_visible);
+      const { error } = await supabase
+        .from('projects')
+        .update({ is_visible })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      console.log('Project visibility updated successfully');
+      // إبطال جميع الاستعلامات ذات الصلة
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects-management'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
+    },
+    onError: (error: any) => {
+      console.error('Error updating project visibility:', error);
+      toast({
+        title: "خطأ في تحديث المشروع",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Submitting form:', { editingProject, formData });
+    
+    if (editingProject) {
+      updateMutation.mutate({ id: editingProject.id, data: formData });
+    } else {
+      createMutation.mutate(formData);
     }
   };
 
@@ -158,53 +243,14 @@ const ProjectsManagement = () => {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return;
-
-    console.log('Deleting project:', id);
-    const { error } = await supabase
-      .from('projects')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error deleting project:', error);
-      toast({
-        title: "خطأ في حذف المشروع",
-        description: error.message,
-        variant: "destructive"
-      });
-      return;
+  const handleDelete = (id: string) => {
+    if (window.confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
+      deleteMutation.mutate(id);
     }
-
-    console.log('Project deleted successfully');
-    toast({
-      title: "تم حذف المشروع",
-      description: "تم حذف المشروع بنجاح"
-    });
-
-    fetchProjects();
   };
 
-  const toggleVisibility = async (project: Project) => {
-    console.log('Toggling project visibility:', project.id, !project.is_visible);
-    const { error } = await supabase
-      .from('projects')
-      .update({ is_visible: !project.is_visible })
-      .eq('id', project.id);
-
-    if (error) {
-      console.error('Error updating project visibility:', error);
-      toast({
-        title: "خطأ في تحديث المشروع",
-        description: error.message,
-        variant: "destructive"
-      });
-      return;
-    }
-
-    console.log('Project visibility updated successfully');
-    fetchProjects();
+  const toggleVisibility = (project: Project) => {
+    toggleVisibilityMutation.mutate({ id: project.id, is_visible: !project.is_visible });
   };
 
   const resetForm = () => {
@@ -224,6 +270,7 @@ const ProjectsManagement = () => {
       display_order: 0
     });
     setEditingProject(null);
+    setIsDialogOpen(false);
   };
 
   // Helper function to safely convert Json to string array
@@ -234,7 +281,9 @@ const ProjectsManagement = () => {
     return [];
   };
 
-  if (loading) {
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
+  if (isLoading) {
     return (
       <div className="p-6">
         <Card>
@@ -377,8 +426,9 @@ const ProjectsManagement = () => {
                 <Button 
                   type="submit"
                   className="bg-yellow-500 text-black hover:bg-yellow-400"
+                  disabled={isSubmitting}
                 >
-                  {editingProject ? 'تحديث' : 'إضافة'}
+                  {isSubmitting ? 'جاري الحفظ...' : editingProject ? 'تحديث' : 'إضافة'}
                 </Button>
               </div>
             </form>
@@ -387,14 +437,14 @@ const ProjectsManagement = () => {
       </div>
 
       <div className="grid gap-6">
-        {projects.length === 0 ? (
+        {projects?.length === 0 ? (
           <Card className="bg-gray-900 border-gray-700">
             <CardContent className="p-6 text-center">
               <p className="text-gray-400">لا توجد مشاريع حتى الآن</p>
             </CardContent>
           </Card>
         ) : (
-          projects.map((project) => (
+          projects?.map((project) => (
             <Card key={project.id} className="bg-gray-900 border-gray-700">
               <CardHeader>
                 <div className="flex justify-between items-start">

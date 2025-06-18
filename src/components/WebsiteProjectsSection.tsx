@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,9 +11,11 @@ const WebsiteProjectsSection = () => {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<{url: string, title: string} | null>(null);
 
+  // توحيد مفتاح الاستعلام مع مكون الإدارة
   const { data: projects, isLoading } = useQuery({
     queryKey: ['website-projects'],
     queryFn: async () => {
+      console.log('Fetching website projects for frontend...');
       const { data, error } = await supabase
         .from('website_projects')
         .select('*')
@@ -22,9 +23,17 @@ const WebsiteProjectsSection = () => {
         .order('display_order', { ascending: true })
         .limit(3);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching website projects:', error);
+        throw error;
+      }
+      console.log('Website projects fetched for frontend:', data);
       return data;
-    }
+    },
+    // إضافة خيارات للتحديث التلقائي
+    staleTime: 0, // البيانات قديمة فوراً
+    refetchOnWindowFocus: true, // إعادة جلب البيانات عند التركيز على النافذة
+    refetchOnMount: true // إعادة جلب البيانات عند تركيب المكون
   });
 
   const handleViewProject = (url: string, title: string) => {
