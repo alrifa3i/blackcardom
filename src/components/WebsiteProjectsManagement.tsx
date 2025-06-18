@@ -32,20 +32,26 @@ const WebsiteProjectsManagement = () => {
   const queryClient = useQueryClient();
 
   const { data: projects, isLoading } = useQuery({
-    queryKey: ['admin-website-projects'],
+    queryKey: ['website-projects'],
     queryFn: async () => {
+      console.log('Fetching website projects...');
       const { data, error } = await supabase
         .from('website_projects')
         .select('*')
         .order('display_order', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching website projects:', error);
+        throw error;
+      }
+      console.log('Website projects fetched:', data);
       return data;
     }
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
+      console.log('Creating website project:', data);
       const { error } = await supabase
         .from('website_projects')
         .insert([{
@@ -55,8 +61,12 @@ const WebsiteProjectsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-website-projects'] });
+      console.log('Website project created successfully');
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['website-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-website-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['website-projects-management'] });
+      
       toast({ title: "تم إضافة المشروع بنجاح" });
       resetForm();
     },
@@ -72,6 +82,7 @@ const WebsiteProjectsManagement = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      console.log('Updating website project:', id, data);
       const { error } = await supabase
         .from('website_projects')
         .update({
@@ -82,8 +93,12 @@ const WebsiteProjectsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-website-projects'] });
+      console.log('Website project updated successfully');
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['website-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-website-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['website-projects-management'] });
+      
       toast({ title: "تم تحديث المشروع بنجاح" });
       resetForm();
     },
@@ -99,6 +114,7 @@ const WebsiteProjectsManagement = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log('Deleting website project:', id);
       const { error } = await supabase
         .from('website_projects')
         .delete()
@@ -106,8 +122,12 @@ const WebsiteProjectsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-website-projects'] });
+      console.log('Website project deleted successfully');
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['website-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-website-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['website-projects-management'] });
+      
       toast({ title: "تم حذف المشروع بنجاح" });
     },
     onError: (error) => {

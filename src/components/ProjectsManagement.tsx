@@ -42,6 +42,7 @@ const ProjectsManagement = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
+      console.log('Fetching projects...');
       const { data, error } = await supabase
         .from('projects')
         .select('*')
@@ -57,6 +58,7 @@ const ProjectsManagement = () => {
         return;
       }
 
+      console.log('Projects fetched:', data);
       setProjects(data || []);
     } catch (error: any) {
       console.error('Error fetching projects:', error);
@@ -92,12 +94,14 @@ const ProjectsManagement = () => {
 
       let error;
       if (editingProject) {
+        console.log('Updating project:', editingProject.id, projectData);
         const { error: updateError } = await supabase
           .from('projects')
           .update(projectData)
           .eq('id', editingProject.id);
         error = updateError;
       } else {
+        console.log('Creating project:', projectData);
         const { error: insertError } = await supabase
           .from('projects')
           .insert([projectData]);
@@ -105,6 +109,7 @@ const ProjectsManagement = () => {
       }
 
       if (error) {
+        console.error('Error saving project:', error);
         toast({
           title: "خطأ في حفظ المشروع",
           description: error.message,
@@ -113,6 +118,7 @@ const ProjectsManagement = () => {
         return;
       }
 
+      console.log('Project saved successfully');
       toast({
         title: editingProject ? "تم تحديث المشروع" : "تم إضافة المشروع",
         description: "تم حفظ البيانات بنجاح"
@@ -122,6 +128,7 @@ const ProjectsManagement = () => {
       resetForm();
       fetchProjects();
     } catch (error: any) {
+      console.error('Error saving project:', error);
       toast({
         title: "خطأ في حفظ المشروع",
         description: error.message,
@@ -131,6 +138,7 @@ const ProjectsManagement = () => {
   };
 
   const handleEdit = (project: Project) => {
+    console.log('Editing project:', project);
     setEditingProject(project);
     setFormData({
       name: project.name,
@@ -153,12 +161,14 @@ const ProjectsManagement = () => {
   const handleDelete = async (id: string) => {
     if (!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return;
 
+    console.log('Deleting project:', id);
     const { error } = await supabase
       .from('projects')
       .delete()
       .eq('id', id);
 
     if (error) {
+      console.error('Error deleting project:', error);
       toast({
         title: "خطأ في حذف المشروع",
         description: error.message,
@@ -167,6 +177,7 @@ const ProjectsManagement = () => {
       return;
     }
 
+    console.log('Project deleted successfully');
     toast({
       title: "تم حذف المشروع",
       description: "تم حذف المشروع بنجاح"
@@ -176,12 +187,14 @@ const ProjectsManagement = () => {
   };
 
   const toggleVisibility = async (project: Project) => {
+    console.log('Toggling project visibility:', project.id, !project.is_visible);
     const { error } = await supabase
       .from('projects')
       .update({ is_visible: !project.is_visible })
       .eq('id', project.id);
 
     if (error) {
+      console.error('Error updating project visibility:', error);
       toast({
         title: "خطأ في تحديث المشروع",
         description: error.message,
@@ -190,6 +203,7 @@ const ProjectsManagement = () => {
       return;
     }
 
+    console.log('Project visibility updated successfully');
     fetchProjects();
   };
 

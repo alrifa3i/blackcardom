@@ -32,20 +32,26 @@ const WebApplicationsManagement = () => {
   const queryClient = useQueryClient();
 
   const { data: applications, isLoading } = useQuery({
-    queryKey: ['admin-web-applications'],
+    queryKey: ['web-applications'],
     queryFn: async () => {
+      console.log('Fetching web applications...');
       const { data, error } = await supabase
         .from('web_applications')
         .select('*')
         .order('display_order', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching web applications:', error);
+        throw error;
+      }
+      console.log('Web applications fetched:', data);
       return data;
     }
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
+      console.log('Creating web application:', data);
       const { error } = await supabase
         .from('web_applications')
         .insert([{
@@ -55,8 +61,12 @@ const WebApplicationsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-web-applications'] });
+      console.log('Web application created successfully');
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['web-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-web-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['web-applications-management'] });
+      
       toast({ title: "تم إضافة التطبيق بنجاح" });
       resetForm();
     },
@@ -72,6 +82,7 @@ const WebApplicationsManagement = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      console.log('Updating web application:', id, data);
       const { error } = await supabase
         .from('web_applications')
         .update({
@@ -82,8 +93,12 @@ const WebApplicationsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-web-applications'] });
+      console.log('Web application updated successfully');
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['web-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-web-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['web-applications-management'] });
+      
       toast({ title: "تم تحديث التطبيق بنجاح" });
       resetForm();
     },
@@ -99,6 +114,7 @@ const WebApplicationsManagement = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log('Deleting web application:', id);
       const { error } = await supabase
         .from('web_applications')
         .delete()
@@ -106,8 +122,12 @@ const WebApplicationsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-web-applications'] });
+      console.log('Web application deleted successfully');
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['web-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-web-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['web-applications-management'] });
+      
       toast({ title: "تم حذف التطبيق بنجاح" });
     },
     onError: (error) => {

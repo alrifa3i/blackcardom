@@ -16,14 +16,19 @@ const ProductsManagement = () => {
 
   // جلب المنتجات من قاعدة البيانات
   const { data: products, isLoading } = useQuery({
-    queryKey: ['products-management'],
+    queryKey: ['products'],
     queryFn: async () => {
+      console.log('Fetching products...');
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .order('display_order', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+      }
+      console.log('Products fetched:', data);
       return data || [];
     }
   });
@@ -31,6 +36,7 @@ const ProductsManagement = () => {
   // إضافة منتج جديد
   const addProductMutation = useMutation({
     mutationFn: async (productData: any) => {
+      console.log('Creating product:', productData);
       const { error } = await supabase
         .from('products')
         .insert([productData]);
@@ -38,8 +44,12 @@ const ProductsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products-management'] });
+      console.log('Product created successfully');
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products-management'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      
       toast({ title: "تم إضافة المنتج بنجاح" });
       resetForm();
     },
@@ -56,6 +66,7 @@ const ProductsManagement = () => {
   // تحديث منتج
   const updateProductMutation = useMutation({
     mutationFn: async ({ id, ...productData }: any) => {
+      console.log('Updating product:', id, productData);
       const { error } = await supabase
         .from('products')
         .update(productData)
@@ -64,8 +75,12 @@ const ProductsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products-management'] });
+      console.log('Product updated successfully');
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products-management'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      
       toast({ title: "تم تحديث المنتج بنجاح" });
       resetForm();
     },
@@ -82,6 +97,7 @@ const ProductsManagement = () => {
   // حذف منتج
   const deleteProductMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log('Deleting product:', id);
       const { error } = await supabase
         .from('products')
         .delete()
@@ -90,8 +106,12 @@ const ProductsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products-management'] });
+      console.log('Product deleted successfully');
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products-management'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      
       toast({ title: "تم حذف المنتج بنجاح" });
     },
     onError: (error) => {
@@ -110,6 +130,7 @@ const ProductsManagement = () => {
   };
 
   const handleEdit = (product: any) => {
+    console.log('Editing product:', product);
     setEditingProduct(product);
     setShowForm(true);
   };
@@ -121,6 +142,8 @@ const ProductsManagement = () => {
   };
 
   const handleSubmit = (formData: any) => {
+    console.log('Submitting product form:', { editingProduct, formData });
+    
     if (editingProduct) {
       updateProductMutation.mutate({ id: editingProduct.id, ...formData });
     } else {
