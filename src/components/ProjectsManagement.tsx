@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS, invalidateAllQueries, DEFAULT_QUERY_OPTIONS } from '@/utils/queryKeys';
 import type { Database } from '@/integrations/supabase/types';
 
 type Project = Database['public']['Tables']['projects']['Row'];
@@ -36,9 +37,9 @@ const ProjectsManagement = () => {
 
   const queryClient = useQueryClient();
 
-  // استخدام React Query بدلاً من useEffect
+  // استخدام المفاتيح الموحدة والإعدادات المحسنة
   const { data: projects, isLoading } = useQuery({
-    queryKey: ['projects'],
+    queryKey: QUERY_KEYS.PROJECTS,
     queryFn: async () => {
       console.log('Fetching projects...');
       const { data, error } = await supabase
@@ -52,10 +53,11 @@ const ProjectsManagement = () => {
       }
       console.log('Projects fetched:', data);
       return data || [];
-    }
+    },
+    ...DEFAULT_QUERY_OPTIONS
   });
 
-  // إضافة مشروع جديد
+  // إضافة مشروع جديد مع Optimistic Update
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
       console.log('Creating project:', data);
@@ -75,25 +77,48 @@ const ProjectsManagement = () => {
         display_order: data.display_order
       };
 
-      const { error } = await supabase
+      const { data: result, error } = await supabase
         .from('projects')
-        .insert([projectData]);
+        .insert([projectData])
+        .select()
+        .single();
+      
       if (error) throw error;
+      return result;
+    },
+    onMutate: async (newProject) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
+      const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
+      
+      // إضافة المشروع الجديد مؤقتاً
+      const tempProject = {
+        id: 'temp-' + Date.now(),
+        ...newProject,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      queryClient.setQueryData(QUERY_KEYS.PROJECTS, (old: any) => 
+        old ? [...old, tempProject] : [tempProject]
+      );
+      
+      return { previousProjects };
     },
     onSuccess: () => {
       console.log('Project created successfully');
-      // إبطال جميع الاستعلامات ذات الصلة
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['projects-management'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
-      
+      invalidateAllQueries(queryClient, 'projects');
       toast({
         title: "تم إضافة المشروع",
         description: "تم حفظ البيانات بنجاح"
       });
       resetForm();
     },
-    onError: (error: any) => {
+    onError: (error: any, newProject, context) => {
+      // التراجع عن Optimistic update
+      if (context?.previousProjects) {
+        queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
+      }
       console.error('Error creating project:', error);
       toast({
         title: "خطأ في حفظ المشروع",
@@ -103,7 +128,7 @@ const ProjectsManagement = () => {
     }
   });
 
-  // تحديث مشروع
+  // تحديث مشروع مع Optimistic Update
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
       console.log('Updating project:', id, data);
@@ -123,26 +148,43 @@ const ProjectsManagement = () => {
         display_order: data.display_order
       };
 
-      const { error } = await supabase
+      const { data: result, error } = await supabase
         .from('projects')
         .update(projectData)
-        .eq('id', id);
+        .eq('id', id)
+        .select()
+        .single();
+      
       if (error) throw error;
+      return result;
+    },
+    onMutate: async ({ id, data }) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
+      const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
+      
+      queryClient.setQueryData(QUERY_KEYS.PROJECTS, (old: any) =>
+        old ? old.map((project: any) => 
+          project.id === id ? { ...project, ...data } : project
+        ) : []
+      );
+      
+      return { previousProjects };
     },
     onSuccess: () => {
       console.log('Project updated successfully');
-      // إبطال جميع الاستعلامات ذات الصلة
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['projects-management'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
-      
+      invalidateAllQueries(queryClient, 'projects');
       toast({
         title: "تم تحديث المشروع",
         description: "تم حفظ البيانات بنجاح"
       });
       resetForm();
     },
-    onError: (error: any) => {
+    onError: (error: any, variables, context) => {
+      // التراجع عن Optimistic update
+      if (context?.previousProjects) {
+        queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
+      }
       console.error('Error updating project:', error);
       toast({
         title: "خطأ في تحديث المشروع",
@@ -152,7 +194,7 @@ const ProjectsManagement = () => {
     }
   });
 
-  // حذف مشروع
+  // حذف مشروع مع Optimistic Update
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       console.log('Deleting project:', id);
@@ -161,20 +203,32 @@ const ProjectsManagement = () => {
         .delete()
         .eq('id', id);
       if (error) throw error;
+      return id;
+    },
+    onMutate: async (deletedId) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
+      const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
+      
+      queryClient.setQueryData(QUERY_KEYS.PROJECTS, (old: any) =>
+        old ? old.filter((project: any) => project.id !== deletedId) : []
+      );
+      
+      return { previousProjects };
     },
     onSuccess: () => {
       console.log('Project deleted successfully');
-      // إبطال جميع الاستعلامات ذات الصلة
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['projects-management'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
-      
+      invalidateAllQueries(queryClient, 'projects');
       toast({
         title: "تم حذف المشروع",
         description: "تم حذف المشروع بنجاح"
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, deletedId, context) => {
+      // التراجع عن Optimistic update
+      if (context?.previousProjects) {
+        queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
+      }
       console.error('Error deleting project:', error);
       toast({
         title: "خطأ في حذف المشروع",
@@ -184,7 +238,7 @@ const ProjectsManagement = () => {
     }
   });
 
-  // تغيير حالة الرؤية
+  // تغيير حالة الرؤية مع Optimistic Update
   const toggleVisibilityMutation = useMutation({
     mutationFn: async ({ id, is_visible }: { id: string, is_visible: boolean }) => {
       console.log('Toggling project visibility:', id, is_visible);
@@ -193,15 +247,30 @@ const ProjectsManagement = () => {
         .update({ is_visible })
         .eq('id', id);
       if (error) throw error;
+      return { id, is_visible };
+    },
+    onMutate: async ({ id, is_visible }) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
+      const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
+      
+      queryClient.setQueryData(QUERY_KEYS.PROJECTS, (old: any) =>
+        old ? old.map((project: any) => 
+          project.id === id ? { ...project, is_visible } : project
+        ) : []
+      );
+      
+      return { previousProjects };
     },
     onSuccess: () => {
       console.log('Project visibility updated successfully');
-      // إبطال جميع الاستعلامات ذات الصلة
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['projects-management'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
+      invalidateAllQueries(queryClient, 'projects');
     },
-    onError: (error: any) => {
+    onError: (error: any, variables, context) => {
+      // التراجع عن Optimistic update
+      if (context?.previousProjects) {
+        queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
+      }
       console.error('Error updating project visibility:', error);
       toast({
         title: "خطأ في تحديث المشروع",
@@ -273,7 +342,6 @@ const ProjectsManagement = () => {
     setIsDialogOpen(false);
   };
 
-  // Helper function to safely convert Json to string array
   const getStringArray = (value: any): string[] => {
     if (Array.isArray(value)) {
       return value;
