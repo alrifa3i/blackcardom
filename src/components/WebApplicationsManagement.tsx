@@ -11,6 +11,7 @@ import { Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { QUERY_KEYS, invalidateAllQueries, DEFAULT_QUERY_OPTIONS } from '@/utils/queryKeys';
 import ImageUpload from './ImageUpload';
 
 const WebApplicationsManagement = () => {
@@ -31,8 +32,9 @@ const WebApplicationsManagement = () => {
 
   const queryClient = useQueryClient();
 
+  // استخدام المفاتيح الموحدة والإعدادات المحسنة
   const { data: applications, isLoading } = useQuery({
-    queryKey: ['web-applications'],
+    queryKey: QUERY_KEYS.WEB_APPLICATIONS,
     queryFn: async () => {
       console.log('Fetching web applications...');
       const { data, error } = await supabase
@@ -46,72 +48,110 @@ const WebApplicationsManagement = () => {
       }
       console.log('Web applications fetched:', data);
       return data;
-    }
+    },
+    ...DEFAULT_QUERY_OPTIONS
   });
 
+  // إضافة تطبيق جديد مع Optimistic Update
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
       console.log('Creating web application:', data);
-      const { error } = await supabase
+      const { data: result, error } = await supabase
         .from('web_applications')
         .insert([{
           ...data,
           technologies: data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean)
-        }]);
+        }])
+        .select()
+        .single();
       if (error) throw error;
+      return result;
+    },
+    onMutate: async (newApp) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.WEB_APPLICATIONS });
+      const previousApps = queryClient.getQueryData(QUERY_KEYS.WEB_APPLICATIONS);
+      
+      const tempApp = {
+        id: 'temp-' + Date.now(),
+        ...newApp,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      queryClient.setQueryData(QUERY_KEYS.WEB_APPLICATIONS, (old: any) => 
+        old ? [...old, tempApp] : [tempApp]
+      );
+      
+      return { previousApps };
     },
     onSuccess: () => {
       console.log('Web application created successfully');
-      // Invalidate all related queries
-      queryClient.invalidateQueries({ queryKey: ['web-applications'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-web-applications'] });
-      queryClient.invalidateQueries({ queryKey: ['web-applications-management'] });
-      
+      invalidateAllQueries(queryClient, 'web-applications');
       toast({ title: "تم إضافة التطبيق بنجاح" });
       resetForm();
     },
-    onError: (error) => {
+    onError: (error: any, newApp, context) => {
+      if (context?.previousApps) {
+        queryClient.setQueryData(QUERY_KEYS.WEB_APPLICATIONS, context.previousApps);
+      }
       console.error('Error creating application:', error);
       toast({ 
         title: "خطأ في إضافة التطبيق", 
-        description: "يرجى المحاولة مرة أخرى",
+        description: error.message,
         variant: "destructive" 
       });
     }
   });
 
+  // تحديث تطبيق مع Optimistic Update
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
       console.log('Updating web application:', id, data);
-      const { error } = await supabase
+      const { data: result, error } = await supabase
         .from('web_applications')
         .update({
           ...data,
           technologies: data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean)
         })
-        .eq('id', id);
+        .eq('id', id)
+        .select()
+        .single();
       if (error) throw error;
+      return result;
+    },
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.WEB_APPLICATIONS });
+      const previousApps = queryClient.getQueryData(QUERY_KEYS.WEB_APPLICATIONS);
+      
+      queryClient.setQueryData(QUERY_KEYS.WEB_APPLICATIONS, (old: any) =>
+        old ? old.map((app: any) => 
+          app.id === id ? { ...app, ...data } : app
+        ) : []
+      );
+      
+      return { previousApps };
     },
     onSuccess: () => {
       console.log('Web application updated successfully');
-      // Invalidate all related queries
-      queryClient.invalidateQueries({ queryKey: ['web-applications'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-web-applications'] });
-      queryClient.invalidateQueries({ queryKey: ['web-applications-management'] });
-      
+      invalidateAllQueries(queryClient, 'web-applications');
       toast({ title: "تم تحديث التطبيق بنجاح" });
       resetForm();
     },
-    onError: (error) => {
+    onError: (error: any, variables, context) => {
+      if (context?.previousApps) {
+        queryClient.setQueryData(QUERY_KEYS.WEB_APPLICATIONS, context.previousApps);
+      }
       console.error('Error updating application:', error);
       toast({ 
         title: "خطأ في تحديث التطبيق", 
-        description: "يرجى المحاولة مرة أخرى",
+        description: error.message,
         variant: "destructive" 
       });
     }
   });
 
+  // حذف تطبيق مع Optimistic Update
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       console.log('Deleting web application:', id);
@@ -120,21 +160,31 @@ const WebApplicationsManagement = () => {
         .delete()
         .eq('id', id);
       if (error) throw error;
+      return id;
+    },
+    onMutate: async (deletedId) => {
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.WEB_APPLICATIONS });
+      const previousApps = queryClient.getQueryData(QUERY_KEYS.WEB_APPLICATIONS);
+      
+      queryClient.setQueryData(QUERY_KEYS.WEB_APPLICATIONS, (old: any) =>
+        old ? old.filter((app: any) => app.id !== deletedId) : []
+      );
+      
+      return { previousApps };
     },
     onSuccess: () => {
       console.log('Web application deleted successfully');
-      // Invalidate all related queries
-      queryClient.invalidateQueries({ queryKey: ['web-applications'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-web-applications'] });
-      queryClient.invalidateQueries({ queryKey: ['web-applications-management'] });
-      
+      invalidateAllQueries(queryClient, 'web-applications');
       toast({ title: "تم حذف التطبيق بنجاح" });
     },
-    onError: (error) => {
+    onError: (error: any, deletedId, context) => {
+      if (context?.previousApps) {
+        queryClient.setQueryData(QUERY_KEYS.WEB_APPLICATIONS, context.previousApps);
+      }
       console.error('Error deleting application:', error);
       toast({ 
         title: "خطأ في حذف التطبيق", 
-        description: "يرجى المحاولة مرة أخرى",
+        description: error.message,
         variant: "destructive" 
       });
     }

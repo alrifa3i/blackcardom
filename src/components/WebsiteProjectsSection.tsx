@@ -1,39 +1,40 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Globe, Calendar } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ArrowRight, Calendar, ExternalLink, Star, ChevronDown, ChevronUp, Palette } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { QUERY_KEYS, DEFAULT_QUERY_OPTIONS } from '@/utils/queryKeys';
+import ServiceRequestForm from './ServiceRequestForm';
 import ProjectViewer from './ProjectViewer';
 
 const WebsiteProjectsSection = () => {
+  const [showServiceForm, setShowServiceForm] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<{url: string, title: string} | null>(null);
 
-  // توحيد مفتاح الاستعلام مع مكون الإدارة
+  // استخدام المفاتيح الموحدة والإعدادات المحسنة
   const { data: projects, isLoading } = useQuery({
-    queryKey: ['website-projects'],
+    queryKey: QUERY_KEYS.WEBSITE_PROJECTS,
     queryFn: async () => {
-      console.log('Fetching website projects for frontend...');
+      console.log('Fetching website projects for display...');
       const { data, error } = await supabase
         .from('website_projects')
         .select('*')
         .eq('is_visible', true)
-        .order('display_order', { ascending: true })
-        .limit(3);
+        .order('display_order', { ascending: true });
       
       if (error) {
         console.error('Error fetching website projects:', error);
         throw error;
       }
-      console.log('Website projects fetched for frontend:', data);
+      console.log('Website projects fetched for display:', data);
       return data;
     },
-    // إضافة خيارات للتحديث التلقائي
-    staleTime: 0, // البيانات قديمة فوراً
-    refetchOnWindowFocus: true, // إعادة جلب البيانات عند التركيز على النافذة
-    refetchOnMount: true // إعادة جلب البيانات عند تركيب المكون
+    ...DEFAULT_QUERY_OPTIONS
   });
 
   const handleViewProject = (url: string, title: string) => {
@@ -43,16 +44,18 @@ const WebsiteProjectsSection = () => {
     }
   };
 
+  const displayedProjects = showMore ? projects : projects?.slice(0, 6);
+
   if (isLoading) {
     return (
-      <section className="py-16 md:py-20 bg-gray-900">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-yellow-500 text-black">تصميم المواقع</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">مشاريع تصميم المواقع</h2>
+      <section id="website-projects" className="py-20 bg-gray-900">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-yellow-500 text-black">مشاريع المواقع</Badge>
+            <h2 className="text-4xl font-bold mb-4 text-white">تصميم مواقع احترافية</h2>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="bg-gray-800 rounded-lg p-6 animate-pulse">
                 <div className="h-48 bg-gray-700 rounded mb-4"></div>
                 <div className="h-4 bg-gray-700 rounded mb-2"></div>
@@ -67,69 +70,95 @@ const WebsiteProjectsSection = () => {
 
   return (
     <>
-      <section id="website-projects" className="py-16 md:py-20 bg-gray-900">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-12 md:mb-16">
-            <Badge className="mb-4 bg-yellow-500 text-black">تصميم المواقع</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">مشاريع تصميم المواقع</h2>
-            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
-              نصمم مواقع إلكترونية عصرية ومتجاوبة تلبي احتياجات عملائنا وتحقق أهدافهم التجارية
+      <section id="website-projects" className="py-20 bg-gray-900">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-yellow-500 text-black">مشاريع المواقع</Badge>
+            <h2 className="text-4xl font-bold mb-4 text-white">تصميم مواقع احترافية</h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              نصمم مواقع ويب عصرية وجذابة تعكس هوية علامتك التجارية وتحقق أهدافك
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {projects?.map((project) => (
-              <Card key={project.id} className="bg-gray-800 border-gray-700 overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                <div className="relative">
-                  <img
-                    src={project.image_url || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=500&q=80'}
-                    alt={project.title}
-                    className="w-full h-48 object-cover"
-                  />
-                  {project.is_featured && (
-                    <Badge className="absolute top-4 right-4 bg-yellow-500 text-black">
-                      مميز
-                    </Badge>
+
+          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            {displayedProjects?.map((project) => (
+              <Card key={project.id} className="modern-card border-0 shadow-xl bg-gradient-to-br from-gray-800 to-gray-700 hover:shadow-2xl transition-all duration-300 group">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      {project.is_featured && (
+                        <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                      )}
+                      <Badge className="bg-purple-500 text-white">
+                        <Palette className="h-3 w-3 mr-1" />
+                        تصميم موقع
+                      </Badge>
+                    </div>
+                  </div>
+                  
+                  {project.image_url && (
+                    <div className="w-full h-48 rounded-lg overflow-hidden mb-4">
+                      <img 
+                        src={project.image_url} 
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
                   )}
-                </div>
-                
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-yellow-500 text-lg">{project.title}</CardTitle>
-                  {project.client_name && (
-                    <p className="text-gray-400 text-sm flex items-center gap-2">
-                      <Globe className="h-4 w-4" />
-                      {project.client_name}
-                    </p>
+                  
+                  <CardTitle className="text-xl font-bold text-white mb-2 group-hover:text-yellow-500 transition-colors">
+                    {project.title}
+                  </CardTitle>
+                  
+                  {project.completion_date && (
+                    <div className="flex items-center text-gray-300 text-sm">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      <span>{new Date(project.completion_date).toLocaleDateString('ar-SA')}</span>
+                    </div>
                   )}
                 </CardHeader>
                 
                 <CardContent className="space-y-4">
-                  <p className="text-gray-300 text-sm">{project.description}</p>
-                  
-                  {project.technologies && (
-                    <div className="flex flex-wrap gap-2">
-                      {(Array.isArray(project.technologies) ? project.technologies : []).map((tech: string, index: number) => (
-                        <Badge key={index} variant="outline" className="text-xs border-gray-600 text-gray-300">
-                          {tech}
-                        </Badge>
-                      ))}
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    {project.description}
+                  </p>
+
+                  {project.client_name && (
+                    <div className="text-sm text-gray-400">
+                      <span className="font-semibold">العميل:</span> {project.client_name}
                     </div>
                   )}
-                  
-                  <div className="flex items-center justify-between pt-2">
-                    {project.completion_date && (
-                      <div className="flex items-center gap-2 text-gray-400 text-xs">
-                        <Calendar className="h-3 w-3" />
-                        {new Date(project.completion_date).toLocaleDateString('ar-EG')}
+
+                  {/* التقنيات المستخدمة */}
+                  {project.technologies && Array.isArray(project.technologies) && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-white mb-2">التقنيات المستخدمة:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {project.technologies.map((tech: string, techIndex: number) => (
+                          <Badge key={techIndex} variant="outline" className="text-xs border-purple-500 text-purple-400">
+                            {tech}
+                          </Badge>
+                        ))}
                       </div>
-                    )}
-                    
+                    </div>
+                  )}
+
+                  {/* أزرار العمل */}
+                  <div className="flex gap-2 pt-4">
+                    <Button 
+                      size="sm" 
+                      className="flex-1 bg-yellow-500 text-black hover:bg-yellow-400"
+                      onClick={() => setShowServiceForm(true)}
+                    >
+                      طلب خدمة مماثلة
+                      <ArrowRight className="mr-1 h-3 w-3" />
+                    </Button>
                     {project.project_url && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
-                        onClick={() => handleViewProject(project.project_url!, project.title)}
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-gray-600 text-white hover:bg-gray-700"
+                        onClick={() => handleViewProject(project.project_url, project.title)}
                       >
                         <ExternalLink className="h-3 w-3 mr-1" />
                         عرض
@@ -140,14 +169,56 @@ const WebsiteProjectsSection = () => {
               </Card>
             ))}
           </div>
-          
-          <div className="text-center mt-12">
-            <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
-              عرض جميع مشاريع المواقع
-            </Button>
+
+          {projects && projects.length > 6 && (
+            <div className="text-center mt-12">
+              <Button
+                onClick={() => setShowMore(!showMore)}
+                variant="outline"
+                className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+              >
+                {showMore ? (
+                  <>
+                    عرض أقل
+                    <ChevronUp className="mr-2 h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    استكشاف المزيد
+                    <ChevronDown className="mr-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {/* Call to Action */}
+          <div className="text-center mt-16">
+            <div className="bg-gradient-to-r from-purple-500/10 to-purple-400/10 border border-purple-500/20 rounded-xl p-8 max-w-3xl mx-auto">
+              <h3 className="text-2xl font-bold text-white mb-4">
+                تحتاج موقع ويب احترافي؟
+              </h3>
+              <p className="text-gray-300 mb-6">
+                نصمم مواقع ويب عصرية وسريعة الاستجابة تناسب جميع الأجهزة
+              </p>
+              <Button 
+                size="lg" 
+                className="bg-yellow-500 text-black hover:bg-yellow-400"
+                onClick={() => setShowServiceForm(true)}
+              >
+                ابدأ مشروعك الآن
+                <ArrowRight className="mr-2 h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </section>
+
+      <ServiceRequestForm 
+        isOpen={showServiceForm} 
+        onClose={() => setShowServiceForm(false)} 
+      />
+
       {selectedProject && (
         <ProjectViewer
           isOpen={isViewerOpen}

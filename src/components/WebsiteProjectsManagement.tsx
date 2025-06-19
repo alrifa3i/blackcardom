@@ -11,6 +11,7 @@ import { Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { QUERY_KEYS, invalidateAllQueries, DEFAULT_QUERY_OPTIONS } from '@/utils/queryKeys';
 import ImageUpload from './ImageUpload';
 
 const WebsiteProjectsManagement = () => {
@@ -31,8 +32,9 @@ const WebsiteProjectsManagement = () => {
 
   const queryClient = useQueryClient();
 
+  // استخدام المفاتيح الموحدة والإعدادات المحسنة
   const { data: projects, isLoading } = useQuery({
-    queryKey: ['website-projects'],
+    queryKey: QUERY_KEYS.WEBSITE_PROJECTS,
     queryFn: async () => {
       console.log('Fetching website projects...');
       const { data, error } = await supabase
@@ -46,72 +48,110 @@ const WebsiteProjectsManagement = () => {
       }
       console.log('Website projects fetched:', data);
       return data;
-    }
+    },
+    ...DEFAULT_QUERY_OPTIONS
   });
 
+  // إضافة مشروع جديد مع Optimistic Update
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
       console.log('Creating website project:', data);
-      const { error } = await supabase
+      const { data: result, error } = await supabase
         .from('website_projects')
         .insert([{
           ...data,
           technologies: data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean)
-        }]);
+        }])
+        .select()
+        .single();
       if (error) throw error;
+      return result;
+    },
+    onMutate: async (newProject) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.WEBSITE_PROJECTS });
+      const previousProjects = queryClient.getQueryData(QUERY_KEYS.WEBSITE_PROJECTS);
+      
+      const tempProject = {
+        id: 'temp-' + Date.now(),
+        ...newProject,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      queryClient.setQueryData(QUERY_KEYS.WEBSITE_PROJECTS, (old: any) => 
+        old ? [...old, tempProject] : [tempProject]
+      );
+      
+      return { previousProjects };
     },
     onSuccess: () => {
       console.log('Website project created successfully');
-      // Invalidate all related queries
-      queryClient.invalidateQueries({ queryKey: ['website-projects'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-website-projects'] });
-      queryClient.invalidateQueries({ queryKey: ['website-projects-management'] });
-      
+      invalidateAllQueries(queryClient, 'website-projects');
       toast({ title: "تم إضافة المشروع بنجاح" });
       resetForm();
     },
-    onError: (error) => {
+    onError: (error: any, newProject, context) => {
+      if (context?.previousProjects) {
+        queryClient.setQueryData(QUERY_KEYS.WEBSITE_PROJECTS, context.previousProjects);
+      }
       console.error('Error creating project:', error);
       toast({ 
         title: "خطأ في إضافة المشروع", 
-        description: "يرجى المحاولة مرة أخرى",
+        description: error.message,
         variant: "destructive" 
       });
     }
   });
 
+  // تحديث مشروع مع Optimistic Update
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
       console.log('Updating website project:', id, data);
-      const { error } = await supabase
+      const { data: result, error } = await supabase
         .from('website_projects')
         .update({
           ...data,
           technologies: data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean)
         })
-        .eq('id', id);
+        .eq('id', id)
+        .select()
+        .single();
       if (error) throw error;
+      return result;
+    },
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.WEBSITE_PROJECTS });
+      const previousProjects = queryClient.getQueryData(QUERY_KEYS.WEBSITE_PROJECTS);
+      
+      queryClient.setQueryData(QUERY_KEYS.WEBSITE_PROJECTS, (old: any) =>
+        old ? old.map((project: any) => 
+          project.id === id ? { ...project, ...data } : project
+        ) : []
+      );
+      
+      return { previousProjects };
     },
     onSuccess: () => {
       console.log('Website project updated successfully');
-      // Invalidate all related queries
-      queryClient.invalidateQueries({ queryKey: ['website-projects'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-website-projects'] });
-      queryClient.invalidateQueries({ queryKey: ['website-projects-management'] });
-      
+      invalidateAllQueries(queryClient, 'website-projects');
       toast({ title: "تم تحديث المشروع بنجاح" });
       resetForm();
     },
-    onError: (error) => {
+    onError: (error: any, variables, context) => {
+      if (context?.previousProjects) {
+        queryClient.setQueryData(QUERY_KEYS.WEBSITE_PROJECTS, context.previousProjects);
+      }
       console.error('Error updating project:', error);
       toast({ 
         title: "خطأ في تحديث المشروع", 
-        description: "يرجى المحاولة مرة أخرى",
+        description: error.message,
         variant: "destructive" 
       });
     }
   });
 
+  // حذف مشروع مع Optimistic Update
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       console.log('Deleting website project:', id);
@@ -120,21 +160,31 @@ const WebsiteProjectsManagement = () => {
         .delete()
         .eq('id', id);
       if (error) throw error;
+      return id;
+    },
+    onMutate: async (deletedId) => {
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.WEBSITE_PROJECTS });
+      const previousProjects = queryClient.getQueryData(QUERY_KEYS.WEBSITE_PROJECTS);
+      
+      queryClient.setQueryData(QUERY_KEYS.WEBSITE_PROJECTS, (old: any) =>
+        old ? old.filter((project: any) => project.id !== deletedId) : []
+      );
+      
+      return { previousProjects };
     },
     onSuccess: () => {
       console.log('Website project deleted successfully');
-      // Invalidate all related queries
-      queryClient.invalidateQueries({ queryKey: ['website-projects'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-website-projects'] });
-      queryClient.invalidateQueries({ queryKey: ['website-projects-management'] });
-      
+      invalidateAllQueries(queryClient, 'website-projects');
       toast({ title: "تم حذف المشروع بنجاح" });
     },
-    onError: (error) => {
+    onError: (error: any, deletedId, context) => {
+      if (context?.previousProjects) {
+        queryClient.setQueryData(QUERY_KEYS.WEBSITE_PROJECTS, context.previousProjects);
+      }
       console.error('Error deleting project:', error);
       toast({ 
         title: "خطأ في حذف المشروع", 
-        description: "يرجى المحاولة مرة أخرى",
+        description: error.message,
         variant: "destructive" 
       });
     }
@@ -246,7 +296,7 @@ const WebsiteProjectsManagement = () => {
                 />
                 
                 <div>
-                  <Label htmlFor="project_url" className="text-white">رابط المشروع</Label>
+                  <Label htmlFor="project_url"  className="text-white">رابط المشروع</Label>
                   <Input
                     id="project_url"
                     value={formData.project_url}
