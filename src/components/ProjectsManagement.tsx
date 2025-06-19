@@ -42,16 +42,16 @@ const ProjectsManagement = () => {
     console.log('Preparing project data:', data);
     
     // Validate required fields
-    if (!data.name.trim()) {
+    if (!data.name?.trim()) {
       throw new Error('اسم المشروع مطلوب');
     }
-    if (!data.description.trim()) {
+    if (!data.description?.trim()) {
       throw new Error('وصف المشروع مطلوب');
     }
-    if (!data.country.trim()) {
+    if (!data.country?.trim()) {
       throw new Error('البلد مطلوب');
     }
-    if (!data.date.trim()) {
+    if (!data.date?.trim()) {
       throw new Error('تاريخ المشروع مطلوب');
     }
 
@@ -60,7 +60,7 @@ const ProjectsManagement = () => {
       description: data.description.trim(),
       country: data.country.trim(),
       date: data.date.trim(),
-      status: data.status,
+      status: data.status || 'مكتمل',
       project_url: data.project_url?.trim() || null,
       image_url: data.image_url?.trim() || null,
       logo: data.logo?.trim() || null,
@@ -164,8 +164,11 @@ const ProjectsManagement = () => {
   // تحديث مشروع مع Optimistic Update
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: typeof formData }) => {
-      console.log('Updating project with id:', id, 'and data:', data);
+      console.log('Starting update mutation for project:', id);
+      console.log('Update data received:', data);
+      
       const projectData = prepareProjectData(data);
+      console.log('Prepared data for update:', projectData);
 
       const { data: result, error } = await supabase
         .from('projects')
@@ -175,18 +178,19 @@ const ProjectsManagement = () => {
         .single();
       
       if (error) {
-        console.error('Supabase error updating project:', error);
+        console.error('Update error from Supabase:', error);
         throw new Error(`خطأ في تحديث المشروع: ${error.message}`);
       }
       
-      console.log('Project updated successfully:', result);
+      console.log('Update successful, result:', result);
       return result;
     },
     onMutate: async ({ id, data }) => {
-      console.log('Updating project - onMutate');
+      console.log('Update mutation onMutate - canceling queries');
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
       const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
       
+      console.log('Applying optimistic update');
       queryClient.setQueryData(QUERY_KEYS.PROJECTS, (old: any) =>
         old ? old.map((project: any) => 
           project.id === id ? { ...project, ...prepareProjectData(data) } : project
@@ -196,7 +200,7 @@ const ProjectsManagement = () => {
       return { previousProjects };
     },
     onSuccess: (data) => {
-      console.log('Project updated successfully - onSuccess:', data);
+      console.log('Update mutation onSuccess:', data);
       invalidateAllQueries(queryClient, 'projects');
       toast({
         title: "✅ تم تحديث المشروع",
@@ -205,7 +209,7 @@ const ProjectsManagement = () => {
       resetForm();
     },
     onError: (error: any, variables, context) => {
-      console.error('Error updating project - onError:', error);
+      console.error('Update mutation onError:', error);
       if (context?.previousProjects) {
         queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
       }
@@ -301,40 +305,56 @@ const ProjectsManagement = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', { editingProject, formData });
+    console.log('Form submission started');
+    console.log('Editing project:', editingProject);
+    console.log('Form data:', formData);
+    
+    // Prevent multiple submissions
+    if (createMutation.isPending || updateMutation.isPending) {
+      console.log('Submission already in progress, ignoring');
+      return;
+    }
     
     try {
       if (editingProject) {
-        console.log('Updating project with ID:', editingProject.id);
-        await updateMutation.mutateAsync({ id: editingProject.id, data: formData });
+        console.log('Calling update mutation for project ID:', editingProject.id);
+        await updateMutation.mutateAsync({ 
+          id: editingProject.id, 
+          data: { ...formData } // Create a new object to avoid reference issues
+        });
       } else {
-        console.log('Creating new project');
-        await createMutation.mutateAsync(formData);
+        console.log('Calling create mutation');
+        await createMutation.mutateAsync({ ...formData });
       }
     } catch (error) {
-      console.error('Submit error:', error);
-      // Error is already handled in the mutation's onError callback
+      console.error('Form submission error:', error);
+      // Error handling is done in mutation onError callbacks
     }
   };
 
   const handleEdit = (project: Project) => {
     console.log('Editing project:', project);
     setEditingProject(project);
-    setFormData({
-      name: project.name,
-      description: project.description,
-      country: project.country,
-      date: project.date,
-      status: project.status,
+    
+    // Convert arrays and objects to strings for form display
+    const formattedData = {
+      name: project.name || '',
+      description: project.description || '',
+      country: project.country || '',
+      date: project.date || '',
+      status: project.status || 'مكتمل',
       project_url: project.project_url || '',
       image_url: project.image_url || '',
       logo: project.logo || '',
       technologies: Array.isArray(project.technologies) ? project.technologies.join(', ') : '',
       achievements: Array.isArray(project.achievements) ? project.achievements.join(', ') : '',
-      stats: JSON.stringify(project.stats || {}),
-      is_visible: project.is_visible,
-      display_order: project.display_order
-    });
+      stats: project.stats ? JSON.stringify(project.stats, null, 2) : '',
+      is_visible: Boolean(project.is_visible),
+      display_order: Number(project.display_order) || 0
+    };
+    
+    console.log('Setting form data:', formattedData);
+    setFormData(formattedData);
     setIsDialogOpen(true);
   };
 
@@ -349,6 +369,7 @@ const ProjectsManagement = () => {
   };
 
   const resetForm = () => {
+    console.log('Resetting form');
     setFormData({
       name: '',
       description: '',
@@ -419,9 +440,10 @@ const ProjectsManagement = () => {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     className="bg-gray-800 border-gray-600 text-white"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -429,9 +451,10 @@ const ProjectsManagement = () => {
                   <Input
                     id="country"
                     value={formData.country}
-                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
                     className="bg-gray-800 border-gray-600 text-white"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -441,10 +464,11 @@ const ProjectsManagement = () => {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   className="bg-gray-800 border-gray-600 text-white"
                   rows={3}
                   required
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -454,14 +478,19 @@ const ProjectsManagement = () => {
                   <Input
                     id="date"
                     value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
                     className="bg-gray-800 border-gray-600 text-white"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
                   <Label htmlFor="status" className="text-white">الحالة</Label>
-                  <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                  <Select 
+                    value={formData.status} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
+                    disabled={isSubmitting}
+                  >
                     <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                       <SelectValue />
                     </SelectTrigger>
@@ -481,8 +510,9 @@ const ProjectsManagement = () => {
                     id="project_url"
                     type="url"
                     value={formData.project_url}
-                    onChange={(e) => setFormData({ ...formData, project_url: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, project_url: e.target.value }))}
                     className="bg-gray-800 border-gray-600 text-white"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -491,8 +521,9 @@ const ProjectsManagement = () => {
                     id="image_url"
                     type="url"
                     value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
                     className="bg-gray-800 border-gray-600 text-white"
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -502,9 +533,10 @@ const ProjectsManagement = () => {
                 <Input
                   id="technologies"
                   value={formData.technologies}
-                  onChange={(e) => setFormData({ ...formData, technologies: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, technologies: e.target.value }))}
                   className="bg-gray-800 border-gray-600 text-white"
                   placeholder="React, Node.js, MongoDB"
+                  disabled={isSubmitting}
                 />
               </div>
 
