@@ -37,7 +37,51 @@ const ProjectsManagement = () => {
 
   const queryClient = useQueryClient();
 
-  // استخدام المفاتيح الموحدة والإعدادات المحسنة
+  // Helper function to validate and prepare project data
+  const prepareProjectData = (data: typeof formData) => {
+    console.log('Preparing project data:', data);
+    
+    // Validate required fields
+    if (!data.name.trim()) {
+      throw new Error('اسم المشروع مطلوب');
+    }
+    if (!data.description.trim()) {
+      throw new Error('وصف المشروع مطلوب');
+    }
+    if (!data.country.trim()) {
+      throw new Error('البلد مطلوب');
+    }
+    if (!data.date.trim()) {
+      throw new Error('تاريخ المشروع مطلوب');
+    }
+
+    const projectData = {
+      name: data.name.trim(),
+      description: data.description.trim(),
+      country: data.country.trim(),
+      date: data.date.trim(),
+      status: data.status,
+      project_url: data.project_url?.trim() || null,
+      image_url: data.image_url?.trim() || null,
+      logo: data.logo?.trim() || null,
+      technologies: data.technologies ? data.technologies.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
+      achievements: data.achievements ? data.achievements.split(',').map((a: string) => a.trim()).filter(Boolean) : [],
+      stats: (() => {
+        try {
+          return data.stats ? JSON.parse(data.stats) : {};
+        } catch (e) {
+          console.warn('Invalid JSON in stats field, using empty object');
+          return {};
+        }
+      })(),
+      is_visible: Boolean(data.is_visible),
+      display_order: Number(data.display_order) || 0
+    };
+
+    console.log('Prepared project data:', projectData);
+    return projectData;
+  };
+
   const { data: projects, isLoading } = useQuery({
     queryKey: QUERY_KEYS.PROJECTS,
     queryFn: async () => {
@@ -59,23 +103,9 @@ const ProjectsManagement = () => {
 
   // إضافة مشروع جديد مع Optimistic Update
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
-      console.log('Creating project:', data);
-      const projectData = {
-        name: data.name,
-        description: data.description,
-        country: data.country,
-        date: data.date,
-        status: data.status,
-        project_url: data.project_url || null,
-        image_url: data.image_url || null,
-        logo: data.logo || null,
-        technologies: data.technologies ? data.technologies.split(',').map((t: string) => t.trim()) : [],
-        achievements: data.achievements ? data.achievements.split(',').map((a: string) => a.trim()) : [],
-        stats: data.stats ? JSON.parse(data.stats) : {},
-        is_visible: data.is_visible,
-        display_order: data.display_order
-      };
+    mutationFn: async (data: typeof formData) => {
+      console.log('Creating project with data:', data);
+      const projectData = prepareProjectData(data);
 
       const { data: result, error } = await supabase
         .from('projects')
@@ -83,18 +113,22 @@ const ProjectsManagement = () => {
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error creating project:', error);
+        throw new Error(`خطأ في إنشاء المشروع: ${error.message}`);
+      }
+      
+      console.log('Project created successfully:', result);
       return result;
     },
     onMutate: async (newProject) => {
-      // Optimistic update
+      console.log('Creating project - onMutate');
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
       const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
       
-      // إضافة المشروع الجديد مؤقتاً
       const tempProject = {
         id: 'temp-' + Date.now(),
-        ...newProject,
+        ...prepareProjectData(newProject),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
@@ -105,24 +139,23 @@ const ProjectsManagement = () => {
       
       return { previousProjects };
     },
-    onSuccess: () => {
-      console.log('Project created successfully');
+    onSuccess: (data) => {
+      console.log('Project created successfully - onSuccess:', data);
       invalidateAllQueries(queryClient, 'projects');
       toast({
-        title: "تم إضافة المشروع",
+        title: "✅ تم إضافة المشروع",
         description: "تم حفظ البيانات بنجاح"
       });
       resetForm();
     },
     onError: (error: any, newProject, context) => {
-      // التراجع عن Optimistic update
+      console.error('Error creating project - onError:', error);
       if (context?.previousProjects) {
         queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
       }
-      console.error('Error creating project:', error);
       toast({
-        title: "خطأ في حفظ المشروع",
-        description: error.message,
+        title: "❌ خطأ في حفظ المشروع",
+        description: error.message || "حدث خطأ غير متوقع",
         variant: "destructive"
       });
     }
@@ -130,23 +163,9 @@ const ProjectsManagement = () => {
 
   // تحديث مشروع مع Optimistic Update
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string, data: any }) => {
-      console.log('Updating project:', id, data);
-      const projectData = {
-        name: data.name,
-        description: data.description,
-        country: data.country,
-        date: data.date,
-        status: data.status,
-        project_url: data.project_url || null,
-        image_url: data.image_url || null,
-        logo: data.logo || null,
-        technologies: data.technologies ? data.technologies.split(',').map((t: string) => t.trim()) : [],
-        achievements: data.achievements ? data.achievements.split(',').map((a: string) => a.trim()) : [],
-        stats: data.stats ? JSON.parse(data.stats) : {},
-        is_visible: data.is_visible,
-        display_order: data.display_order
-      };
+    mutationFn: async ({ id, data }: { id: string, data: typeof formData }) => {
+      console.log('Updating project with id:', id, 'and data:', data);
+      const projectData = prepareProjectData(data);
 
       const { data: result, error } = await supabase
         .from('projects')
@@ -155,40 +174,44 @@ const ProjectsManagement = () => {
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error updating project:', error);
+        throw new Error(`خطأ في تحديث المشروع: ${error.message}`);
+      }
+      
+      console.log('Project updated successfully:', result);
       return result;
     },
     onMutate: async ({ id, data }) => {
-      // Optimistic update
+      console.log('Updating project - onMutate');
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
       const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
       
       queryClient.setQueryData(QUERY_KEYS.PROJECTS, (old: any) =>
         old ? old.map((project: any) => 
-          project.id === id ? { ...project, ...data } : project
+          project.id === id ? { ...project, ...prepareProjectData(data) } : project
         ) : []
       );
       
       return { previousProjects };
     },
-    onSuccess: () => {
-      console.log('Project updated successfully');
+    onSuccess: (data) => {
+      console.log('Project updated successfully - onSuccess:', data);
       invalidateAllQueries(queryClient, 'projects');
       toast({
-        title: "تم تحديث المشروع",
+        title: "✅ تم تحديث المشروع",
         description: "تم حفظ البيانات بنجاح"
       });
       resetForm();
     },
     onError: (error: any, variables, context) => {
-      // التراجع عن Optimistic update
+      console.error('Error updating project - onError:', error);
       if (context?.previousProjects) {
         queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
       }
-      console.error('Error updating project:', error);
       toast({
-        title: "خطأ في تحديث المشروع",
-        description: error.message,
+        title: "❌ خطأ في تحديث المشروع",
+        description: error.message || "حدث خطأ غير متوقع",
         variant: "destructive"
       });
     }
@@ -206,7 +229,6 @@ const ProjectsManagement = () => {
       return id;
     },
     onMutate: async (deletedId) => {
-      // Optimistic update
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
       const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
       
@@ -225,7 +247,6 @@ const ProjectsManagement = () => {
       });
     },
     onError: (error: any, deletedId, context) => {
-      // التراجع عن Optimistic update
       if (context?.previousProjects) {
         queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
       }
@@ -250,7 +271,6 @@ const ProjectsManagement = () => {
       return { id, is_visible };
     },
     onMutate: async ({ id, is_visible }) => {
-      // Optimistic update
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
       const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
       
@@ -267,7 +287,6 @@ const ProjectsManagement = () => {
       invalidateAllQueries(queryClient, 'projects');
     },
     onError: (error: any, variables, context) => {
-      // التراجع عن Optimistic update
       if (context?.previousProjects) {
         queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
       }
@@ -280,14 +299,21 @@ const ProjectsManagement = () => {
     }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting form:', { editingProject, formData });
+    console.log('Form submitted:', { editingProject, formData });
     
-    if (editingProject) {
-      updateMutation.mutate({ id: editingProject.id, data: formData });
-    } else {
-      createMutation.mutate(formData);
+    try {
+      if (editingProject) {
+        console.log('Updating project with ID:', editingProject.id);
+        await updateMutation.mutateAsync({ id: editingProject.id, data: formData });
+      } else {
+        console.log('Creating new project');
+        await createMutation.mutateAsync(formData);
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+      // Error is already handled in the mutation's onError callback
     }
   };
 
@@ -488,6 +514,7 @@ const ProjectsManagement = () => {
                   variant="outline" 
                   onClick={() => setIsDialogOpen(false)}
                   className="border-gray-600 text-gray-300"
+                  disabled={isSubmitting}
                 >
                   إلغاء
                 </Button>
@@ -496,7 +523,14 @@ const ProjectsManagement = () => {
                   className="bg-yellow-500 text-black hover:bg-yellow-400"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'جاري الحفظ...' : editingProject ? 'تحديث' : 'إضافة'}
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
+                      جاري الحفظ...
+                    </>
+                  ) : (
+                    editingProject ? 'تحديث' : 'إضافة'
+                  )}
                 </Button>
               </div>
             </form>
