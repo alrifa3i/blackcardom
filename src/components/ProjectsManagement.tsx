@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useProjectMutations, type ProjectFormData } from '@/hooks/useProjectMutations';
 import ProjectForm from '@/components/projects/ProjectForm';
 import ProjectList from '@/components/projects/ProjectList';
+import { toast } from '@/hooks/use-toast';
 import type { Database } from '@/integrations/supabase/types';
 
 type Project = Database['public']['Tables']['projects']['Row'];
@@ -33,7 +34,7 @@ const ProjectsManagement = () => {
 
   const { createMutation, updateMutation, deleteMutation, toggleVisibilityMutation } = useProjectMutations();
 
-  const { data: projects, isLoading } = useQuery({
+  const { data: projects, isLoading, refetch } = useQuery({
     queryKey: QUERY_KEYS.PROJECTS,
     queryFn: async () => {
       console.log('Fetching projects...');
@@ -60,12 +61,38 @@ const ProjectsManagement = () => {
     
     // التحقق من وجود البيانات المطلوبة
     if (!formData.name?.trim()) {
-      console.error('Project name is required');
+      toast({
+        title: "❌ خطأ في البيانات",
+        description: "اسم المشروع مطلوب",
+        variant: "destructive"
+      });
       return;
     }
     
     if (!formData.description?.trim()) {
-      console.error('Project description is required');
+      toast({
+        title: "❌ خطأ في البيانات",
+        description: "وصف المشروع مطلوب",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!formData.country?.trim()) {
+      toast({
+        title: "❌ خطأ في البيانات",
+        description: "البلد مطلوب",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!formData.date?.trim()) {
+      toast({
+        title: "❌ خطأ في البيانات",
+        description: "تاريخ المشروع مطلوب",
+        variant: "destructive"
+      });
       return;
     }
     
@@ -80,21 +107,26 @@ const ProjectsManagement = () => {
         console.log('Updating project with ID:', editingProject.id);
         console.log('Update data:', formData);
         
-        const result = await updateMutation.mutateAsync({ 
+        await updateMutation.mutateAsync({ 
           id: editingProject.id, 
           data: formData
         });
         
-        console.log('Update result:', result);
+        console.log('Update completed successfully');
         resetForm();
+        // Refresh the projects list
+        refetch();
       } else {
         console.log('Creating new project');
-        const result = await createMutation.mutateAsync(formData);
-        console.log('Create result:', result);
+        await createMutation.mutateAsync(formData);
+        console.log('Create completed successfully');
         resetForm();
+        // Refresh the projects list
+        refetch();
       }
     } catch (error) {
       console.error('Form submission error:', error);
+      // Error is already handled by the mutation's onError callback
     }
   };
 
@@ -137,7 +169,9 @@ const ProjectsManagement = () => {
   };
 
   const handleDelete = (id: string) => {
-    deleteMutation.mutate(id);
+    if (window.confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
+      deleteMutation.mutate(id);
+    }
   };
 
   const handleToggleVisibility = (project: Project) => {
@@ -181,6 +215,7 @@ const ProjectsManagement = () => {
             variant="ghost"
             onClick={() => setShowForm(false)}
             className="text-gray-400 hover:text-white"
+            disabled={isSubmitting}
           >
             <ArrowLeft className="h-4 w-4 ml-2" />
             العودة للقائمة
@@ -197,7 +232,7 @@ const ProjectsManagement = () => {
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             isEditing={!!editingProject}
-            onCancel={() => setShowForm(false)}
+            onCancel={() => !isSubmitting && setShowForm(false)}
           />
         </div>
       </div>

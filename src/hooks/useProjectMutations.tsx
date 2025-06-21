@@ -122,33 +122,20 @@ export const useProjectMutations = () => {
       const projectData = prepareProjectData(data);
       console.log('Prepared data for update:', projectData);
 
-      // First check if the project exists
-      const { data: existingProject, error: checkError } = await supabase
-        .from('projects')
-        .select('id')
-        .eq('id', id)
-        .maybeSingle();
-
-      if (checkError) {
-        console.error('Error checking project existence:', checkError);
-        throw new Error(`خطأ في التحقق من وجود المشروع: ${checkError.message}`);
-      }
-
-      if (!existingProject) {
-        console.error('Project not found with ID:', id);
-        throw new Error('المشروع غير موجود');
-      }
-
-      // Now update the project
+      // Update the project directly - removed double checking
       const { data: result, error } = await supabase
         .from('projects')
         .update(projectData)
         .eq('id', id)
-        .select()
-        .maybeSingle();
+        .select('*')
+        .single();
       
       if (error) {
         console.error('Update error from Supabase:', error);
+        // Check if it's a not found error
+        if (error.code === 'PGRST116') {
+          throw new Error('المشروع غير موجود أو تم حذفه');
+        }
         throw new Error(`خطأ في تحديث المشروع: ${error.message}`);
       }
       
