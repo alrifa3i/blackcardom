@@ -91,37 +91,16 @@ export const useProjectMutations = () => {
       console.log('Project created successfully:', result);
       return result;
     },
-    onMutate: async (newProject) => {
-      console.log('Creating project - onMutate');
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
-      const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
-      
-      const tempProject = {
-        id: 'temp-' + Date.now(),
-        ...prepareProjectData(newProject),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
-      queryClient.setQueryData(QUERY_KEYS.PROJECTS, (old: any) => 
-        old ? [...old, tempProject] : [tempProject]
-      );
-      
-      return { previousProjects };
-    },
     onSuccess: (data) => {
       console.log('Project created successfully - onSuccess:', data);
-      invalidateAllQueries(queryClient, 'projects');
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROJECTS });
       toast({
         title: "✅ تم إضافة المشروع",
         description: "تم حفظ البيانات بنجاح"
       });
     },
-    onError: (error: any, newProject, context) => {
+    onError: (error: any) => {
       console.error('Error creating project - onError:', error);
-      if (context?.previousProjects) {
-        queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
-      }
       toast({
         title: "❌ خطأ في حفظ المشروع",
         description: error.message || "حدث خطأ غير متوقع",
@@ -154,33 +133,16 @@ export const useProjectMutations = () => {
       console.log('Update successful, result:', result);
       return result;
     },
-    onMutate: async ({ id, data }) => {
-      console.log('Update mutation onMutate - canceling queries');
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
-      const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
-      
-      console.log('Applying optimistic update');
-      queryClient.setQueryData(QUERY_KEYS.PROJECTS, (old: any) =>
-        old ? old.map((project: any) => 
-          project.id === id ? { ...project, ...prepareProjectData(data) } : project
-        ) : []
-      );
-      
-      return { previousProjects };
-    },
     onSuccess: (data) => {
       console.log('Update mutation onSuccess:', data);
-      invalidateAllQueries(queryClient, 'projects');
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROJECTS });
       toast({
         title: "✅ تم تحديث المشروع",
         description: "تم حفظ البيانات بنجاح"
       });
     },
-    onError: (error: any, variables, context) => {
+    onError: (error: any) => {
       console.error('Update mutation onError:', error);
-      if (context?.previousProjects) {
-        queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
-      }
       toast({
         title: "❌ خطأ في تحديث المشروع",
         description: error.message || "حدث خطأ غير متوقع",
@@ -200,28 +162,15 @@ export const useProjectMutations = () => {
       if (error) throw error;
       return id;
     },
-    onMutate: async (deletedId) => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
-      const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
-      
-      queryClient.setQueryData(QUERY_KEYS.PROJECTS, (old: any) =>
-        old ? old.filter((project: any) => project.id !== deletedId) : []
-      );
-      
-      return { previousProjects };
-    },
     onSuccess: () => {
       console.log('Project deleted successfully');
-      invalidateAllQueries(queryClient, 'projects');
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROJECTS });
       toast({
         title: "تم حذف المشروع",
         description: "تم حذف المشروع بنجاح"
       });
     },
-    onError: (error: any, deletedId, context) => {
-      if (context?.previousProjects) {
-        queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
-      }
+    onError: (error: any) => {
       console.error('Error deleting project:', error);
       toast({
         title: "خطأ في حذف المشروع",
@@ -242,26 +191,11 @@ export const useProjectMutations = () => {
       if (error) throw error;
       return { id, is_visible };
     },
-    onMutate: async ({ id, is_visible }) => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROJECTS });
-      const previousProjects = queryClient.getQueryData(QUERY_KEYS.PROJECTS);
-      
-      queryClient.setQueryData(QUERY_KEYS.PROJECTS, (old: any) =>
-        old ? old.map((project: any) => 
-          project.id === id ? { ...project, is_visible } : project
-        ) : []
-      );
-      
-      return { previousProjects };
-    },
     onSuccess: () => {
       console.log('Project visibility updated successfully');
-      invalidateAllQueries(queryClient, 'projects');
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROJECTS });
     },
-    onError: (error: any, variables, context) => {
-      if (context?.previousProjects) {
-        queryClient.setQueryData(QUERY_KEYS.PROJECTS, context.previousProjects);
-      }
+    onError: (error: any) => {
       console.error('Error updating project visibility:', error);
       toast({
         title: "خطأ في تحديث المشروع",

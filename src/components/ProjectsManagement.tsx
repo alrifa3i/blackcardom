@@ -1,8 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Plus, ArrowLeft } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS, DEFAULT_QUERY_OPTIONS } from '@/utils/queryKeys';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,7 +13,7 @@ import type { Database } from '@/integrations/supabase/types';
 type Project = Database['public']['Tables']['projects']['Row'];
 
 const ProjectsManagement = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState<ProjectFormData>({
     name: '',
@@ -104,7 +103,7 @@ const ProjectsManagement = () => {
     
     console.log('Setting form data:', formattedData);
     setFormData(formattedData);
-    setIsDialogOpen(true);
+    setShowForm(true);
   };
 
   const handleDelete = (id: string) => {
@@ -133,44 +132,58 @@ const ProjectsManagement = () => {
       display_order: 0
     });
     setEditingProject(null);
-    setIsDialogOpen(false);
+    setShowForm(false);
+  };
+
+  const handleAddNew = () => {
+    resetForm();
+    setShowForm(true);
   };
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
+  if (showForm) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            onClick={() => setShowForm(false)}
+            className="text-gray-400 hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4 ml-2" />
+            العودة للقائمة
+          </Button>
+          <h1 className="text-3xl font-bold text-white">
+            {editingProject ? 'تعديل المشروع' : 'إضافة مشروع جديد'}
+          </h1>
+        </div>
+
+        <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+          <ProjectForm
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            isEditing={!!editingProject}
+            onCancel={() => setShowForm(false)}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">إدارة المشاريع</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              onClick={() => {
-                resetForm();
-                setIsDialogOpen(true);
-              }}
-              className="bg-yellow-500 text-black hover:bg-yellow-400"
-            >
-              <Plus className="h-4 w-4 ml-2" />
-              إضافة مشروع جديد
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-gray-900 border-gray-700 max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-white">
-                {editingProject ? 'تعديل المشروع' : 'إضافة مشروع جديد'}
-              </DialogTitle>
-            </DialogHeader>
-            <ProjectForm
-              formData={formData}
-              setFormData={setFormData}
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              isEditing={!!editingProject}
-              onCancel={() => setIsDialogOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
+        <Button 
+          onClick={handleAddNew}
+          className="bg-yellow-500 text-black hover:bg-yellow-400"
+        >
+          <Plus className="h-4 w-4 ml-2" />
+          إضافة مشروع جديد
+        </Button>
       </div>
 
       <ProjectList
