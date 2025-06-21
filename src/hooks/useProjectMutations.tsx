@@ -2,7 +2,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { QUERY_KEYS, invalidateAllQueries } from '@/utils/queryKeys';
+import { QUERY_KEYS } from '@/utils/queryKeys';
 import type { Database } from '@/integrations/supabase/types';
 
 type Project = Database['public']['Tables']['projects']['Row'];
@@ -115,6 +115,10 @@ export const useProjectMutations = () => {
       console.log('Starting update mutation for project:', id);
       console.log('Update data received:', data);
       
+      if (!id) {
+        throw new Error('معرف المشروع مطلوب للتحديث');
+      }
+      
       const projectData = prepareProjectData(data);
       console.log('Prepared data for update:', projectData);
 
@@ -130,6 +134,11 @@ export const useProjectMutations = () => {
         throw new Error(`خطأ في تحديث المشروع: ${error.message}`);
       }
       
+      if (!result) {
+        console.error('No result returned from update');
+        throw new Error('لم يتم العثور على المشروع للتحديث');
+      }
+      
       console.log('Update successful, result:', result);
       return result;
     },
@@ -138,7 +147,7 @@ export const useProjectMutations = () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROJECTS });
       toast({
         title: "✅ تم تحديث المشروع",
-        description: "تم حفظ البيانات بنجاح"
+        description: "تم حفظ التغييرات بنجاح"
       });
     },
     onError: (error: any) => {

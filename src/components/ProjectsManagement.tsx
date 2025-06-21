@@ -56,7 +56,18 @@ const ProjectsManagement = () => {
     e.preventDefault();
     console.log('Form submission started');
     console.log('Editing project:', editingProject);
-    console.log('Form data:', formData);
+    console.log('Form data before submission:', formData);
+    
+    // التحقق من وجود البيانات المطلوبة
+    if (!formData.name?.trim()) {
+      console.error('Project name is required');
+      return;
+    }
+    
+    if (!formData.description?.trim()) {
+      console.error('Project description is required');
+      return;
+    }
     
     // Prevent multiple submissions
     if (createMutation.isPending || updateMutation.isPending) {
@@ -65,26 +76,33 @@ const ProjectsManagement = () => {
     }
     
     try {
-      if (editingProject) {
-        console.log('Calling update mutation for project ID:', editingProject.id);
-        await updateMutation.mutateAsync({ 
+      if (editingProject?.id) {
+        console.log('Updating project with ID:', editingProject.id);
+        console.log('Update data:', formData);
+        
+        const result = await updateMutation.mutateAsync({ 
           id: editingProject.id, 
-          data: { ...formData }
+          data: formData
         });
+        
+        console.log('Update result:', result);
+        resetForm();
       } else {
-        console.log('Calling create mutation');
-        await createMutation.mutateAsync({ ...formData });
+        console.log('Creating new project');
+        const result = await createMutation.mutateAsync(formData);
+        console.log('Create result:', result);
+        resetForm();
       }
-      resetForm();
     } catch (error) {
       console.error('Form submission error:', error);
     }
   };
 
   const handleEdit = (project: Project) => {
-    console.log('Editing project:', project);
+    console.log('Starting edit for project:', project);
     setEditingProject(project);
     
+    // تحويل البيانات بشكل صحيح
     const formattedData: ProjectFormData = {
       name: project.name || '',
       description: project.description || '',
@@ -94,14 +112,26 @@ const ProjectsManagement = () => {
       project_url: project.project_url || '',
       image_url: project.image_url || '',
       logo: project.logo || '',
-      technologies: Array.isArray(project.technologies) ? project.technologies.join(', ') : '',
-      achievements: Array.isArray(project.achievements) ? project.achievements.join(', ') : '',
-      stats: project.stats ? JSON.stringify(project.stats, null, 2) : '',
+      technologies: Array.isArray(project.technologies) 
+        ? project.technologies.join(', ') 
+        : typeof project.technologies === 'string' 
+        ? project.technologies 
+        : '',
+      achievements: Array.isArray(project.achievements) 
+        ? project.achievements.join(', ') 
+        : typeof project.achievements === 'string' 
+        ? project.achievements 
+        : '',
+      stats: project.stats && typeof project.stats === 'object' 
+        ? JSON.stringify(project.stats, null, 2) 
+        : project.stats 
+        ? String(project.stats) 
+        : '',
       is_visible: Boolean(project.is_visible),
       display_order: Number(project.display_order) || 0
     };
     
-    console.log('Setting form data:', formattedData);
+    console.log('Formatted form data:', formattedData);
     setFormData(formattedData);
     setShowForm(true);
   };
@@ -136,6 +166,7 @@ const ProjectsManagement = () => {
   };
 
   const handleAddNew = () => {
+    console.log('Adding new project');
     resetForm();
     setShowForm(true);
   };
