@@ -122,12 +122,30 @@ export const useProjectMutations = () => {
       const projectData = prepareProjectData(data);
       console.log('Prepared data for update:', projectData);
 
+      // First check if the project exists
+      const { data: existingProject, error: checkError } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (checkError) {
+        console.error('Error checking project existence:', checkError);
+        throw new Error(`خطأ في التحقق من وجود المشروع: ${checkError.message}`);
+      }
+
+      if (!existingProject) {
+        console.error('Project not found with ID:', id);
+        throw new Error('المشروع غير موجود');
+      }
+
+      // Now update the project
       const { data: result, error } = await supabase
         .from('projects')
         .update(projectData)
         .eq('id', id)
         .select()
-        .single();
+        .maybeSingle();
       
       if (error) {
         console.error('Update error from Supabase:', error);
@@ -136,7 +154,7 @@ export const useProjectMutations = () => {
       
       if (!result) {
         console.error('No result returned from update');
-        throw new Error('لم يتم العثور على المشروع للتحديث');
+        throw new Error('فشل في تحديث المشروع - لم يتم إرجاع بيانات');
       }
       
       console.log('Update successful, result:', result);
